@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全校學生名單 - 跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        .class-title {
+            background: #2339d6;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0;
+            letter-spacing: 2px;
+        }
+        .student-list-col {
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 0 0 20px 0;
+            margin-bottom: 24px;
+        }
+        .student-item {
+            text-align: center;
+            margin: 18px 0;
+        }
+        .student-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .student-photo:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+        }
+        .student-name {
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 1.08rem;
+        }
+        .student-id {
+            color: #2339d6;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        @media (max-width: 991px) {
+            .class-title { font-size: 1rem; }
+            .student-photo { width: 64px; height: 64px; }
+        }
+        @media (max-width: 767px) {
+            .student-list-col { margin-bottom: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h2 class="mb-4 fw-bold text-center" style="color:#2339d6;letter-spacing:2px;">全校學生名單</h2>
+        <div class="row" id="studentsListRow">
+            <!-- 學生名單動態生成 -->
+        </div>
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>返回首頁</a>
+        </div>
+    </div>
+    <script>
+    // 假資料，實際可從後端獲取
+    const studentsData = [
+        {
+            class: '高中三',
+            students: [
+                { name: '羅諭琦', id: '', photo: '' },
+                { name: '盧諄霖', id: '', photo: '' },
+                { name: '洪俊豪', id: '', photo: '' },
+                { name: '歐陽浩田', id: '', photo: '' },
+                { name: '黎耀駿', id: '', photo: '' },
+                { name: '伍康舜', id: '', photo: '' },
+                { name: '施汪濤', id: '', photo: '' },
+                { name: '郭鈞焯', id: '', photo: '' },
+                { name: 'Ali', id: '', photo: '' },
+                { name: '丁嘉瑩', id: '', photo: '' },
+                { name: '白樂天', id: '', photo: '' },
+                { name: '朱耀鋒', id: '', photo: '' },
+                { name: 'Inderveer', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '高中二',
+            students: [
+                { name: '黃樂源', id: '', photo: '' },
+                { name: '吳凱婷', id: '', photo: '' },
+                { name: 'Sudais', id: '', photo: '' },
+                { name: '歐陽芷穎', id: '', photo: '' },
+                { name: '伍浩霖', id: '', photo: '' },
+                { name: '李信楠', id: '', photo: '' },
+                { name: '陳成鑫', id: '', photo: '' },
+                { name: '張善婷', id: '', photo: '' },
+                { name: '梁毅韜', id: '', photo: '' },
+                { name: '林建廷', id: '', photo: '' },
+                { name: 'Alvin', id: '', photo: '' },
+                { name: '吳漢棋', id: '', photo: '' },
+                { name: '黃仲恒', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '高中一',
+            students: [
+                { name: '余明亮', id: '', photo: '' },
+                { name: '葉海澄', id: '', photo: '' },
+                { name: '李心悅', id: '', photo: '' },
+                { name: '黃心怡', id: '', photo: '' },
+                { name: '梅昕晴', id: '', photo: '' },
+                { name: '朱穎心', id: '', photo: '' },
+                { name: '蘇南燊', id: '', photo: '' },
+                { name: '王弘希', id: '', photo: '' },
+                { name: '鄭凱文', id: '', photo: '' },
+                { name: '陳昱均', id: '', photo: '' },
+                { name: '唐梓珊', id: '', photo: '' },
+                { name: '巫曉峰', id: '', photo: '' },
+                { name: '林思恒', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '初中四',
+            students: [
+                { name: '周晉琛', id: '', photo: '' },
+                { name: '陳澔亮', id: '', photo: '' },
+                { name: '葉芷汝', id: '', photo: '' },
+                { name: '林家朗', id: '', photo: '' },
+                { name: '關祈章', id: '', photo: '' },
+                { name: '洪宇軒', id: '', photo: '' },
+                { name: '鍾政希', id: '', photo: '' },
+                { name: '蔡芷宜', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '初中三',
+            students: [
+                { name: '麥梓淳', id: '', photo: '' },
+                { name: '鄧旨媃', id: '', photo: '' },
+                { name: '吳諾暉', id: '', photo: '' },
+                { name: '許家晞', id: '', photo: '' },
+                { name: '謝易男', id: '', photo: '' },
+                { name: '林詩彤', id: '', photo: '' },
+                { name: '謝嘉謙', id: '', photo: '' },
+                { name: '梁珀源', id: '', photo: '' },
+                { name: '張凱祺', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '初中二',
+            students: [
+                { name: '蔡濠名', id: '', photo: '' },
+                { name: '許浚銘', id: '', photo: '' },
+                { name: '賴浚棋', id: '', photo: '' },
+                { name: '楊臻一', id: '', photo: '' },
+                { name: '陳進浩', id: '', photo: '' },
+                { name: '黃崇康', id: '', photo: '' },
+                { name: '韓俊希', id: '', photo: '' },
+                { name: '梁心悠', id: '', photo: '' },
+                { name: '謝梓健', id: '', photo: '' }
+            ]
+        },
+        {
+            class: '初中一',
+            students: [
+                { name: '許逸峰', id: '', photo: '' },
+                { name: '林宏晉', id: '', photo: '' },
+                { name: '錢寶存', id: '', photo: '' },
+                { name: '雲語嫣', id: '', photo: '' },
+                { name: '李澤民', id: '', photo: '' },
+                { name: '陳穎朗', id: '', photo: '' },
+                { name: '黃逸朗', id: '', photo: '' },
+                { name: '張倩瑜', id: '', photo: '' },
+                { name: '盧佩儀', id: '', photo: '' },
+                { name: '袁培琋', id: '', photo: '' }
+            ]
+        },
+        { class: '高小五', students: [
+            { name: '高烯瑜', id: '', photo: '' },
+            { name: '陳傲雲', id: '', photo: '' },
+            { name: '黎溢鉦', id: '', photo: '' },
+            { name: '林詩藍', id: '', photo: '' },
+            { name: '周奕朗', id: '', photo: '' },
+            { name: '林銳添', id: '', photo: '' },
+            { name: '丁翰鏐', id: '', photo: '' },
+            { name: '吳卓鏗', id: '', photo: '' },
+            { name: '汪俊睎', id: '', photo: '' },
+            { name: '文恩祈', id: '', photo: '' },
+            { name: '陳旨軒', id: '', photo: '' },
+            { name: '張嘉兒', id: '', photo: '' }
+        ] },
+        { class: '高小四', students: [
+            { name: '鄧祈佑', id: '', photo: '' },
+            { name: '賴焯熹', id: '', photo: '' },
+            { name: '黃子軒', id: '', photo: '' },
+            { name: '梁茜程', id: '', photo: '' },
+            { name: '黃泳鈺', id: '', photo: '' },
+            { name: '沈柏熹', id: '', photo: '' },
+            { name: '吳梓城', id: '', photo: '' }
+        ] },
+        { class: '高小三', students: [
+            { name: '方君睿', id: '', photo: '' },
+            { name: '麥浩敏', id: '', photo: '' },
+            { name: '李雨蕊', id: '', photo: '' },
+            { name: '余蒂峰', id: '', photo: '' },
+            { name: '楊洛謙', id: '', photo: '' },
+            { name: '林子竣', id: '', photo: '' },
+            { name: '馮樂宏', id: '', photo: '' },
+            { name: '謝韶謙', id: '', photo: '' }
+        ] },
+        { class: '高小二', students: [
+            { name: '梁晉銘', id: '', photo: '' },
+            { name: '徐子淳', id: '', photo: '' },
+            { name: '伍珖灳', id: '', photo: '' },
+            { name: '曾業淳', id: '', photo: '' },
+            { name: '方子仁', id: '', photo: '' },
+            { name: '陳衍叡', id: '', photo: '' },
+            { name: '韓鎮聰', id: '', photo: '' },
+            { name: '馮鎮泓', id: '', photo: '' },
+            { name: '張逸朗', id: '', photo: '' }
+        ] },
+        { class: '高小一', students: [
+            { name: '林熙程', id: '', photo: '' },
+            { name: '李俊熹', id: '', photo: '' },
+            { name: '潘彥旭', id: '', photo: '' },
+            { name: '劉子龍', id: '', photo: '' },
+            { name: '倪灝', id: '', photo: '' },
+            { name: '陳泳霖', id: '', photo: '' },
+            { name: '潘彥東', id: '', photo: '' }
+        ] },
+        { class: '初小四', students: [
+            { name: '蔡澤銘', id: '', photo: '' },
+            { name: '鍾嘉諾', id: '', photo: '' },
+            { name: '譚詠殷', id: '', photo: '' },
+            { name: '鄺芷瑩', id: '', photo: '' },
+            { name: '李卓霖', id: '', photo: '' },
+            { name: '蕭洛希', id: '', photo: '' },
+            { name: '李柏言', id: '', photo: '' },
+            { name: '趙靖昕', id: '', photo: '' },
+            { name: '歐知穎', id: '', photo: '' },
+            { name: '劉星座', id: '', photo: '' },
+            { name: '黃渝婷', id: '', photo: '' }
+        ] },
+        { class: '初小三', students: [
+            { name: '林澤星', id: '', photo: '' },
+            { name: '李高略', id: '', photo: '' },
+            { name: '羅年洲', id: '', photo: '' },
+            { name: '施宇軒', id: '', photo: '' },
+            { name: '陳學禮', id: '', photo: '' },
+            { name: '曾溢知', id: '', photo: '' },
+            { name: '陳家溱', id: '', photo: '' },
+            { name: '蔡瀚毅', id: '', photo: '' },
+            { name: '楊凱琳', id: '', photo: '' },
+            { name: '龍正罡', id: '', photo: '' }
+        ] },
+        { class: '初小二', students: [
+            { name: '張濬霖', id: '', photo: '' },
+            { name: '梁誠軒', id: '', photo: '' },
+            { name: '唐鎧滔', id: '', photo: '' },
+            { name: 'OLIVIA (NCS)', id: '', photo: '' },
+            { name: 'WALEED (NCS)', id: '', photo: '' },
+            { name: '梁梓君', id: '', photo: '' },
+            { name: '許明然', id: '', photo: '' },
+            { name: 'AROUSE (NCS)', id: '', photo: '' },
+            { name: '張皓然', id: '', photo: '' },
+            { name: '陳德添', id: '', photo: '' }
+        ] },
+        { class: '初小一', students: [
+            { name: '林梓宇', id: '', photo: '' },
+            { name: '黃梓鈺', id: '', photo: '' },
+            { name: '黃晉豫', id: '', photo: '' },
+            { name: '鄔浩霖', id: '', photo: '' },
+            { name: '林柏言', id: '', photo: '' },
+            { name: '劉佩諭', id: '', photo: '' },
+            { name: '趙柏然', id: '', photo: '' },
+            { name: '劉星宙', id: '', photo: '' },
+            { name: '葉尚樺', id: '', photo: '' },
+            { name: '謝浩縉', id: '', photo: '' },
+            { name: '鍾應笙', id: '', photo: '' }
+        ] }
+    ];
+
+    // 自動為所有學生補上唯一 id（1~200 依序遞增）
+    (function assignStudentIds() {
+        let idCounter = 1;
+        studentsData.forEach(cls => {
+            cls.students.forEach(stu => {
+                stu.id = idCounter.toString().padStart(3, '0');
+                idCounter++;
+            });
+        });
+    })();
+
+    // 動態生成學生名單
+    const row = document.getElementById('studentsListRow');
+    studentsData.forEach(cls => {
+        const col = document.createElement('div');
+        col.className = 'col-lg-2 col-md-4 col-6 student-list-col';
+        col.innerHTML = `<div class="class-title">${cls.class}</div>`;
+        cls.students.forEach(stu => {
+            col.innerHTML += `
+                <div class="student-item">
+                    <img src="${stu.photo}" class="student-photo" alt="${stu.name}" title="點擊查看成績" onclick="goToStudentZone('${stu.id}')">
+                    <div class="student-name">${stu.name}</div>
+                    <div class="student-id">${stu.id}</div>
+                </div>
+            `;
+        });
+        row.appendChild(col);
+    });
+
+    // 跳轉到個人專區
+    function goToStudentZone(id) {
+        window.location.href = `student-zone.html?id=${id}`;
+    }
+    </script>
+</body>
+</html> 

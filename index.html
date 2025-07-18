@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學校跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        /* 頂部導航欄 */
+        .top-nav {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        
+        .top-nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        
+        .top-nav a:hover {
+            color: #f97316;
+        }
+        
+        /* 主要導航欄 */
+        .navbar {
+            background-color: #2563eb !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+            margin: 0 10px;
+            padding: 8px 15px !important;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            background-color: #f97316;
+            color: white !important;
+        }
+        
+        /* 主要內容區域 */
+        .main-content {
+            background-color: white;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 英雄區域 */
+        .hero-section {
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-section p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        /* 校訓區域 */
+        .motto-section {
+            background-color: #fef3c7;
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 3px solid #f97316;
+        }
+        
+        .motto-section h2 {
+            color: #1e3a8a;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .motto-section p {
+            color: #92400e;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* 功能卡片 */
+        .feature-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            border-color: #f97316;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+        
+        /* 內容區域 */
+        .content-section {
+            padding: 40px 0;
+            background-color: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f97316;
+        }
+        
+        .section-header h2 {
+            color: #1e3a8a;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .section-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        /* 表格容器 */
+        .table-container {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .table-container h3 {
+            color: #1e3a8a;
+            border-bottom: 2px solid #f97316;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* 表單容器 */
+        .form-container {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .form-container h3 {
+            color: #1e3a8a;
+            border-bottom: 2px solid #f97316;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* 按鈕樣式 */
+        .btn-custom {
+            background-color: #2563eb;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-custom:hover {
+            background-color: #1d4ed8;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #f97316;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #ea580c;
+            color: white;
+        }
+        
+        /* 徽章樣式 */
+        .score-badge {
+            background-color: #2563eb;
+        }
+        
+        /* 操作按鈕樣式 */
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+        }
+        
+        .btn-info {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #31d2f2;
+            border-color: #25cff2;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+            color: white;
+        }
+        
+        .score-badge {
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .rank-badge {
+            background-color: #f97316;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .rank-1 { background-color: #fbbf24; }
+        .rank-2 { background-color: #94a3b8; }
+        .rank-3 { background-color: #f59e0b; }
+        
+        /* 警告訊息 */
+        .alert-custom {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* 模態框樣式 */
+        .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            background-color: #2563eb;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .modal-title {
+            color: white;
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .navbar-nav .nav-link {
+                margin: 5px 0;
+            }
+            
+            .feature-card {
+                margin: 10px 0;
+            }
+        }
+        
+        /* 表格樣式 */
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .table th {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* 表單樣式 */
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.25);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+        .zone-card {
+            min-height: 260px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .zone-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #2563eb;
+        }
+        @media (max-width: 767px) {
+            .zone-card { margin-bottom: 24px; }
+        }
+        .btn-role-teacher {
+          background: #22a06b !important;
+          color: #fff !important;
+          border: none;
+        }
+        .btn-role-teacher:hover {
+          background: #178a57 !important;
+          color: #fff !important;
+        }
+        .btn-role-parent {
+          background: #38bdf8 !important;
+          color: #fff !important;
+          border: none;
+        }
+        .btn-role-parent:hover {
+          background: #0ea5e9 !important;
+          color: #fff !important;
+        }
+/* ====== 全站美化 ====== */
+body {
+  background: #f4f8fb;
+  font-family: 'Microsoft JhengHei', Arial, sans-serif;
+}
+.bg-deco {
+  position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 0;
+}
+.hero-section {
+  background: linear-gradient(135deg,#2563eb 0%,#1e3a8a 100%);
+  color: #fff;
+  padding: 64px 0 0 0;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(30,58,138,0.08);
+}
+.hero-section .container { position: relative; z-index: 1; }
+.hero-section .main-title {
+  font-size: 2.7rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 10px rgba(30,58,138,0.18);
+}
+.hero-section .sub-title {
+  font-size: 1.18rem;
+  color: #fbbf24;
+  margin-top: 10px;
+  letter-spacing: 2px;
+}
+.zone-card {
+  min-height: 260px;
+  box-shadow: 0 4px 18px rgba(37,99,235,0.10);
+  border-radius: 18px;
+  border: none;
+  transition: all 0.25s;
+  background: #fff;
+  position: relative;
+}
+.zone-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 10px 32px rgba(37,99,235,0.18);
+  border-color: #f97316;
+}
+.zone-icon {
+  width: 70px; height: 70px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px;
+  font-size: 2.5rem;
+}
+.zone-card:nth-child(1) .zone-icon { background: #e3edfa; color: #2563eb; }
+.zone-card:nth-child(2) .zone-icon { background: #e3f7ea; color: #22a06b; }
+.zone-card:nth-child(3) .zone-icon { background: #fff7e6; color: #f97316; }
+.zone-card .fw-bold { font-size: 1.22rem; letter-spacing: 2px; color: #374151; }
+.zone-desc { font-size: 1.05rem; line-height: 1.7; }
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 16px;
+  border-bottom: none;
+  position: relative;
+}
+.section-header h2 {
+  color: #1e3a8a;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  display: inline-block;
+  position: relative;
+}
+.section-header h2:after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg,#fbbf24 0%,#2563eb 100%);
+  border-radius: 2px;
+  margin: 10px auto 0 auto;
+}
+.table-container {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(30,58,138,0.08);
+  padding: 25px;
+  margin: 20px 0;
+}
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(30,58,138,0.06);
+}
+.table th {
+  background-color: #2563eb;
+  color: white;
+  font-size: 1.08rem;
+}
+.table td {
+  font-size: 1.05rem;
+}
+.form-container {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(30,58,138,0.07);
+  padding: 25px;
+  margin: 20px 0;
+}
+.form-label { color: #1e3a8a; font-weight: 500; }
+.btn-custom {
+  background: linear-gradient(90deg,#2563eb 0%,#1e3a8a 100%);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 10px 32px;
+  letter-spacing: 1px;
+  border: none;
+  transition: background 0.2s;
+}
+.btn-custom:hover {
+  background: linear-gradient(90deg,#1e3a8a 0%,#2563eb 100%);
+}
+.attitude-section {
+  background: linear-gradient(120deg,#fbbf24 0%,#6ad0d6 100%);
+  padding: 40px 0 16px 0;
+  border-radius: 22px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 16px rgba(251,191,36,0.08);
+}
+.attitude-grid { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.attitude-row { display: flex; gap: 32px; }
+.attitude-card { position: relative; overflow: hidden; width: 200px; height: 200px; border-radius: 16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); background:#fff; }
+.attitude-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; filter: brightness(0.92); }
+/* 返回頂部按鈕 */
+#backToTopBtn {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 999;
+  background: linear-gradient(90deg,#2563eb 0%,#fbbf24 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 54px; height: 54px;
+  font-size: 1.6rem;
+  box-shadow: 0 2px 10px rgba(30,58,138,0.13);
+  display: none;
+  align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+#backToTopBtn:hover { background: linear-gradient(90deg,#fbbf24 0%,#2563eb 100%); color: #fff; }
+@media (max-width: 900px) {
+  .attitude-card, .attitude-img { width: 120px; height: 120px; }
+  .attitude-row { gap: 12px !important; }
+  .attitude-grid { gap: 12px !important; }
+  .zone-card { min-height: 180px; }
+}
+</style>
+<script>
+// 返回頂部按鈕
+window.addEventListener('scroll', function() {
+  const btn = document.getElementById('backToTopBtn');
+  if (window.scrollY > 300) btn.style.display = 'flex';
+  else btn.style.display = 'none';
+});
+function backToTop() {
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+<button id="backToTopBtn" onclick="backToTop()" title="返回頂部"><i class="fas fa-arrow-up"></i></button>
+</head>
+<body>
+    <!-- 頂部導航欄 -->
+    <div class="top-nav">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="#"><i class="fas fa-phone me-1"></i>電話：(852) 2750 2549</a>
+                    <a href="#"><i class="fas fa-envelope me-1"></i>電郵：info@holyword.edu.hk</a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="#"><i class="fas fa-map-marker-alt me-1"></i>地址：九龍油塘鯉魚門道60號</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-school me-2"></i>基督教中國佈道會聖道學校
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">
+                            <i class="fas fa-home me-1"></i>首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#scores">
+                            <i class="fas fa-chart-bar me-1"></i>成績
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#rankings">
+                            <i class="fas fa-trophy me-1"></i>排名
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="holyjumpvibe.html">
+                            <i class="fas fa-book-open me-1"></i>《HolyJumpVibe》繩刊
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="rope-classroom.html">
+                            <i class="fas fa-chalkboard me-1"></i>『繩』目教室
+                        </a>
+                    </li>
+                    <!-- 移除上傳影片連結 -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-1"></i>登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <section id="home" class="hero-section" style="background:linear-gradient(135deg,#2563eb 0%,#1e3a8a 100%);padding:48px 0 0 0;">
+            <div class="container">
+                <div class="text-center mb-4">
+                    <span style="font-size:2.5rem;color:#fff;vertical-align:middle;"><img src="https://i.imgur.com/7hxUzog.png" alt="校徽" style="height:48px;width:48px;vertical-align:middle;"></span>
+                    <span style="font-size:2.2rem;font-weight:700;color:#f3f4f6;letter-spacing:2px;vertical-align:middle;margin-left:10px;">基督教中國佈道會聖道學校</span>
+                </div>
+                <div class="text-center mb-2">
+                    <span style="font-size:1.5rem;color:#f3f4f6;font-weight:500;">HolyStride跳繩運動平台</span>
+                </div>
+                <div class="text-center mb-3">
+                    <span style="color:#e0e7ef;font-size:1.05rem;">培養學生健康體魄．建立團隊精神．追求卓越表現</span>
+                </div>
+                <div class="d-flex justify-content-center mb-5">
+                    <div style="background:#f97316;padding:10px 32px;border-radius:20px;display:inline-block;">
+                        <span style="color:#fff;font-size:1.08rem;font-weight:500;letter-spacing:1px;">
+                            以愛作為根基．以聖經真理．以成就卓越
+                        </span>
+                    </div>
+                </div>
+                <style>
+                .attitude-card { position: relative; overflow: hidden; width: 200px; height: 200px; border-radius: 12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); background:#222; }
+                .attitude-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; filter: brightness(0.85); }
+                @media (max-width: 900px) {
+                  .attitude-card { width: 140px; height: 140px; }
+                  .attitude-row { gap: 12px !important; }
+                  .attitude-grid { gap: 12px !important; }
+                }
+                </style>
+                <div class="row justify-content-center align-items-center mt-3">
+                    <div class="col-md-4 mb-4">
+                        <div class="zone-card text-center p-4 bg-white rounded shadow" style="cursor: pointer;" onclick="window.location.href='students-list.html'">
+                            <div class="zone-icon mx-auto mb-2" style="background:#e3edfa;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-user" style="font-size:2.5rem;color:#2563eb;"></i>
+                            </div>
+                            <div class="fw-bold mb-2" style="font-size:1.2rem;letter-spacing:2px;color:#374151;">學生專區</div>
+                            <div class="zone-desc text-secondary" style="font-size:1.05rem;line-height:1.7;">
+                                查看個人跳繩成績和學校排名<br>追蹤進步情況
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="zone-card text-center p-4 bg-white rounded shadow" style="cursor: pointer;" onclick="window.location.href='students-list.html'">
+                            <div class="zone-icon mx-auto mb-2" style="background:#e3f7ea;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-users" style="font-size:2.5rem;color:#22a06b;"></i>
+                            </div>
+                            <div class="fw-bold mb-2" style="font-size:1.2rem;letter-spacing:2px;color:#374151;">家長專區</div>
+                            <div class="zone-desc text-secondary" style="font-size:1.05rem;line-height:1.7;">
+                                為孩子上傳跳繩表演影片，<br>參與孩子的成長歷程
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="zone-card text-center p-4 bg-white rounded shadow" style="cursor: pointer;" onclick="window.location.href='rainbow-certificate-detail.html'">
+                            <div class="zone-icon mx-auto mb-2" style="background:#e0f2fe;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-chalkboard-teacher" style="font-size:2.5rem;color:#0ea5e9;"></i>
+                            </div>
+                            <div class="fw-bold mb-2" style="font-size:1.2rem;letter-spacing:2px;color:#374151;">彩虹章別計劃自學專區</div>
+                            <div class="zone-desc text-secondary" style="font-size:1.05rem;line-height:1.7;">
+                                上傳彩虹章別計劃影片，獲得教師回饋<br>促進自主學習與互動
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section id="scores" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar me-2"></i>成績紀錄</h2>
+                    <p class="text-muted">查看和輸入學生的跳繩成績</p>
+                </div>
+            
+            <div class="table-container">
+                <h3 class="mb-4">當前成績</h3>
+                <table id="scoresTable" class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>學生姓名</th>
+                            <th>總分</th>
+                            <th>日期</th>
+                            <th id="actionHeader" style="display: none;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-container">
+                <h3 class="mb-4"><i class="fas fa-plus me-2"></i>輸入新成績</h3>
+                <form id="scoreForm">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="studentName" class="form-label">學生姓名</label>
+                                <input type="text" class="form-control" id="studentName" placeholder="輸入學生姓名" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreFront" class="form-label">30秒前跳</label>
+                                <input type="number" class="form-control" id="scoreFront" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreJack" class="form-label">30秒開合跳</label>
+                                <input type="number" class="form-control" id="scoreJack" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreSki" class="form-label">30秒滑雪跳</label>
+                                <input type="number" class="form-control" id="scoreSki" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreBike" class="form-label">30秒單車步</label>
+                                <input type="number" class="form-control" id="scoreBike" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreDate" class="form-label">日期</label>
+                                <input type="date" class="form-control" id="scoreDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-custom">
+                        <i class="fas fa-save me-2"></i>提交成績
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="rankings" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-trophy me-2"></i>學校排名</h2>
+                    <p class="text-muted">查看學生在學校中的跳繩排名</p>
+                </div>
+            
+            <div class="table-container">
+                <table id="rankingsTable" class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>排名</th>
+                            <th>學生姓名</th>
+                            <th>總分</th>
+                            <th>日期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <div class="attitude-section mb-5" style="background:#6ad0d6;padding:32px 0 8px 0;border-radius:18px;">
+          <h2 class="text-center" style="color:#fff;font-weight:700;letter-spacing:4px;font-size:2rem;margin-bottom:28px;">跳繩中帶出六種學習態度</h2>
+          <div class="attitude-grid" style="display:flex;flex-direction:column;align-items:center;gap:24px;">
+            <div class="attitude-row" style="display:flex;gap:24px;">
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/f7GY28u.png" class="attitude-img" alt="堅持">
+              </div>
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/uebhHcm.png" class="attitude-img" alt="專注">
+              </div>
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/AJCwrek.png" class="attitude-img" alt="尊重">
+              </div>
+            </div>
+            <div class="attitude-row" style="display:flex;gap:24px;">
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/IYYiSGb.png" class="attitude-img" alt="自信">
+              </div>
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/id6FW6C.png" class="attitude-img" alt="自我紀律">
+              </div>
+              <div class="attitude-card position-relative">
+                <img src="https://i.imgur.com/Fns6P0m.png" class="attitude-img" alt="領導才能">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 頁腳 -->
+        <footer class="bg-dark text-light py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>基督教中國佈道會聖道學校</h5>
+                        <p class="mb-0">跳繩成績與教學平台</p>
+                        <p class="mb-0">促進學生健康發展，提升跳繩技能</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全局變量
+        let currentRole = null;
+        let isTeacherLoggedIn = false;
+        
+        // 初始化數據
+        let scores = JSON.parse(localStorage.getItem('scores') || '[]');
+        
+        // 設置今天的日期為默認值
+        document.getElementById('scoreDate').valueAsDate = new Date();
+        
+        // 頁面載入時顯示角色選擇
+        window.addEventListener('load', function() {
+            showRoleSelection();
+        });
+
+        function renderScores() {
+            let tableBody = document.querySelector('#scoresTable tbody');
+            let actionHeader = document.getElementById('actionHeader');
+            let html = '';
+            
+            // 根據教師登入狀態顯示/隱藏操作欄位
+            if (isTeacherLoggedIn) {
+                actionHeader.style.display = 'table-cell';
+            } else {
+                actionHeader.style.display = 'none';
+            }
+            
+            scores.forEach(function(item, index) {
+                html += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td><span class="score-badge">${item.total}</span></td>
+                        <td>${item.date}</td>
+                        <td style="${isTeacherLoggedIn ? 'display: table-cell;' : 'display: none;'}">
+                            <button class="btn btn-sm btn-info me-1" onclick="editScore(${index})" title="編輯成績">
+                                <i class="fas fa-edit"></i>✏️
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="removeScore(${index})" title="移除成績">
+                                <i class="fas fa-trash"></i>🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = html;
+        }
+
+        function renderRankings() {
+            // 以學生姓名分組，僅取每位學生最新日期的成績
+            let latestScores = {};
+            scores.forEach(function(item) {
+                if (
+                    !latestScores[item.name] ||
+                    new Date(item.date) > new Date(latestScores[item.name].date)
+                ) {
+                    latestScores[item.name] = item;
+                }
+            });
+
+            // 轉為陣列並依總分排序
+            let rankings = Object.values(latestScores).sort((a, b) => b.total - a.total);
+
+            let tableBody = document.querySelector('#rankingsTable tbody');
+            let html = '';
+            rankings.forEach(function(item, index) {
+                let rankClass = '';
+                if (index === 0) rankClass = 'rank-1';
+                else if (index === 1) rankClass = 'rank-2';
+                else if (index === 2) rankClass = 'rank-3';
+
+                html += `
+                    <tr>
+                        <td>
+                            <span class="rank-badge ${rankClass}">${index + 1}</span>
+                            ${index < 3 ? '<i class="fas fa-medal ms-1"></i>' : ''}
+                        </td>
+                        <td>${item.name}</td>
+                        <td>${item.total}</td>
+                        <td>${item.date}</td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = html;
+        }
+
+        // 顯示角色選擇模態框
+        function showRoleSelection() {
+            // 若localStorage已有角色，直接設置狀態並返回
+            const savedRole = localStorage.getItem('userRole');
+            if (savedRole) {
+                currentRole = savedRole;
+                if (savedRole === 'teacher') {
+                    isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+                }
+                updateRoleStatus && updateRoleStatus();
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '9999';
+            
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-school me-2"></i>歡迎來到基督教中國佈道會聖道學校跳繩平台
+                            </h5>
+                        </div>
+                        <div class="modal-body text-center">
+                            <p class="mb-4 text-muted">請選擇你的身份</p>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-role-teacher btn-lg w-100" onclick="selectRole('teacher')">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>老師
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-role-parent btn-lg w-100" onclick="selectRole('parent')">
+                                        <i class="fas fa-users me-2"></i>家長
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // 選擇角色
+        function selectRole(role) {
+            currentRole = role;
+            localStorage.setItem('userRole', role);
+            if (role === 'teacher') {
+                showTeacherLogin();
+            } else {
+                // 家長直接進入，關閉模態框
+                closeModal();
+                showAlert('歡迎家長！您可以使用影片上傳功能。', 'success');
+            }
+        }
+        
+        // 顯示老師登入模態框
+        function showTeacherLogin() {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '9999';
+            
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-lock me-2"></i>老師登入
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="teacherLoginForm">
+                                <div class="mb-3">
+                                    <label for="teacherPassword" class="form-label">密碼</label>
+                                    <input type="password" class="form-control" id="teacherPassword" placeholder="請輸入老師密碼" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-custom">
+                                        <i class="fas fa-sign-in-alt me-2"></i>登入
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="showRoleSelection()">
+                                        <i class="fas fa-arrow-left me-2"></i>返回選擇角色
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加表單提交事件
+            document.getElementById('teacherLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('teacherPassword').value;
+                
+                if (password === '1111') {
+                    isTeacherLoggedIn = true;
+                    localStorage.setItem('isTeacherLoggedIn', 'true');
+                    localStorage.setItem('userRole', 'teacher');
+                    closeModal();
+                    showAlert('老師登入成功！您可以使用所有管理功能。', 'success');
+                    // 重新渲染成績表格以顯示操作按鈕
+                    renderScores();
+                } else {
+                    showAlert('密碼錯誤，請重新輸入！', 'danger');
+                    document.getElementById('teacherPassword').value = '';
+                }
+            });
+        }
+        
+        // 關閉模態框
+        function closeModal() {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            });
+        }
+        
+        // 跳轉到學生專區
+        function goToStudentZone() {
+            window.location.href = 'student-zone.html';
+        }
+        
+        // 登出功能
+        function logout() {
+            // 重置所有狀態
+            currentRole = null;
+            isTeacherLoggedIn = false;
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('isTeacherLoggedIn');
+            // 顯示登出成功訊息
+            showAlert('已成功登出！', 'success');
+            // 重新顯示角色選擇
+            setTimeout(() => {
+                showRoleSelection();
+            }, 1000);
+        }
+        
+        // 顯示警告訊息
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show alert-custom`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 3000);
+        }
+
+        // 編輯成績
+        function editScore(index) {
+            if (!isTeacherLoggedIn) {
+                showAlert('只有已登入的老師可以編輯成績！', 'warning');
+                return;
+            }
+            
+            const score = scores[index];
+            if (!score) {
+                showAlert('找不到要編輯的成績！', 'danger');
+                return;
+            }
+            
+            // 創建編輯模態框
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '9999';
+            
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-edit me-2"></i>編輯成績
+                            </h5>
+                            <button type="button" class="btn-close" onclick="closeModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editScoreForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="editStudentName" class="form-label">學生姓名</label>
+                                            <input type="text" class="form-control" id="editStudentName" value="${score.name}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="editScoreDate" class="form-label">日期</label>
+                                            <input type="date" class="form-control" id="editScoreDate" value="${score.date}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="editScoreFront" class="form-label">30秒前跳</label>
+                                            <input type="number" class="form-control" id="editScoreFront" value="${score.front}" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="editScoreJack" class="form-label">30秒開合跳</label>
+                                            <input type="number" class="form-control" id="editScoreJack" value="${score.jack}" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="editScoreSki" class="form-label">30秒滑雪跳</label>
+                                            <input type="number" class="form-control" id="editScoreSki" value="${score.ski}" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="editScoreBike" class="form-label">30秒單車步</label>
+                                            <input type="number" class="form-control" id="editScoreBike" value="${score.bike}" min="0" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-custom">
+                                        <i class="fas fa-save me-2"></i>儲存修改
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                                        <i class="fas fa-times me-2"></i>取消
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加表單提交事件
+            document.getElementById('editScoreForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('editStudentName').value;
+                const front = parseInt(document.getElementById('editScoreFront').value);
+                const jack = parseInt(document.getElementById('editScoreJack').value);
+                const ski = parseInt(document.getElementById('editScoreSki').value);
+                const bike = parseInt(document.getElementById('editScoreBike').value);
+                const date = document.getElementById('editScoreDate').value;
+                
+                if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && date) {
+                    const total = front + jack + ski + bike;
+                    
+                    // 更新成績
+                    scores[index] = { name, front, jack, ski, bike, total, date };
+                    localStorage.setItem('scores', JSON.stringify(scores));
+                    
+                    closeModal();
+                    renderScores();
+                    renderRankings();
+                    
+                    showAlert('成績已成功更新！', 'success');
+                } else {
+                    showAlert('請輸入完整的成績資料！', 'danger');
+                }
+            });
+        }
+
+        // 移除成績
+        function removeScore(index) {
+            if (!isTeacherLoggedIn) {
+                showAlert('只有已登入的老師可以移除成績！', 'warning');
+                return;
+            }
+            
+            const score = scores[index];
+            if (!score) {
+                showAlert('找不到要移除的成績！', 'danger');
+                return;
+            }
+            
+            // 顯示確認對話框
+            if (confirm(`確定要移除 ${score.name} 的成績嗎？\n\n學生：${score.name}\n總分：${score.total}\n日期：${score.date}\n\n此操作無法復原！`)) {
+                // 移除成績
+                scores.splice(index, 1);
+                localStorage.setItem('scores', JSON.stringify(scores));
+                
+                renderScores();
+                renderRankings();
+                
+                showAlert('成績已成功移除！', 'success');
+            }
+        }
+
+        // 初始渲染
+        renderScores();
+        renderRankings();
+
+        // 表單處理
+        document.getElementById('scoreForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // 檢查老師登入狀態
+            if (!isTeacherLoggedIn) {
+                showAlert('只有已登入的老師可以提交成績！', 'warning');
+                return;
+            }
+            
+            let name = document.getElementById('studentName').value;
+            let front = parseInt(document.getElementById('scoreFront').value);
+            let jack = parseInt(document.getElementById('scoreJack').value);
+            let ski = parseInt(document.getElementById('scoreSki').value);
+            let bike = parseInt(document.getElementById('scoreBike').value);
+            let date = document.getElementById('scoreDate').value;
+            
+            if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && date) {
+                let total = front + jack + ski + bike;
+                
+                // 只覆蓋同名同日的成績，不同日就新增
+                const existingIndex = scores.findIndex(score => score.name === name && score.date === date);
+                if (existingIndex !== -1) {
+                    // 覆蓋現有成績
+                    scores[existingIndex] = { name, front, jack, ski, bike, total, date };
+                    showAlert(`已更新 ${name} ${date} 的成績！`, 'success');
+                } else {
+                    // 添加新成績
+                    scores.push({ name, front, jack, ski, bike, total, date });
+                    showAlert('成績已成功提交！', 'success');
+                }
+                
+                localStorage.setItem('scores', JSON.stringify(scores));
+                renderScores();
+                renderRankings();
+                
+                // 清空表單
+                document.getElementById('studentName').value = '';
+                document.getElementById('scoreFront').value = '';
+                document.getElementById('scoreJack').value = '';
+                document.getElementById('scoreSki').value = '';
+                document.getElementById('scoreBike').value = '';
+                document.getElementById('scoreDate').valueAsDate = new Date();
+            } else {
+                showAlert('請輸入完整的姓名、四項分數和日期', 'danger');
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // 檢查角色權限
+            if (currentRole !== 'parent' && !isTeacherLoggedIn) {
+                showAlert('只有家長或已登入的老師可以上傳影片！', 'warning');
+                return;
+            }
+            
+            let studentName = document.getElementById('studentNameUpload').value;
+            let videoFile = document.getElementById('videoFile').files[0];
+            let description = document.getElementById('videoDescription').value;
+            
+            if (studentName && videoFile) {
+                showAlert('影片上傳成功！我們會盡快審核您的影片。', 'success');
+                
+                // 清空表單
+                document.getElementById('studentNameUpload').value = '';
+                document.getElementById('videoFile').value = '';
+                document.getElementById('videoDescription').value = '';
+            } else {
+                showAlert('請選擇學生姓名和影片文件', 'danger');
+            }
+        });
+
+        // 添加角色狀態顯示
+        function updateRoleStatus() {
+            let statusText = '';
+            if (isTeacherLoggedIn) {
+                statusText = '老師 (已登入)';
+            } else if (currentRole === 'parent') {
+                statusText = '家長';
+            } else {
+                statusText = '未選擇角色';
+            }
+            
+            // 可以在頁面上顯示當前角色狀態
+            console.log('當前角色：', statusText);
+        }
+
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 初始化角色狀態
+        updateRoleStatus();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生專區 - 基督教中國佈道會聖道學校跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #ea580c;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 1rem;
+        }
+
+        .student-info {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .student-info h3 {
+            color: #1e3a8a;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .student-photo {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .student-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .student-photo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .student-photo .photo-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e3edfa 0%, #dbeafe 100%);
+            border: 4px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .student-photo .photo-placeholder i {
+            font-size: 3rem;
+            color: #3b82f6;
+        }
+
+        .student-photo .photo-overlay {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .student-photo:hover .photo-overlay {
+            display: flex;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+        }
+
+        .tables-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-title {
+            color: #1e3a8a;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .score-table th,
+        .score-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .score-table th {
+            background: #f3f4f6;
+            color: #374151;
+            font-weight: bold;
+        }
+
+        .score-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .tables-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>基督教中國佈道會聖道學校跳繩平台</h1>
+        <button class="back-btn" onclick="goBack()">返回首頁</button>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="chart-section">
+                <h2 class="chart-title">四大項成績趨勢圖</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <!-- 新增：老師專用成績輸入表單 -->
+                <form id="scoreInputForm" class="mt-4" style="display:none;">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3">
+                            <label for="scoreType" class="form-label">項目</label>
+                            <select class="form-select" id="scoreType" required>
+                                <option value="frontJump">30秒前跳</option>
+                                <option value="jumpingJack">30秒開合跳</option>
+                                <option value="skiJump">30秒滑雪跳</option>
+                                <option value="bicycleStep">30秒單車步</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="scoreValue" class="form-label">次數</label>
+                            <input type="number" class="form-control" id="scoreValue" min="0" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="scoreDate" class="form-label">紀錄日期</label>
+                            <input type="date" class="form-control" id="scoreDate" required>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save me-2"></i>提交新成績</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- 彩虹章別計劃自學專區：彩虹章別計劃影片提交及教師意見表格 -->
+                <div id="parentUploadSection" style="display:none;">
+                    <div id="parentUploadFormCard" class="card mt-4 mb-3" style="display:none;">
+                        <div class="card-header bg-info text-white">彩虹章別計劃影片提交</div>
+                        <div class="card-body">
+                            <form id="selfStudyUploadForm">
+                                <div class="mb-3">
+                                    <label for="selfStudyVideo" class="form-label">選擇影片</label>
+                                    <input type="file" class="form-control" id="selfStudyVideo" accept="video/*" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="selfStudyDesc" class="form-label">簡短說明</label>
+                                    <input type="text" class="form-control" id="selfStudyDesc" maxlength="100" placeholder="請簡述影片內容">
+                                </div>
+                                <button type="submit" class="btn btn-success">上傳影片</button>
+                                <div id="selfStudyUploadMsg" class="mt-2"></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary text-white">彩虹章別計劃影片與教師意見</div>
+                        <div class="card-body" id="videoFeedbackSection">
+                            <!-- 動態渲染彩虹章別計劃影片與教師意見 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-info">
+                <h3>學生資訊</h3>
+                <div class="student-photo" onclick="uploadStudentPhoto()" style="cursor: pointer;" title="點擊上傳相片">
+                    <!-- 如果有學生相片，顯示相片；否則顯示預設圖示 -->
+                    <img id="studentPhoto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIzMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+" alt="學生相片" style="display: none;">
+                    <div class="photo-placeholder" id="photoPlaceholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="photo-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">學生姓名</div>
+                    <div class="info-value" id="studentName">張小明</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">學生編號</div>
+                    <div class="info-value" id="studentId">2024001</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">班級</div>
+                    <div class="info-value" id="studentClass">六年級甲班</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">總測試次數</div>
+                    <div class="info-value" id="totalTests">12次</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tables-section">
+            <div class="table-container">
+                <h3 class="table-title">30秒前跳成績</h3>
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>次數</th>
+                            <th>紀錄日期</th>
+                            <th>學生姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody id="frontJumpTable">
+                        <tr>
+                            <td>45</td>
+                            <td>2024-01-15</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>48</td>
+                            <td>2024-01-22</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>52</td>
+                            <td>2024-01-29</td>
+                            <td>張小明</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3 class="table-title">30秒開合跳成績</h3>
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>次數</th>
+                            <th>紀錄日期</th>
+                            <th>學生姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jumpingJackTable">
+                        <tr>
+                            <td>32</td>
+                            <td>2024-01-15</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>35</td>
+                            <td>2024-01-22</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>38</td>
+                            <td>2024-01-29</td>
+                            <td>張小明</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3 class="table-title">30秒滑雪跳成績</h3>
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>次數</th>
+                            <th>紀錄日期</th>
+                            <th>學生姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody id="skiJumpTable">
+                        <tr>
+                            <td>28</td>
+                            <td>2024-01-15</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>30</td>
+                            <td>2024-01-22</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>33</td>
+                            <td>2024-01-29</td>
+                            <td>張小明</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3 class="table-title">30秒單車步成績</h3>
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>次數</th>
+                            <th>紀錄日期</th>
+                            <th>學生姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bicycleStepTable">
+                        <tr>
+                            <td>40</td>
+                            <td>2024-01-15</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>42</td>
+                            <td>2024-01-22</td>
+                            <td>張小明</td>
+                        </tr>
+                        <tr>
+                            <td>45</td>
+                            <td>2024-01-29</td>
+                            <td>張小明</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 完整 studentsData 結構，與 students-list.html 保持一致
+    const studentsData = [
+        { class: '高中三', students: [
+            { name: '羅諭琦', id: '001', photo: '' },
+            { name: '盧諄霖', id: '002', photo: '' },
+            { name: '洪俊豪', id: '003', photo: '' },
+            { name: '歐陽浩田', id: '004', photo: '' },
+            { name: '黎耀駿', id: '005', photo: '' },
+            { name: '伍康舜', id: '006', photo: '' },
+            { name: '施汪濤', id: '007', photo: '' },
+            { name: '郭鈞焯', id: '008', photo: '' },
+            { name: 'Ali', id: '009', photo: '' },
+            { name: '丁嘉瑩', id: '010', photo: '' },
+            { name: '白樂天', id: '011', photo: '' },
+            { name: '朱耀鋒', id: '012', photo: '' },
+            { name: 'Inderveer', id: '013', photo: '' }
+        ] },
+        { class: '高中二', students: [
+            { name: '黃樂源', id: '014', photo: '' },
+            { name: '吳凱婷', id: '015', photo: '' },
+            { name: 'Sudais', id: '016', photo: '' },
+            { name: '歐陽芷穎', id: '017', photo: '' },
+            { name: '伍浩霖', id: '018', photo: '' },
+            { name: '李信楠', id: '019', photo: '' },
+            { name: '陳成鑫', id: '020', photo: '' },
+            { name: '張善婷', id: '021', photo: '' },
+            { name: '梁毅韜', id: '022', photo: '' },
+            { name: '林建廷', id: '023', photo: '' },
+            { name: 'Alvin', id: '024', photo: '' },
+            { name: '吳漢棋', id: '025', photo: '' },
+            { name: '黃仲恒', id: '026', photo: '' }
+        ] },
+        { class: '高中一', students: [
+            { name: '余明亮', id: '027', photo: '' },
+            { name: '葉海澄', id: '028', photo: '' },
+            { name: '李心悅', id: '029', photo: '' },
+            { name: '黃心怡', id: '030', photo: '' },
+            { name: '梅昕晴', id: '031', photo: '' },
+            { name: '朱穎心', id: '032', photo: '' },
+            { name: '蘇南燊', id: '033', photo: '' },
+            { name: '王弘希', id: '034', photo: '' },
+            { name: '鄭凱文', id: '035', photo: '' },
+            { name: '陳昱均', id: '036', photo: '' },
+            { name: '唐梓珊', id: '037', photo: '' },
+            { name: '巫曉峰', id: '038', photo: '' },
+            { name: '林思恒', id: '039', photo: '' }
+        ] },
+        { class: '初中四', students: [
+            { name: '周晉琛', id: '040', photo: '' },
+            { name: '陳澔亮', id: '041', photo: '' },
+            { name: '葉芷汝', id: '042', photo: '' },
+            { name: '林家朗', id: '043', photo: '' },
+            { name: '關祈章', id: '044', photo: '' },
+            { name: '洪宇軒', id: '045', photo: '' },
+            { name: '鍾政希', id: '046', photo: '' },
+            { name: '蔡芷宜', id: '047', photo: '' }
+        ] },
+        { class: '初中三', students: [
+            { name: '麥梓淳', id: '048', photo: '' },
+            { name: '鄧旨媃', id: '049', photo: '' },
+            { name: '吳諾暉', id: '050', photo: '' },
+            { name: '許家晞', id: '051', photo: '' },
+            { name: '謝易男', id: '052', photo: '' },
+            { name: '林詩彤', id: '053', photo: '' },
+            { name: '謝嘉謙', id: '054', photo: '' },
+            { name: '梁珀源', id: '055', photo: '' },
+            { name: '張凱祺', id: '056', photo: '' }
+        ] },
+        { class: '初中二', students: [
+            { name: '蔡濠名', id: '057', photo: '' },
+            { name: '許浚銘', id: '058', photo: '' },
+            { name: '賴浚棋', id: '059', photo: '' },
+            { name: '楊臻一', id: '060', photo: '' },
+            { name: '陳進浩', id: '061', photo: '' },
+            { name: '黃崇康', id: '062', photo: '' },
+            { name: '韓俊希', id: '063', photo: '' },
+            { name: '梁心悠', id: '064', photo: '' },
+            { name: '謝梓健', id: '065', photo: '' }
+        ] },
+        { class: '初中一', students: [
+            { name: '許逸峰', id: '066', photo: '' },
+            { name: '林宏晉', id: '067', photo: '' },
+            { name: '錢寶存', id: '068', photo: '' },
+            { name: '雲語嫣', id: '069', photo: '' },
+            { name: '李澤民', id: '070', photo: '' },
+            { name: '陳穎朗', id: '071', photo: '' },
+            { name: '黃逸朗', id: '072', photo: '' },
+            { name: '張倩瑜', id: '073', photo: '' },
+            { name: '盧佩儀', id: '074', photo: '' },
+            { name: '袁培琋', id: '075', photo: '' }
+        ] },
+        { class: '高小五', students: [
+            { name: '高烯瑜', id: '076', photo: '' },
+            { name: '陳傲雲', id: '077', photo: '' },
+            { name: '黎溢鉦', id: '078', photo: '' },
+            { name: '林詩藍', id: '079', photo: '' },
+            { name: '周奕朗', id: '080', photo: '' },
+            { name: '林銳添', id: '081', photo: '' },
+            { name: '丁翰鏐', id: '082', photo: '' },
+            { name: '吳卓鏗', id: '083', photo: '' },
+            { name: '汪俊睎', id: '084', photo: '' },
+            { name: '文恩祈', id: '085', photo: '' },
+            { name: '陳旨軒', id: '086', photo: '' },
+            { name: '張嘉兒', id: '087', photo: '' }
+        ] },
+        { class: '高小四', students: [
+            { name: '鄧祈佑', id: '088', photo: '' },
+            { name: '賴焯熹', id: '089', photo: '' },
+            { name: '黃子軒', id: '090', photo: '' },
+            { name: '梁茜程', id: '091', photo: '' },
+            { name: '黃泳鈺', id: '092', photo: '' },
+            { name: '沈柏熹', id: '093', photo: '' },
+            { name: '吳梓城', id: '094', photo: '' }
+        ] },
+        { class: '高小三', students: [
+            { name: '方君睿', id: '095', photo: '' },
+            { name: '麥浩敏', id: '096', photo: '' },
+            { name: '李雨蕊', id: '097', photo: '' },
+            { name: '余蒂峰', id: '098', photo: '' },
+            { name: '楊洛謙', id: '099', photo: '' },
+            { name: '林子竣', id: '100', photo: '' },
+            { name: '馮樂宏', id: '101', photo: '' },
+            { name: '謝韶謙', id: '102', photo: '' }
+        ] },
+        { class: '高小二', students: [
+            { name: '梁晉銘', id: '103', photo: '' },
+            { name: '徐子淳', id: '104', photo: '' },
+            { name: '伍珖灳', id: '105', photo: '' },
+            { name: '曾業淳', id: '106', photo: '' },
+            { name: '方子仁', id: '107', photo: '' },
+            { name: '陳衍叡', id: '108', photo: '' },
+            { name: '韓鎮聰', id: '109', photo: '' },
+            { name: '馮鎮泓', id: '110', photo: '' },
+            { name: '張逸朗', id: '111', photo: '' }
+        ] },
+        { class: '高小一', students: [
+            { name: '林熙程', id: '112', photo: '' },
+            { name: '李俊熹', id: '113', photo: '' },
+            { name: '潘彥旭', id: '114', photo: '' },
+            { name: '劉子龍', id: '115', photo: '' },
+            { name: '倪灝', id: '116', photo: '' },
+            { name: '陳泳霖', id: '117', photo: '' },
+            { name: '潘彥東', id: '118', photo: '' }
+        ] },
+        { class: '初小四', students: [
+            { name: '蔡澤銘', id: '119', photo: '' },
+            { name: '鍾嘉諾', id: '120', photo: '' },
+            { name: '譚詠殷', id: '121', photo: '' },
+            { name: '鄺芷瑩', id: '122', photo: '' },
+            { name: '李卓霖', id: '123', photo: '' },
+            { name: '蕭洛希', id: '124', photo: '' },
+            { name: '李柏言', id: '125', photo: '' },
+            { name: '趙靖昕', id: '126', photo: '' },
+            { name: '歐知穎', id: '127', photo: '' },
+            { name: '劉星座', id: '128', photo: '' },
+            { name: '黃渝婷', id: '129', photo: '' }
+        ] },
+        { class: '初小三', students: [
+            { name: '林澤星', id: '130', photo: '' },
+            { name: '李高略', id: '131', photo: '' },
+            { name: '羅年洲', id: '132', photo: '' },
+            { name: '施宇軒', id: '133', photo: '' },
+            { name: '陳學禮', id: '134', photo: '' },
+            { name: '曾溢知', id: '135', photo: '' },
+            { name: '陳家溱', id: '136', photo: '' },
+            { name: '蔡瀚毅', id: '137', photo: '' },
+            { name: '楊凱琳', id: '138', photo: '' },
+            { name: '龍正罡', id: '139', photo: '' }
+        ] },
+        { class: '初小二', students: [
+            { name: '張濬霖', id: '140', photo: '' },
+            { name: '梁誠軒', id: '141', photo: '' },
+            { name: '唐鎧滔', id: '142', photo: '' },
+            { name: 'OLIVIA (NCS)', id: '143', photo: '' },
+            { name: 'WALEED (NCS)', id: '144', photo: '' },
+            { name: '梁梓君', id: '145', photo: '' },
+            { name: '許明然', id: '146', photo: '' },
+            { name: 'AROUSE (NCS)', id: '147', photo: '' },
+            { name: '張皓然', id: '148', photo: '' },
+            { name: '陳德添', id: '149', photo: '' }
+        ] },
+        { class: '初小一', students: [
+            { name: '林梓宇', id: '150', photo: '' },
+            { name: '黃梓鈺', id: '151', photo: '' },
+            { name: '黃晉豫', id: '152', photo: '' },
+            { name: '鄔浩霖', id: '153', photo: '' },
+            { name: '林柏言', id: '154', photo: '' },
+            { name: '劉佩諭', id: '155', photo: '' },
+            { name: '趙柏然', id: '156', photo: '' },
+            { name: '劉星宙', id: '157', photo: '' },
+            { name: '葉尚樺', id: '158', photo: '' },
+            { name: '謝浩縉', id: '159', photo: '' },
+            { name: '鍾應笙', id: '160', photo: '' }
+        ] }
+    ];
+
+    // 成績資料結構
+    let scoreData = {
+        frontJump: [
+            { value: 45, date: '2024-01-15' },
+            { value: 48, date: '2024-01-22' },
+            { value: 52, date: '2024-01-29' }
+        ],
+        jumpingJack: [
+            { value: 32, date: '2024-01-15' },
+            { value: 35, date: '2024-01-22' },
+            { value: 38, date: '2024-01-29' }
+        ],
+        skiJump: [
+            { value: 28, date: '2024-01-15' },
+            { value: 30, date: '2024-01-22' },
+            { value: 33, date: '2024-01-29' }
+        ],
+        bicycleStep: [
+            { value: 40, date: '2024-01-15' },
+            { value: 42, date: '2024-01-22' },
+            { value: 45, date: '2024-01-29' }
+        ]
+    };
+
+    // 折線圖初始化
+    let performanceChart;
+    function renderChart() {
+        const canvas = document.getElementById('performanceChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const sd = window.scoreData || { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [] };
+        // 合併所有日期
+        const allDates = Array.from(new Set([
+            ...sd.frontJump.map(s=>s.date),
+            ...sd.jumpingJack.map(s=>s.date),
+            ...sd.skiJump.map(s=>s.date),
+            ...sd.bicycleStep.map(s=>s.date)
+        ])).sort();
+        const getSeries = (arr) => allDates.map(d => {
+            const found = arr.find(s=>s.date===d);
+            return found ? found.value : null;
+        });
+        if(window.performanceChart && typeof window.performanceChart.destroy === 'function') window.performanceChart.destroy();
+        window.performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: allDates.map(d=>d.replace('2024-','').replace('-','月')+'日'),
+                datasets: [
+                    {
+                        label: '30秒前跳',
+                        data: getSeries(sd.frontJump),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '30秒開合跳',
+                        data: getSeries(sd.jumpingJack),
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '30秒滑雪跳',
+                        data: getSeries(sd.skiJump),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '30秒單車步',
+                        data: getSeries(sd.bicycleStep),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 12 },
+                            usePointStyle: true
+                        }
+                    },
+                    title: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '次數' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    },
+                    x: {
+                        title: { display: true, text: '測試日期' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    }
+                },
+                interaction: { intersect: false, mode: 'index' },
+                elements: { point: { radius: 4, hoverRadius: 6 } }
+            }
+        });
+    }
+
+    // 表格渲染
+    function renderTables() {
+        const name = document.getElementById('studentName').textContent;
+        const render = (arr, elId) => {
+            const tbody = document.getElementById(elId);
+            if (arr && arr.length > 0) {
+                tbody.innerHTML = arr.map(s => `<tr><td>${s.value}</td><td>${s.date}</td><td>${name}</td></tr>`).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">暫無資料</td></tr>';
+            }
+        };
+        
+        const scoreData = window.scoreData || { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [] };
+        render(scoreData.frontJump, 'frontJumpTable');
+        render(scoreData.jumpingJack, 'jumpingJackTable');
+        render(scoreData.skiJump, 'skiJumpTable');
+        render(scoreData.bicycleStep, 'bicycleStepTable');
+    }
+
+    // 表單權限與事件
+    function setupScoreForm() {
+        const form = document.getElementById('scoreInputForm');
+        if(localStorage.getItem('userRole') === 'teacher') {
+            form.style.display = '';
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                const type = document.getElementById('scoreType').value;
+                const value = parseInt(document.getElementById('scoreValue').value);
+                const date = document.getElementById('scoreDate').value;
+                if(type && !isNaN(value) && date) {
+                    scoreData[type].push({ value, date });
+                    // 依日期排序
+                    scoreData[type].sort((a,b)=>a.date.localeCompare(b.date));
+                    renderChart();
+                    renderTables();
+                    // ===== 新增：同步寫入首頁成績格式到 localStorage 'scores' =====
+                    const id = getQueryParam('id');
+                    const student = findStudentById(id);
+                    if(student) {
+                        let scores = JSON.parse(localStorage.getItem('scores') || '[]');
+                        // 取得該生當日所有四大項分數
+                        let front = 0, jack = 0, ski = 0, bike = 0;
+                        scoreData.frontJump.forEach(s => { if(s.date === date) front = s.value; });
+                        scoreData.jumpingJack.forEach(s => { if(s.date === date) jack = s.value; });
+                        scoreData.skiJump.forEach(s => { if(s.date === date) ski = s.value; });
+                        scoreData.bicycleStep.forEach(s => { if(s.date === date) bike = s.value; });
+                        let total = front + jack + ski + bike;
+                        // 只覆蓋同名同日的成績，不同日就新增
+                        const existingIndex = scores.findIndex(score => score.name === student.name && score.date === date);
+                        if (existingIndex !== -1) {
+                            scores[existingIndex] = { name: student.name, front, jack, ski, bike, total, date };
+                        } else {
+                            scores.push({ name: student.name, front, jack, ski, bike, total, date });
+                        }
+                        localStorage.setItem('scores', JSON.stringify(scores));
+                    }
+                    // ===== END =====
+                    form.reset();
+                }
+            };
+        } else {
+            form.style.display = 'none';
+        }
+    }
+
+    // 根據 id 查找學生
+    function findStudentById(id) {
+        for (const cls of studentsData) {
+            for (const stu of cls.students) {
+                if (stu.id === id) return { ...stu, class: cls.class };
+            }
+        }
+        return null;
+    }
+
+    // 取得網址參數 id
+    function getQueryParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+    // 取得該生所有成績
+    function getStudentScores(name) {
+        const allScores = JSON.parse(localStorage.getItem('scores') || '[]');
+        return allScores.filter(s => s.name === name);
+    }
+    // 渲染四大技能折線圖和表格
+    function renderStudentScores() {
+        const id = getQueryParam('id');
+        const student = findStudentById(id);
+        
+        // 分類四大項
+        let scoreData = { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [] };
+        
+        if (student) {
+            const studentScores = getStudentScores(student.name);
+            if (studentScores && studentScores.length > 0) {
+                studentScores.forEach(s => {
+                    scoreData.frontJump.push({ value: s.front, date: s.date });
+                    scoreData.jumpingJack.push({ value: s.jack, date: s.date });
+                    scoreData.skiJump.push({ value: s.ski, date: s.date });
+                    scoreData.bicycleStep.push({ value: s.bike, date: s.date });
+                });
+            } else {
+                // 如果沒有成績資料，顯示預設資料
+                console.log('沒有找到學生成績資料，使用預設資料');
+            }
+        } else {
+            console.log('未找到學生資料');
+        }
+        
+        // 渲染折線圖
+        window.scoreData = scoreData;
+        renderChart();
+        renderTables();
+        
+        // 更新學生資訊
+        updateStudentInfo(student ? student.name : '查無此學生', student ? getStudentScores(student.name) : []);
+    }
+    
+    // 更新學生資訊
+    function updateStudentInfo(name, scores) {
+        document.getElementById('totalTests').textContent = scores ? scores.length + '次' : '0次';
+    }
+
+    // 儲存自學影片到 localStorage
+    function saveSelfStudyVideo(studentId, videoUrl, desc, date) {
+        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
+        let stu = all.find(s => s.studentId === studentId);
+        if (!stu) {
+            stu = { studentId, videos: [] };
+            all.push(stu);
+        }
+        stu.videos.push({ url: videoUrl, desc, date, feedback: [] });
+        localStorage.setItem('selfStudyVideos', JSON.stringify(all));
+    }
+    // 取得學生所有自學影片
+    function getSelfStudyVideos(studentId) {
+        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
+        let stu = all.find(s => s.studentId === studentId);
+        return stu ? stu.videos : [];
+    }
+    // 新增教師意見
+    function addTeacherFeedback(studentId, videoIdx, teacher, comment) {
+        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
+        let stu = all.find(s => s.studentId === studentId);
+        if (stu && stu.videos[videoIdx]) {
+            stu.videos[videoIdx].feedback.push({ teacher, comment, date: new Date().toISOString().slice(0,10) });
+            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
+        }
+    }
+    // 渲染影片與教師意見
+    function renderVideoFeedbackSection(studentId) {
+        const section = document.getElementById('videoFeedbackSection');
+        const videos = getSelfStudyVideos(studentId);
+        const isTeacher = localStorage.getItem('userRole') === 'teacher';
+        if (!section) return;
+        if (!videos.length) {
+            section.innerHTML = '<div class="text-muted">暫無彩虹章別計劃影片</div>';
+            return;
+        }
+        section.innerHTML = videos.map((v, idx) => `
+            <div class="mb-4 p-3 border rounded">
+                <div class="mb-2"><b>上傳日期：</b>${v.date}</div>
+                <div class="mb-2"><b>說明：</b>${v.desc}</div>
+                <video src="${v.url}" controls style="max-width:100%;height:180px;"></video>
+                <div class="mt-2"><b>教師意見：</b></div>
+                <ul class="list-group mb-2">
+                    ${v.feedback && v.feedback.length ? v.feedback.map((f, fidx) => `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><b>${f.teacher}</b>（${f.date}）：<span class="feedback-comment" data-idx="${idx}" data-fidx="${fidx}">${f.comment}</span></span>
+                            ${isTeacher ? `
+                            <span>
+                                <button class="btn btn-sm btn-outline-secondary edit-feedback-btn" data-idx="${idx}" data-fidx="${fidx}">編輯</button>
+                                <button class="btn btn-sm btn-outline-danger delete-feedback-btn" data-idx="${idx}" data-fidx="${fidx}">刪除</button>
+                            </span>
+                            ` : ''}
+                        </li>
+                    `).join('') : '<li class="list-group-item text-muted">暫無意見</li>'}
+                </ul>
+                ${isTeacher ? `
+                <form class="teacher-feedback-form" data-idx="${idx}">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" name="teacher" placeholder="教師姓名" value="${localStorage.getItem('teacherName')||''}" required style="max-width:120px;">
+                        <input type="text" class="form-control" name="comment" placeholder="輸入意見..." required>
+                        <button class="btn btn-primary" type="submit">留言</button>
+                    </div>
+                </form>
+                ` : ''}
+            </div>
+        `).join('');
+        // 綁定教師留言表單
+        if (isTeacher) {
+            section.querySelectorAll('.teacher-feedback-form').forEach(form => {
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    const idx = +form.getAttribute('data-idx');
+                    const comment = form.comment.value.trim();
+                    const teacher = form.teacher.value.trim() || '老師';
+                    if (comment && teacher) {
+                        localStorage.setItem('teacherName', teacher);
+                        addTeacherFeedback(studentId, idx, teacher, comment);
+                        renderVideoFeedbackSection(studentId);
+                    }
+                };
+            });
+            // 編輯意見
+            section.querySelectorAll('.edit-feedback-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const idx = +btn.getAttribute('data-idx');
+                    const fidx = +btn.getAttribute('data-fidx');
+                    const all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
+                    const stu = all.find(s => s.studentId === studentId);
+                    if (stu && stu.videos[idx] && stu.videos[idx].feedback[fidx]) {
+                        const old = stu.videos[idx].feedback[fidx];
+                        const newComment = prompt('編輯意見內容：', old.comment);
+                        if (newComment !== null && newComment.trim() !== '') {
+                            stu.videos[idx].feedback[fidx].comment = newComment.trim();
+                            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
+                            renderVideoFeedbackSection(studentId);
+                        }
+                    }
+                };
+            });
+            // 刪除意見
+            section.querySelectorAll('.delete-feedback-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const idx = +btn.getAttribute('data-idx');
+                    const fidx = +btn.getAttribute('data-fidx');
+                    if (confirm('確定要刪除此意見嗎？')) {
+                        const all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
+                        const stu = all.find(s => s.studentId === studentId);
+                        if (stu && stu.videos[idx] && stu.videos[idx].feedback[fidx]) {
+                            stu.videos[idx].feedback.splice(fidx, 1);
+                            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
+                            renderVideoFeedbackSection(studentId);
+                        }
+                    }
+                };
+            });
+        }
+    }
+    // 初始化彩虹章別計劃影片區塊
+    function initSelfStudyVideoSection() {
+        const id = (new URL(window.location.href)).searchParams.get('id');
+        // 家長上傳影片
+        const uploadForm = document.getElementById('selfStudyUploadForm');
+        if (uploadForm) {
+            uploadForm.onsubmit = function(e) {
+                e.preventDefault();
+                const fileInput = document.getElementById('selfStudyVideo');
+                const desc = document.getElementById('selfStudyDesc').value;
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        saveSelfStudyVideo(id, evt.target.result, desc, new Date().toISOString().slice(0,10));
+                        document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-success">影片上傳成功！</div>';
+                        uploadForm.reset();
+                        renderVideoFeedbackSection(id);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-danger">請選擇影片文件</div>';
+                }
+            };
+        }
+        // 初始渲染
+        renderVideoFeedbackSection(id);
+    }
+
+    // 初始化
+    function goBack() {
+        window.location.href = 'index.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const id = getQueryParam('id');
+        const student = findStudentById(id);
+        
+        if (student) {
+            // 更新學生資訊
+            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentId').textContent = student.id;
+            document.getElementById('studentClass').textContent = student.class;
+            if (student.photo && document.getElementById('studentPhoto')) {
+                document.getElementById('studentPhoto').src = student.photo;
+                document.getElementById('studentPhoto').style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+            }
+        } else {
+            document.getElementById('studentName').textContent = '查無此學生';
+            document.getElementById('studentId').textContent = '';
+            document.getElementById('studentClass').textContent = '';
+        }
+        
+        renderStudentScores();
+        setupScoreForm && setupScoreForm();
+
+        const role = localStorage.getItem('userRole');
+        if(role === 'parent' || role === 'teacher') {
+            document.getElementById('parentUploadSection').style.display = 'block';
+            if(role === 'parent') {
+                document.getElementById('parentUploadFormCard').style.display = 'block';
+            } else {
+                document.getElementById('parentUploadFormCard').style.display = 'none';
+            }
+            initSelfStudyVideoSection();
+        }
+
+        // 模擬動態數據更新
+        function updateChartData() {
+            // 這裡可以添加實時數據更新邏輯
+            console.log('圖表數據已更新');
+        }
+
+        // 每30秒更新一次數據（可選）
+        setInterval(updateChartData, 30000);
+
+        // 相片處理功能
+        function loadStudentPhoto() {
+            const studentPhoto = document.getElementById('studentPhoto');
+            const photoPlaceholder = document.getElementById('photoPlaceholder');
+            
+            // 這裡可以從後端API獲取學生相片
+            // 目前使用預設的SVG相片
+            const photoUrl = localStorage.getItem('studentPhoto') || studentPhoto.src;
+            
+            if (photoUrl && photoUrl !== studentPhoto.src) {
+                studentPhoto.src = photoUrl;
+                studentPhoto.style.display = 'block';
+                photoPlaceholder.style.display = 'none';
+            } else {
+                studentPhoto.style.display = 'none';
+                photoPlaceholder.style.display = 'flex';
+            }
+        }
+
+        // 上傳相片功能
+        function uploadStudentPhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoUrl = e.target.result;
+                        document.getElementById('studentPhoto').src = photoUrl;
+                        document.getElementById('studentPhoto').style.display = 'block';
+                        document.getElementById('photoPlaceholder').style.display = 'none';
+                        
+                        // 保存到本地存儲（實際應用中應該上傳到服務器）
+                        localStorage.setItem('studentPhoto', photoUrl);
+                        
+                        showMessage('相片上傳成功！', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        // 顯示訊息
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.right = '20px';
+            messageDiv.style.zIndex = '9999';
+            messageDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 3000);
+        }
+
+        // 初始化相片
+        loadStudentPhoto();
+    });
+
+    // ===== END =====
+    </script>
+</body>
+</html> 

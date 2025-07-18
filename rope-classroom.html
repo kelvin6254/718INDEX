@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>『繩』目教室 - 跳繩示範教學</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f4f8fb 100%);
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            position: relative;
+        }
+        .bg-deco {
+            position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 0;
+        }
+        .bg-deco .circle1 {
+            position: absolute; left: 5vw; top: 8vh; width: 180px; height: 180px; background: #b3e5fc; opacity: 0.25; border-radius: 50%; filter: blur(2px);}
+        .bg-deco .circle2 {
+            position: absolute; right: 8vw; top: 60vh; width: 120px; height: 120px; background: #81d4fa; opacity: 0.18; border-radius: 50%; filter: blur(1px);}
+        .bg-deco .circle3 {
+            position: absolute; left: 40vw; bottom: 0; width: 220px; height: 220px; background: #4fc3f7; opacity: 0.12; border-radius: 50%; filter: blur(2px);}
+        .main-title {
+            color: #2563eb;
+            font-weight: 900;
+            font-size: 2.7rem;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 12px #b3c6f7;
+        }
+        .sub-title {
+            display: inline-block;
+            background: linear-gradient(90deg,#27b3fa 0%,#fbbf24 100%);
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 18px;
+            padding: 6px 28px;
+            margin-bottom: 2.2rem;
+            box-shadow: 0 2px 12px rgba(39,179,250,0.08);
+        }
+        .section-nav {
+            margin-bottom: 2.5rem;
+        }
+        .section-nav .btn {
+            background: #27b3fa;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 30px;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(39,179,250,0.10);
+            transition: background 0.18s, transform 0.18s;
+        }
+        .section-nav .btn:hover {
+            background: #2563eb;
+            color: #fff;
+            transform: translateY(-3px) scale(1.04);
+        }
+        .card {
+            box-shadow: 0 4px 24px rgba(30,58,138,0.10);
+            border-radius: 22px;
+            border: 1.5px solid #e3e8f0;
+            margin-bottom: 3.5rem;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 10px 36px rgba(37,99,235,0.16);
+            transform: translateY(-4px) scale(1.01);
+        }
+        .card-header {
+            background: linear-gradient(90deg,#2563eb 0%,#1e3a8a 100%);
+            color: #fff;
+            font-weight: 800;
+            font-size: 2rem;
+            border-radius: 22px 22px 0 0;
+            letter-spacing: 2px;
+            text-shadow: 1px 2px 8px #1e3a8a33;
+        }
+        .card-body {
+            background: #fff;
+            border-radius: 0 0 22px 22px;
+        }
+        .divider {
+            border-top: 3px dashed #27b3fa;
+            margin: 40px 0 32px 0;
+        }
+        .video-responsive {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(39,179,250,0.13);
+        }
+        .video-responsive iframe {
+            position: absolute;
+            top:0; left:0; width:100%; height:100%; border-radius: 18px;
+        }
+        .right-features {
+            background: linear-gradient(135deg,#e3f7fa 0%,#f1f5fd 100%);
+            border-radius: 18px;
+            padding: 18px 18px 10px 18px;
+            box-shadow: 0 2px 10px rgba(39,179,250,0.07);
+        }
+        .right-features .feature-title {
+            font-weight: 800;
+            font-size: 1.13rem;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .right-features .feature-title i {
+            color: #27b3fa;
+            font-size: 1.1rem;
+        }
+        .feature-list {
+            list-style: disc inside;
+            margin-bottom: 0;
+            color: #374151;
+        }
+        .card-body .row { gap: 0; }
+        @media (max-width: 900px) {
+            .card-header { font-size: 1.3rem; }
+            .main-title { font-size: 1.5rem; }
+            .sub-title { font-size: 1rem; padding: 4px 16px; }
+            .card { border-radius: 14px; }
+            .card-body, .right-features { border-radius: 14px; }
+            .video-responsive, .video-responsive iframe { border-radius: 10px; }
+        }
+        @media (max-width: 768px) {
+            .card-header { font-size: 1.1rem; }
+            .main-title { font-size: 1.1rem; }
+            .sub-title { font-size: 0.95rem; }
+            .card { border-radius: 10px; }
+            .card-body, .right-features { border-radius: 10px; }
+            .video-responsive, .video-responsive iframe { border-radius: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-deco">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+    </div>
+    <div class="container py-4 position-relative" style="z-index:1;">
+        <div class="main-title">『繩』目教室</div>
+        <div class="text-center mb-4"><span class="sub-title">跳繩示範教學</span></div>
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5 section-nav">
+            <a href="#basic" class="btn">基礎動作</a>
+            <a href="#footwork" class="btn">腳步動作</a>
+            <a href="#cross" class="btn">交叉動作</a>
+            <a href="#power" class="btn">力量動作</a>
+            <a href="#release" class="btn">放柄動作</a>
+            <a href="#wrap" class="btn">繞繩動作</a>
+        </div>
+        <!-- 基礎動作 -->
+        <div class="card mb-5" id="basic">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">基礎動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">預備動作及起繩動作</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/1QG6lL4DPGg" title="基礎動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>繩放腳後，雙手合埋</li>
+                                        <li>打開手，劃大圈，放到腳前</li>
+                                        <li>放到腳前時跳起</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>找一樣物件放在身體前面，雙手打開令繩包住物件</li>
+                                        <li>起繩後前腳掌微提高將繩攝在下面</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>預備姿勢，手放在膊頭位置</li>
+                                        <li>畫圓圈時雙手太直</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <!-- 腳步動作 -->
+        <div class="card mb-5" id="footwork">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">腳步動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">開合跳與腳步協調</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/2V-20Qe4M8Y" title="腳步動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>開腳與肩闊，左右平衡</li>
+                                        <li>跳過繩時動作變動</li>
+                                        <li>雙腳合實時要平衡</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>單腳、雙腳交替練習</li>
+                                        <li>慢動作分解練習</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>腳步不協調</li>
+                                        <li>膝蓋彎曲過多</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <!-- 交叉動作 -->
+        <div class="card mb-5" id="cross">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">交叉動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">雙手交叉與協調</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/2jcJDEta3FE" title="交叉動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>雙手交叉於身前</li>
+                                        <li>交叉時手腕發力</li>
+                                        <li>保持繩子弧度</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>無繩練習交叉手勢</li>
+                                        <li>慢速分解動作</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>手交叉不夠明顯</li>
+                                        <li>繩子打結</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <!-- 力量動作 -->
+        <div class="card mb-5" id="power">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">力量動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">掌上壓與協調</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/4Qw1wQv1KjB" title="力量動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>雙手撐地，雙腳撐出</li>
+                                        <li>掌上壓動作標準</li>
+                                        <li>繩子拉回時協調</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>無繩模擬掌上壓</li>
+                                        <li>分步驟練習</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>雙手未撐地已做動作</li>
+                                        <li>繩子拉回不順暢</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <!-- 放柄動作 -->
+        <div class="card mb-5" id="release">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">放柄動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">放柄技巧與節奏</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/5Qw1wQv1KjC" title="放柄動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>擺繩速度放慢</li>
+                                        <li>繩到頭頂時放柄</li>
+                                        <li>放柄手法正確</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>節奏練習</li>
+                                        <li>放柄練習</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>繩未到頭頂已放柄</li>
+                                        <li>拋柄太大力</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <!-- 繞繩動作 -->
+        <div class="card mb-5" id="wrap">
+            <div class="card-header text-center" style="font-size:2rem;font-weight:700;">繞繩動作</div>
+            <div class="card-body">
+                <div class="text-center mb-4" style="font-size:1.25rem;font-weight:600;">繞繩與身體協調</div>
+                <div class="row align-items-start">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="video-responsive">
+                            <iframe src="https://www.youtube.com/embed/6Qw1wQv1KjD" title="繞繩動作示範" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="right-features">
+                            <div class="row row-cols-1 row-cols-md-1 g-3">
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-lightbulb"></i>學習重點</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>雙手交叉擺放</li>
+                                        <li>身體穿過繩圈</li>
+                                        <li>動作協調流暢</li>
+                                    </ul>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="feature-title"><i class="fas fa-dumbbell"></i>練習方法</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>雙手擺交叉動作</li>
+                                        <li>分步驟練習</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <div class="feature-title"><i class="fas fa-exclamation-triangle"></i>常見錯誤</div>
+                                    <ul class="feature-list mb-2">
+                                        <li>繩圈不夠大</li>
+                                        <li>動作不協調</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center my-5">
+            <a href="index.html" class="text-decoration-none" style="min-width:260px;">
+                <div style="background:linear-gradient(90deg,#fbbf24 0%,#27b3fa 100%);color:#fff;font-weight:700;font-size:1.18rem;border-radius:22px;box-shadow:0 4px 18px rgba(39,179,250,0.13);padding:18px 32px;display:flex;align-items:center;justify-content:center;gap:12px;transition:background 0.18s,transform 0.18s;">
+                    <i class="fas fa-arrow-left"></i> 返回首頁
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html> 
