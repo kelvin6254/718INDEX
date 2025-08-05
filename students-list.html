@@ -305,22 +305,91 @@
         });
     })();
 
+    // 載入已儲存的學生相片
+    function loadStudentPhotos() {
+        const saved = localStorage.getItem('studentPhotos');
+        if (saved) {
+            const savedData = JSON.parse(saved);
+            // 建立一個 id->photo 的對照表
+            const photoMap = {};
+            savedData.forEach(cls => {
+                cls.students.forEach(stu => {
+                    if (stu.id && stu.photo) {
+                        photoMap[stu.id] = stu.photo;
+                    }
+                });
+            });
+            // 合併相片資料
+            studentsData.forEach(cls => {
+                cls.students.forEach(stu => {
+                    if (photoMap[stu.id]) {
+                        stu.photo = photoMap[stu.id];
+                    }
+                });
+            });
+        }
+    }
+
     // 動態生成學生名單
-    const row = document.getElementById('studentsListRow');
-    studentsData.forEach(cls => {
-        const col = document.createElement('div');
-        col.className = 'col-lg-2 col-md-4 col-6 student-list-col';
-        col.innerHTML = `<div class="class-title">${cls.class}</div>`;
-        cls.students.forEach(stu => {
-            col.innerHTML += `
-                <div class="student-item">
-                    <img src="${stu.photo}" class="student-photo" alt="${stu.name}" title="點擊查看成績" onclick="goToStudentZone('${stu.id}')">
-                    <div class="student-name">${stu.name}</div>
-                    <div class="student-id">${stu.id}</div>
-                </div>
-            `;
+    function renderStudentList() {
+        const row = document.getElementById('studentsListRow');
+        row.innerHTML = ''; // 清空現有內容
+        
+        studentsData.forEach(cls => {
+            const col = document.createElement('div');
+            col.className = 'col-lg-2 col-md-4 col-6 student-list-col';
+            col.innerHTML = `<div class="class-title">${cls.class}</div>`;
+            cls.students.forEach(stu => {
+                const photoSrc = stu.photo && stu.photo !== '' ? stu.photo : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+';
+                col.innerHTML += `
+                    <div class="student-item">
+                        <img src="${photoSrc}" class="student-photo" alt="${stu.name}" title="點擊查看成績" onclick="goToStudentZone('${stu.id}')">
+                        <div class="student-name">${stu.name}</div>
+                        <div class="student-id">${stu.id}</div>
+                    </div>
+                `;
+            });
+            row.appendChild(col);
         });
-        row.appendChild(col);
+    }
+
+    // 初始化頁面
+    loadStudentPhotos();
+    renderStudentList();
+    
+    // 監聽 localStorage 變化，即時更新相片
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'studentPhotos') {
+            loadStudentPhotos();
+            renderStudentList();
+        }
+    });
+    
+    // 定期檢查相片更新（每2秒檢查一次）
+    setInterval(function() {
+        const currentPhotos = localStorage.getItem('studentPhotos');
+        if (currentPhotos !== window.lastPhotosCheck) {
+            window.lastPhotosCheck = currentPhotos;
+            loadStudentPhotos();
+            renderStudentList();
+            console.log('學生名單相片已更新');
+        }
+    }, 2000);
+    
+    // 頁面獲得焦點時重新載入相片
+    window.addEventListener('focus', function() {
+        loadStudentPhotos();
+        renderStudentList();
+        console.log('頁面獲得焦點，重新載入相片');
+    });
+    
+    // 頁面可見性變化時重新載入相片
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            loadStudentPhotos();
+            renderStudentList();
+            console.log('頁面變為可見，重新載入相片');
+        }
     });
 
     // 跳轉到個人專區

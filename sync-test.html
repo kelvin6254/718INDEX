@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同步測試 - 基督教中國佈道會聖道學校</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f8fb;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .sync-status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .sync-status.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        
+        .sync-status.warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+        
+        .sync-status.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .student-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .student-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .student-item.has-photo {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .student-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #3b82f6;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .student-photo.placeholder {
+            background: linear-gradient(135deg, #e3edfa 0%, #dbeafe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1><i class="fas fa-sync me-3"></i>相片同步測試</h1>
+            <p class="mb-0">基督教中國佈道會聖道學校跳繩平台</p>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div class="test-card">
+            <h3><i class="fas fa-cogs me-2"></i>同步狀態</h3>
+            <div id="syncStatus">
+                <div class="sync-status warning">
+                    <i class="fas fa-spinner fa-spin me-2"></i>
+                    正在檢查同步狀態...
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <button class="btn btn-primary mb-2" onclick="checkSync()">
+                        <i class="fas fa-refresh me-2"></i>檢查同步
+                    </button>
+                    <button class="btn btn-success mb-2" onclick="openImportTool()">
+                        <i class="fas fa-upload me-2"></i>打開匯入工具
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-info mb-2" onclick="openStudentList()">
+                        <i class="fas fa-list me-2"></i>打開學生名單
+                    </button>
+                    <button class="btn btn-warning mb-2" onclick="openStudentZone()">
+                        <i class="fas fa-user me-2"></i>打開學生專區
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h3><i class="fas fa-users me-2"></i>學生相片預覽</h3>
+            <div class="student-preview" id="studentPreview">
+                <!-- 動態生成學生預覽 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 測試學生資料
+        const testStudents = [
+            { name: '羅諭琦', id: '001', photo: '' },
+            { name: '黃樂源', id: '014', photo: '' },
+            { name: '余明亮', id: '027', photo: '' },
+            { name: '周晉琛', id: '040', photo: '' },
+            { name: '麥梓淳', id: '048', photo: '' },
+            { name: '蔡濠名', id: '057', photo: '' },
+            { name: '許逸峰', id: '066', photo: '' },
+            { name: '高烯瑜', id: '076', photo: '' }
+        ];
+
+        // 載入學生相片
+        function loadStudentPhotos() {
+            const saved = localStorage.getItem('studentPhotos');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                testStudents.forEach(testStudent => {
+                    for (const cls of savedData) {
+                        for (const student of cls.students) {
+                            if (student.id === testStudent.id && student.photo) {
+                                testStudent.photo = student.photo;
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 渲染學生預覽
+        function renderStudentPreview() {
+            const preview = document.getElementById('studentPreview');
+            let html = '';
+            
+            testStudents.forEach(student => {
+                const hasPhoto = student.photo && student.photo !== '';
+                html += `
+                    <div class="student-item ${hasPhoto ? 'has-photo' : ''}">
+                        <div class="student-photo ${hasPhoto ? '' : 'placeholder'}">
+                            ${hasPhoto ? 
+                                `<img src="${student.photo}" alt="${student.name}" class="student-photo">` :
+                                `<i class="fas fa-user"></i>`
+                            }
+                        </div>
+                        <div class="fw-bold small">${student.name}</div>
+                        <small class="text-muted">${hasPhoto ? '已上傳' : '待上傳'}</small>
+                    </div>
+                `;
+            });
+            
+            preview.innerHTML = html;
+        }
+
+        // 檢查同步狀態
+        function checkSync() {
+            const status = document.getElementById('syncStatus');
+            const saved = localStorage.getItem('studentPhotos');
+            
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    const totalStudents = data.reduce((sum, cls) => sum + cls.students.length, 0);
+                    const uploadedPhotos = data.reduce((sum, cls) => 
+                        sum + cls.students.filter(s => s.photo && s.photo !== '').length, 0);
+                    
+                    status.innerHTML = `
+                        <div class="sync-status success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>同步正常</strong><br>
+                            總學生數: ${totalStudents}<br>
+                            已上傳相片: ${uploadedPhotos}<br>
+                            同步率: ${Math.round((uploadedPhotos / totalStudents) * 100)}%
+                        </div>
+                    `;
+                } catch (e) {
+                    status.innerHTML = `
+                        <div class="sync-status error">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <strong>同步錯誤</strong><br>
+                            資料格式錯誤: ${e.message}
+                        </div>
+                    `;
+                }
+            } else {
+                status.innerHTML = `
+                    <div class="sync-status warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>尚未有相片資料</strong><br>
+                        請先使用批量匯入工具上傳相片
+                    </div>
+                `;
+            }
+            
+            loadStudentPhotos();
+            renderStudentPreview();
+        }
+
+        // 打開匯入工具
+        function openImportTool() {
+            window.open('student-photo-import.html', '_blank');
+        }
+
+        // 打開學生名單
+        function openStudentList() {
+            window.open('students-list.html', '_blank');
+        }
+
+        // 打開學生專區
+        function openStudentZone() {
+            window.open('student-zone.html?id=001', '_blank');
+        }
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSync();
+            
+            // 定期檢查更新
+            setInterval(function() {
+                loadStudentPhotos();
+                renderStudentPreview();
+            }, 3000);
+        });
+    </script>
+</body>
+</html> 
