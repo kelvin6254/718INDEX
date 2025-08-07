@@ -65,118 +65,127 @@
             .student-list-col { margin-bottom: 16px; }
         }
         
-        /* 手機拖拉支援 */
+        /* 手機響應式設計 - 按比例顯示 */
         @media (max-width: 768px) {
             .container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                padding-left: 0;
-                padding-right: 0;
+                padding: 10px;
             }
             
             .row {
-                flex-wrap: nowrap;
-                min-width: max-content;
-                margin-left: 0;
-                margin-right: 0;
+                flex-wrap: wrap;
+                margin: 0;
             }
             
+            /* 手機上每行顯示2個學生 */
             .col-lg-2, .col-md-4, .col-6 {
-                flex: 0 0 auto;
-                width: 280px;
-                min-width: 280px;
-                padding-left: 8px;
-                padding-right: 8px;
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding: 4px;
             }
             
             .student-list-col {
-                margin-right: 16px;
-                margin-bottom: 16px;
-                margin-left: 0;
+                margin: 0 0 8px 0;
+                border-radius: 8px;
             }
             
-            /* 增加拖拉提示 */
-            .scroll-hint {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0,0,0,0.8);
-                color: white;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 14px;
-                z-index: 1000;
-                animation: fadeInOut 3s ease-in-out;
-                transition: opacity 0.5s ease;
+            .class-title {
+                font-size: 0.9rem;
+                padding: 6px 0;
+                letter-spacing: 1px;
             }
             
-            @keyframes fadeInOut {
-                0%, 100% { opacity: 0; }
-                20%, 80% { opacity: 1; }
+            .student-item {
+                margin: 8px 0;
             }
             
-            /* 拖拉指示器 */
-            .scroll-indicator {
-                position: fixed;
-                bottom: 60px;
-                left: 50%;
-                transform: translateX(-50%);
+            .student-photo {
+                width: 50px;
+                height: 50px;
+                border-width: 2px;
+            }
+            
+            .student-name {
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+            
+            .student-id {
+                font-size: 0.8rem;
+            }
+            
+            /* 移除拖拉相關元素 */
+            .scroll-hint, .scroll-indicator {
+                display: none;
+            }
+        }
+        
+        /* 超小螢幕 - 每行顯示1個學生 */
+        @media (max-width: 480px) {
+            .col-lg-2, .col-md-4, .col-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            
+            .student-photo {
                 width: 60px;
-                height: 4px;
-                background: rgba(255,255,255,0.3);
-                border-radius: 2px;
-                z-index: 999;
+                height: 60px;
             }
             
-            .scroll-indicator::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                width: 20px;
-                background: rgba(255,255,255,0.8);
-                border-radius: 2px;
-                animation: scrollMove 2s infinite;
+            .student-name {
+                font-size: 1rem;
             }
             
-            @keyframes scrollMove {
-                0% { left: 0; }
-                50% { left: 40px; }
-                100% { left: 0; }
+            /* 班級篩選器在小螢幕上的樣式 */
+            #classFilter {
+                gap: 4px !important;
             }
             
-            /* 確保容器可以水平滾動 */
-            .container-fluid {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+            #classFilter .btn {
+                font-size: 0.8rem;
+                padding: 4px 8px;
             }
+        }
+        
+        /* 班級篩選器樣式 */
+        #classFilter .btn {
+            transition: all 0.3s ease;
+            border-radius: 20px;
+        }
+        
+        #classFilter .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #classFilter .btn.active {
+            background: #2339d6;
+            border-color: #2339d6;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4">
-        <div class="container">
-            <h2 class="mb-4 fw-bold text-center" style="color:#2339d6;letter-spacing:2px;">全校學生名單</h2>
-            
-            <!-- 手機拖拉提示 -->
-            <div class="scroll-hint d-md-none">
-                <i class="fas fa-arrows-alt-h me-2"></i>左右拖拉查看更多班級
+    <div class="container py-4">
+        <h2 class="mb-4 fw-bold text-center" style="color:#2339d6;letter-spacing:2px;">全校學生名單</h2>
+        
+        <!-- 班級篩選器 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap justify-content-center gap-2" id="classFilter">
+                    <button class="btn btn-outline-primary btn-sm active" data-class="all">
+                        <i class="fas fa-users me-1"></i>全部班級
+                    </button>
+                    <!-- 班級按鈕動態生成 -->
+                </div>
             </div>
-            <div class="scroll-indicator d-md-none"></div>
         </div>
         
-        <div class="container-fluid px-0">
-            <div class="row" id="studentsListRow">
-                <!-- 學生名單動態生成 -->
-            </div>
+        <div class="row" id="studentsListRow">
+            <!-- 學生名單動態生成 -->
         </div>
         
-        <div class="container">
-            <div class="text-center mt-4">
-                <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>返回首頁</a>
-            </div>
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>返回首頁</a>
         </div>
     </div>
     <script>
@@ -434,13 +443,19 @@
     }
 
     // 動態生成學生名單
-    function renderStudentList() {
+    function renderStudentList(selectedClass = 'all') {
         const row = document.getElementById('studentsListRow');
         row.innerHTML = ''; // 清空現有內容
         
         studentsData.forEach(cls => {
+            // 如果選擇了特定班級且不匹配，則跳過
+            if (selectedClass !== 'all' && cls.class !== selectedClass) {
+                return;
+            }
+            
             const col = document.createElement('div');
             col.className = 'col-lg-2 col-md-4 col-6 student-list-col';
+            col.setAttribute('data-class', cls.class);
             col.innerHTML = `<div class="class-title">${cls.class}</div>`;
             cls.students.forEach(stu => {
                 const photoSrc = stu.photo && stu.photo !== '' ? stu.photo : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+';
@@ -455,10 +470,38 @@
             row.appendChild(col);
         });
     }
+    
+    // 生成班級篩選按鈕
+    function renderClassFilter() {
+        const filterContainer = document.getElementById('classFilter');
+        studentsData.forEach(cls => {
+            const button = document.createElement('button');
+            button.className = 'btn btn-outline-primary btn-sm';
+            button.setAttribute('data-class', cls.class);
+            button.innerHTML = `<i class="fas fa-graduation-cap me-1"></i>${cls.class}`;
+            button.onclick = function() {
+                // 更新按鈕狀態
+                filterContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 重新渲染學生名單
+                renderStudentList(cls.class);
+            };
+            filterContainer.appendChild(button);
+        });
+    }
 
     // 初始化頁面
     loadStudentPhotos();
+    renderClassFilter();
     renderStudentList();
+    
+    // 綁定全部班級按鈕
+    document.querySelector('[data-class="all"]').onclick = function() {
+        document.getElementById('classFilter').querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        renderStudentList('all');
+    };
     
     // 監聽 localStorage 變化，即時更新相片
     window.addEventListener('storage', function(e) {
@@ -500,41 +543,19 @@
         window.location.href = `student-zone.html?id=${id}`;
     }
     
-    // 手機拖拉優化
+    // 手機優化 - 添加觸控反饋
     document.addEventListener('DOMContentLoaded', function() {
-        const container = document.querySelector('.container-fluid');
-        if (container) {
-            let isScrolling = false;
-            let startX = 0;
-            let scrollLeft = 0;
-            
-            container.addEventListener('touchstart', function(e) {
-                isScrolling = true;
-                startX = e.touches[0].pageX - container.offsetLeft;
-                scrollLeft = container.scrollLeft;
+        // 為學生照片添加觸控反饋
+        const studentPhotos = document.querySelectorAll('.student-photo');
+        studentPhotos.forEach(photo => {
+            photo.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
             });
             
-            container.addEventListener('touchmove', function(e) {
-                if (!isScrolling) return;
-                e.preventDefault();
-                const x = e.touches[0].pageX - container.offsetLeft;
-                const walk = (x - startX) * 2;
-                container.scrollLeft = scrollLeft - walk;
+            photo.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
             });
-            
-            container.addEventListener('touchend', function() {
-                isScrolling = false;
-            });
-        }
-        
-        // 隱藏拖拉提示
-        setTimeout(() => {
-            const hint = document.querySelector('.scroll-hint');
-            if (hint) {
-                hint.style.opacity = '0';
-                setTimeout(() => hint.remove(), 1000);
-            }
-        }, 5000);
+        });
     });
     </script>
 </body>
