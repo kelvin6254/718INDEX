@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影片上傳系統部署指南</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #f5f6fa; font-family: 'Microsoft JhengHei', Arial, sans-serif; }
+        .guide-card { background: white; border-radius: 12px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .code-block { background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; }
+        .step-number { display: inline-block; width: 30px; height: 30px; background: #2339d6; color: white; border-radius: 50%; text-align: center; line-height: 30px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">
+            <i class="fas fa-rocket me-2"></i>影片上傳系統部署指南
+        </h1>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-cloud me-2"></i>第一步：雲端服務設定</h3>
+            
+            <h5>1.1 AWS S3 設定</h5>
+            <ol>
+                <li>註冊 AWS 帳號</li>
+                <li>建立 S3 儲存桶</li>
+                <li>設定 CORS 政策</li>
+                <li>建立 IAM 用戶和存取金鑰</li>
+            </ol>
+            
+            <h5>1.2 MongoDB Atlas 設定</h5>
+            <ol>
+                <li>註冊 MongoDB Atlas 帳號</li>
+                <li>建立資料庫叢集</li>
+                <li>建立資料庫用戶</li>
+                <li>取得連接字串</li>
+            </ol>
+            
+            <h5>1.3 環境變數設定</h5>
+            <div class="code-block">
+# .env 檔案<br>
+AWS_ACCESS_KEY_ID=your_aws_access_key<br>
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key<br>
+AWS_REGION=ap-southeast-1<br>
+S3_BUCKET_NAME=your-bucket-name<br>
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/jump-rope-app<br>
+NODE_ENV=production<br>
+PORT=3000
+            </div>
+        </div>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-server me-2"></i>第二步：伺服器部署</h3>
+            
+            <h5>2.1 使用 Heroku 部署（推薦新手）</h5>
+            <div class="code-block">
+# 安裝 Heroku CLI<br>
+npm install -g heroku<br><br>
+
+# 登入 Heroku<br>
+heroku login<br><br>
+
+# 建立 Heroku 應用<br>
+heroku create your-app-name<br><br>
+
+# 設定環境變數<br>
+heroku config:set AWS_ACCESS_KEY_ID=your_key<br>
+heroku config:set AWS_SECRET_ACCESS_KEY=your_secret<br>
+heroku config:set S3_BUCKET_NAME=your_bucket<br>
+heroku config:set MONGODB_URI=your_mongodb_uri<br><br>
+
+# 部署應用<br>
+git add .<br>
+git commit -m "Initial deployment"<br>
+git push heroku main
+            </div>
+            
+            <h5>2.2 使用 AWS EC2 部署</h5>
+            <ol>
+                <li>啟動 EC2 實例</li>
+                <li>安裝 Node.js 和 PM2</li>
+                <li>上傳程式碼</li>
+                <li>設定環境變數</li>
+                <li>啟動應用程式</li>
+            </ol>
+            
+            <h5>2.3 使用 Google Cloud Platform</h5>
+            <ol>
+                <li>建立 Compute Engine 實例</li>
+                <li>安裝必要軟體</li>
+                <li>部署應用程式</li>
+                <li>設定負載平衡器</li>
+            </ol>
+        </div>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-database me-2"></i>第三步：資料庫設定</h3>
+            
+            <h5>3.1 MongoDB Atlas 設定</h5>
+            <div class="code-block">
+# 連接字串格式<br>
+mongodb+srv://username:password@cluster.mongodb.net/database-name?retryWrites=true&w=majority<br><br>
+
+# 在程式碼中使用<br>
+mongoose.connect(process.env.MONGODB_URI, {<br>
+  useNewUrlParser: true,<br>
+  useUnifiedTopology: true<br>
+});
+            </div>
+            
+            <h5>3.2 資料庫備份</h5>
+            <ul>
+                <li>設定自動備份</li>
+                <li>定期匯出資料</li>
+                <li>監控資料庫效能</li>
+            </ul>
+        </div>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-shield-alt me-2"></i>第四步：安全設定</h3>
+            
+            <h5>4.1 SSL 憑證</h5>
+            <div class="code-block">
+# 使用 Let's Encrypt<br>
+sudo apt-get install certbot<br>
+sudo certbot --nginx -d yourdomain.com<br><br>
+
+# 或使用 Heroku 自動 SSL<br>
+heroku certs:auto:enable
+            </div>
+            
+            <h5>4.2 防火牆設定</h5>
+            <ul>
+                <li>只開放必要端口</li>
+                <li>設定 IP 白名單</li>
+                <li>監控異常存取</li>
+            </ul>
+            
+            <h5>4.3 環境變數安全</h5>
+            <ul>
+                <li>不要在程式碼中硬編碼敏感資訊</li>
+                <li>使用環境變數管理設定</li>
+                <li>定期更換金鑰</li>
+            </ul>
+        </div>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-cogs me-2"></i>第五步：監控和維護</h3>
+            
+            <h5>5.1 應用程式監控</h5>
+            <ul>
+                <li>使用 PM2 管理 Node.js 程序</li>
+                <li>設定日誌記錄</li>
+                <li>監控伺服器資源使用</li>
+                <li>設定錯誤警報</li>
+            </ul>
+            
+            <h5>5.2 效能優化</h5>
+            <ul>
+                <li>啟用 Gzip 壓縮</li>
+                <li>設定快取策略</li>
+                <li>使用 CDN 加速影片傳輸</li>
+                <li>優化資料庫查詢</li>
+            </ul>
+            
+            <h5>5.3 備份策略</h5>
+            <ul>
+                <li>定期備份資料庫</li>
+                <li>備份 S3 影片檔案</li>
+                <li>測試恢復程序</li>
+                <li>建立災難恢復計劃</li>
+            </ul>
+        </div>
+        
+        <div class="guide-card">
+            <h3><i class="fas fa-globe me-2"></i>第六步：域名和 DNS</h3>
+            
+            <h5>6.1 域名設定</h5>
+            <ol>
+                <li>購買域名（如：jump-rope-app.com）</li>
+                <li>設定 DNS 記錄</li>
+                <li>指向您的伺服器 IP</li>
+                <li>設定 SSL 憑證</li>
+            </ol>
+            
+            <h5>6.2 前端整合</h5>
+            <div class="code-block">
+// 修改前端 API 呼叫<br>
+const API_BASE_URL = 'https://your-domain.com';<br><br>
+
+async function uploadVideoToServer(studentId, videoFile, description) {<br>
+  const formData = new FormData();<br>
+  formData.append('video', videoFile);<br>
+  formData.append('studentId', studentId);<br>
+  formData.append('description', description);<br><br>
+  
+  const response = await fetch(`${API_BASE_URL}/api/upload-video`, {<br>
+    method: 'POST',<br>
+    body: formData<br>
+  });<br><br>
+  
+  return response.json();<br>
+}
+            </div>
+        </div>
+        
+        <div class="alert alert-success">
+            <h5><i class="fas fa-check-circle me-2"></i>部署檢查清單</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul>
+                        <li>✅ 後端伺服器運行正常</li>
+                        <li>✅ 資料庫連接成功</li>
+                        <li>✅ S3 儲存桶可存取</li>
+                        <li>✅ SSL 憑證有效</li>
+                        <li>✅ 域名設定正確</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul>
+                        <li>✅ 影片上傳功能正常</li>
+                        <li>✅ 老師瀏覽功能正常</li>
+                        <li>✅ 錯誤處理完善</li>
+                        <li>✅ 監控系統運作</li>
+                        <li>✅ 備份機制建立</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-home me-2"></i>返回首頁
+            </a>
+            <a href="video-upload-solution.html" class="btn btn-success btn-lg">
+                <i class="fas fa-video me-2"></i>查看完整解決方案
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

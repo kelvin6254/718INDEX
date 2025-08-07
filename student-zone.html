@@ -1080,6 +1080,86 @@
         }
     }
     
+    // 上傳影片到伺服器
+    async function uploadVideoToServer(studentId, videoFile, description) {
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        formData.append('studentId', studentId);
+        formData.append('description', description);
+        
+        try {
+            // 檢查伺服器是否可用
+            const healthCheck = await fetch('http://localhost:3000/api/health');
+            if (!healthCheck.ok) {
+                throw new Error('伺服器連線失敗，請確認後端服務是否啟動');
+            }
+            
+            const response = await fetch('http://localhost:3000/api/upload-video', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || '上傳失敗');
+            }
+            
+            const result = await response.json();
+            if (result.success) {
+                console.log('✅ 影片上傳成功:', result.videoUrl);
+                return result.videoUrl;
+            } else {
+                throw new Error(result.error || '上傳失敗');
+            }
+        } catch (error) {
+            console.error('❌ 上傳失敗:', error);
+            throw error;
+        }
+    }
+    
+    // 從伺服器取得影片列表
+    async function getVideosFromServer(studentId = null) {
+        try {
+            const url = studentId 
+                ? `http://localhost:3000/api/videos/student/${studentId}`
+                : 'http://localhost:3000/api/videos';
+            
+            const response = await fetch(url);
+            const videos = await response.json();
+            return videos;
+        } catch (error) {
+            console.error('取得影片失敗:', error);
+            return [];
+        }
+    }
+    
+    // 老師審核影片
+    async function reviewVideo(videoId, status, comment, teacherId) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/videos/${videoId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status,
+                    comment,
+                    teacherId
+                })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                return result.video;
+            } else {
+                throw new Error(result.error || '審核失敗');
+            }
+        } catch (error) {
+            console.error('審核失敗:', error);
+            throw error;
+        }
+    }
+    
     // 模擬伺服器儲存 (實際應用中會上傳到真實伺服器)
     function saveToServerStorage(studentId, videoRecord) {
         // 這裡可以加入實際的伺服器上傳邏輯
@@ -1314,7 +1394,7 @@
             // 家長上傳影片
     const uploadForm = document.getElementById('selfStudyUploadForm');
     if (uploadForm) {
-        uploadForm.onsubmit = function(e) {
+        uploadForm.onsubmit = async function(e) {
             e.preventDefault();
             const fileInput = document.getElementById('selfStudyVideo');
             const desc = document.getElementById('selfStudyDesc').value;
@@ -1340,33 +1420,29 @@
             // 顯示上傳中狀態
             document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin me-2"></i>正在上傳影片，請稍候...</div>';
             
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    saveSelfStudyVideo(id, evt.target.result, desc, new Date().toISOString().slice(0,10));
-                    document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>影片上傳成功！老師將會盡快審核您的影片。</div>';
-                    uploadForm.reset();
-                    renderVideoFeedbackSection(id);
-                    
-                    // 3秒後隱藏成功訊息
-                    setTimeout(() => {
-                        const msgElement = document.getElementById('selfStudyUploadMsg');
-                        if (msgElement) {
-                            msgElement.innerHTML = '';
-                        }
-                    }, 3000);
-                    
-                } catch (error) {
-                    console.error('影片上傳失敗:', error);
-                    document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>影片上傳失敗，請重試</div>';
-                }
-            };
-            
-            reader.onerror = function() {
-                document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>檔案讀取失敗，請重試</div>';
-            };
-            
-            reader.readAsDataURL(file);
+            try {
+                // 上傳到伺服器
+                const videoUrl = await uploadVideoToServer(id, file, desc);
+                
+                // 儲存到本地（作為備份）
+                saveSelfStudyVideo(id, videoUrl, desc, new Date().toISOString().slice(0,10));
+                
+                document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>影片上傳成功！老師將會盡快審核您的影片。</div>';
+                uploadForm.reset();
+                renderVideoFeedbackSection(id);
+                
+                // 3秒後隱藏成功訊息
+                setTimeout(() => {
+                    const msgElement = document.getElementById('selfStudyUploadMsg');
+                    if (msgElement) {
+                        msgElement.innerHTML = '';
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.error('影片上傳失敗:', error);
+                document.getElementById('selfStudyUploadMsg').innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>影片上傳失敗：' + error.message + '</div>';
+            }
         };
     }
         // 初始渲染
