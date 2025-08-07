@@ -1,0 +1,84 @@
+{
+  "name": "跳繩平台",
+  "short_name": "跳繩平台",
+  "description": "基督教中國佈道會聖道學校跳繩平台 - 學生跳繩成績管理系統",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-HK",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiByeD0iMTQiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTM2IDEyQzI5LjM3IDEyIDI0IDE3LjM3IDI0IDI0YzAgNC4xOCAyLjEyIDcuODggNS4zNCA5LjE0TDM2IDUybDYuNjYtMTguODZDMzUuODggMzEuODggMzggMjguMTggMzggMjRjMC02LjYzLTUuMzctMTItMTItMTJ6IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=",
+      "sizes": "72x72",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTQ4IDI0QzM5LjE2IDI0IDMyIDMxLjE2IDMyIDQwYzAgNS41NyAyLjgzIDEwLjUxIDcuMTIgMTIuMTlMNDggNjlsOC44OC0yNS4xOEM0Ny4xNyA0Mi41MSA1MCAzNy41NyA1MCA0MGMwLTguODQtNy4xNi0xNi0xNi0xNnoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==",
+      "sizes": "96x96",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iMjYiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTY0IDMyQzUyLjQzIDMyIDQzIDQxLjQzIDQzIDUzYzAgNy40MyAzLjc3IDE0LjAxIDkuNSAxNi4yNUw2NCA5Mmw5LjUtMjIuNzVDNDYuMjMgNTYuOTkgNDIgNTAuNDMgNDIgNTNjMC0xMS41Ny05LjQzLTIxLTIxLTIxeiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjE0NCIgdmlld0JveD0iMCAwIDE0NCAxNDQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNDQiIGhlaWdodD0iMTQ0IiByeD0iMjkiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTcyIDM2QzU4LjUgMzYgNDggNDYuNSA0OCA2MGMwIDkuODYgNS4zIDIwLjAxIDEyLjUgMjIuODVMNzIgMTAzLjVsMTIuNS0yMC42NUM0OS4yMyA4MC4wMSA0NCA2OS44NiA0NCA2MGMwLTEzLjUtMTAuNS0yNC0yNC0yNHoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==",
+      "sizes": "144x144",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgdmlld0JveD0iMCAwIDE1MiAxNTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTIiIGhlaWdodD0iMTUyIiByeD0iMzAiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTc2IDM4QzYwLjU3IDM4IDQ4IDUwLjU3IDQ4IDY2YzAgMTAuNDMgNS42IDIxLjAxIDEzLjIgMjQuMzVMNzYgMTA5LjVsMTMuMi0xOS4xNUM0OS4yMyA4Ny4wMSA0MyA3Ni40MyA0MyA2NmMwLTE1LjQzLTEyLjU3LTI4LTI4LTI4eiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+      "sizes": "152x152",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMzgiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTk2IDQ4Qzc2LjczIDQ4IDYwIDY0LjczIDYwIDg0YzAgMTMuOTEgNy40NyAyOC4wMSAxNy42IDMyLjQ3TDk2IDE0NmwxNy42LTI5LjUzQzY1LjYzIDExMi4wMSA1OCA5Ny45MSA1OCA4NGMwLTE5LjI3LTE2LjczLTM2LTM2LTM2eiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTAyIiBmaWxsPSIjMjU2M2ViIi8+CjxwYXRoIGQ9Ik0yNTYgMTI4QzE5Mi4xOSAxMjggMTQ0IDE3Ni4xOSAxNDQgMjQwYzAgMzcuMDcgMTkuOTIgNzQuNjcgNDYuOTMgODYuNTNMMjU2IDM4OWw2NS4wNy03OC40N0MyMzYuMDggMjk4LjY3IDIxNiAyNjEuMDcgMjE2IDI0MGMwLTYzLjgxLTQ4LjE5LTExMi0xMTItMTEyeiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["education", "sports", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjZjVmNWY1Ii8+CjxyZWN0IHdpZHRoPSIxMjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMjU2M2ViIi8+Cjx0ZXh0IHg9IjY0MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuWkqeaWr+WbvueJhzwvdGV4dD4KPHJlY3QgeD0iNjQiIHk9IjEwMCIgd2lkdGg9IjExNTIiIGhlaWdodD0iNTIwIiByeD0iMTIiIGZpbGw9IndoaXRlIi8+Cjx0ZXh0IHg9IjY0MCIgeT0iMTgwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzIiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuWkqeaWr+WbvueJh+WbvueJhzwvdGV4dD4KPC9zdmc+",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "學生名單",
+      "short_name": "學生名單",
+      "description": "查看全校學生名單",
+      "url": "/students-list.html",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTQ4IDI0QzM5LjE2IDI0IDMyIDMxLjE2IDMyIDQwYzAgNS41NyAyLjgzIDEwLjUxIDcuMTIgMTIuMTlMNDggNjlsOC44OC0yNS4xOEM0Ny4xNyA0Mi41MSA1MCAzNy41NyA1MCA0MGMwLTguODQtNy4xNi0xNi0xNi0xNnoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "相片匯入",
+      "short_name": "相片匯入",
+      "description": "匯入學生相片",
+      "url": "/student-photo-import.html",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMyNTYzZWIiLz4KPHBhdGggZD0iTTQ4IDI0QzM5LjE2IDI0IDMyIDMxLjE2IDMyIDQwYzAgNS41NyAyLjgzIDEwLjUxIDcuMTIgMTIuMTlMNDggNjlsOC44OC0yNS4xOEM0Ny4xNyA0Mi41MSA1MCAzNy41NyA1MCA0MGMwLTguODQtNy4xNi0xNi0xNi0xNnoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 

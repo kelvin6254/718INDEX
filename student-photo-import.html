@@ -11,6 +11,7 @@
         .header { background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); color: white; padding: 2rem 0; text-align: center; }
         .upload-area { border: 3px dashed #2563eb; border-radius: 15px; padding: 3rem; text-align: center; background: #f8fafc; transition: all 0.3s ease; cursor: pointer; }
         .upload-area:hover { border-color: #1e3a8a; background: #e3edfa; }
+        .upload-area.dragover { border-color: #059669; background: #d1fae5; transform: scale(1.02); }
         .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem; }
         .student-card { background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
         .student-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #3b82f6; margin-bottom: 0.5rem; }
@@ -37,6 +38,17 @@
             <button class="btn btn-primary btn-custom" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-folder-open me-2"></i>選擇檔案
             </button>
+            <div class="mt-3">
+                <small class="text-muted">
+                    <strong>檔案命名建議：</strong><br>
+                    • 趙靖昕.jpg<br>
+                    • IMG_001_趙靖昕.jpg<br>
+                    • photo-羅諭琦-2024.jpg<br>
+                    • 學生照片_黃樂源.png<br>
+                    • Ali.jpg (英文姓名)<br>
+                    • IMG_Ali_001.jpg (英文姓名)
+                </small>
+            </div>
         </div>
         <div class="action-buttons">
             <button class="btn btn-primary btn-custom" onclick="autoMatchPhotos()">
@@ -45,28 +57,248 @@
             <button class="btn btn-info btn-custom" onclick="forceSync()">
                 <i class="fas fa-sync me-2"></i>強制同步
             </button>
+            <button class="btn btn-warning btn-custom" onclick="clearAllPhotos()">
+                <i class="fas fa-trash me-2"></i>清除所有相片
+            </button>
+            <button class="btn btn-secondary btn-custom" onclick="checkDuplicatePhotos()">
+                <i class="fas fa-search me-2"></i>檢查重複相片
+            </button>
+            <button class="btn btn-success btn-custom" onclick="manualSave()">
+                <i class="fas fa-save me-2"></i>手動儲存
+            </button>
+            <button class="btn btn-outline-info btn-custom" onclick="testFileNameMatching()">
+                <i class="fas fa-vial me-2"></i>測試檔案名稱匹配
+            </button>
+            <button class="btn btn-outline-warning btn-custom" onclick="checkAvailableStudents()">
+                <i class="fas fa-users me-2"></i>檢查可配對學生
+            </button>
+            <button class="btn btn-outline-danger btn-custom" onclick="forceRematch()">
+                <i class="fas fa-redo me-2"></i>強制重新匹配
+            </button>
+        </div>
+        <div class="text-center mb-3">
+            <div class="badge bg-success fs-6" id="photoStats">
+                <i class="fas fa-camera me-2"></i>載入中...
+            </div>
         </div>
         <div class="student-grid" id="studentGrid"></div>
     </div>
     <script>
-        // 直接複製 students-list.html 的 studentsData 與自動補 id
+        // 完整的學生資料，包含全校學生
         const studentsData = [
-            { class: '高中三', students: [
-                { name: '羅諭琦', id: '', photo: '' },
-                { name: '盧諄霖', id: '', photo: '' },
-                { name: '洪俊豪', id: '', photo: '' },
-                { name: '歐陽浩田', id: '', photo: '' },
-                { name: '黎耀駿', id: '', photo: '' },
-                { name: '伍康舜', id: '', photo: '' },
-                { name: '施汪濤', id: '', photo: '' },
-                { name: '郭鈞焯', id: '', photo: '' },
-                { name: 'Ali', id: '', photo: '' },
-                { name: '丁嘉瑩', id: '', photo: '' },
-                { name: '白樂天', id: '', photo: '' },
-                { name: '朱耀鋒', id: '', photo: '' },
-                { name: 'Inderveer', id: '', photo: '' }
+            {
+                class: '高中三',
+                students: [
+                    { name: '羅諭琦', id: '', photo: '' },
+                    { name: '盧諄霖', id: '', photo: '' },
+                    { name: '洪俊豪', id: '', photo: '' },
+                    { name: '歐陽浩田', id: '', photo: '' },
+                    { name: '黎耀駿', id: '', photo: '' },
+                    { name: '伍康舜', id: '', photo: '' },
+                    { name: '施汪濤', id: '', photo: '' },
+                    { name: '郭鈞焯', id: '', photo: '' },
+                    { name: 'Ali', id: '', photo: '' },
+                    { name: '丁嘉瑩', id: '', photo: '' },
+                    { name: '白樂天', id: '', photo: '' },
+                    { name: '朱耀鋒', id: '', photo: '' },
+                    { name: 'Inderveer', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '高中二',
+                students: [
+                    { name: '黃樂源', id: '', photo: '' },
+                    { name: '吳凱婷', id: '', photo: '' },
+                    { name: 'Sudais', id: '', photo: '' },
+                    { name: '歐陽芷穎', id: '', photo: '' },
+                    { name: '伍浩霖', id: '', photo: '' },
+                    { name: '李信楠', id: '', photo: '' },
+                    { name: '陳成鑫', id: '', photo: '' },
+                    { name: '張善婷', id: '', photo: '' },
+                    { name: '梁毅韜', id: '', photo: '' },
+                    { name: '林建廷', id: '', photo: '' },
+                    { name: 'Alvin', id: '', photo: '' },
+                    { name: '吳漢棋', id: '', photo: '' },
+                    { name: '黃仲恒', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '高中一',
+                students: [
+                    { name: '余明亮', id: '', photo: '' },
+                    { name: '葉海澄', id: '', photo: '' },
+                    { name: '李心悅', id: '', photo: '' },
+                    { name: '黃心怡', id: '', photo: '' },
+                    { name: '梅昕晴', id: '', photo: '' },
+                    { name: '朱穎心', id: '', photo: '' },
+                    { name: '蘇南燊', id: '', photo: '' },
+                    { name: '王弘希', id: '', photo: '' },
+                    { name: '鄭凱文', id: '', photo: '' },
+                    { name: '陳昱均', id: '', photo: '' },
+                    { name: '唐梓珊', id: '', photo: '' },
+                    { name: '巫曉峰', id: '', photo: '' },
+                    { name: '林思恒', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '初中四',
+                students: [
+                    { name: '周晉琛', id: '', photo: '' },
+                    { name: '陳澔亮', id: '', photo: '' },
+                    { name: '葉芷汝', id: '', photo: '' },
+                    { name: '林家朗', id: '', photo: '' },
+                    { name: '關祈章', id: '', photo: '' },
+                    { name: '洪宇軒', id: '', photo: '' },
+                    { name: '鍾政希', id: '', photo: '' },
+                    { name: '蔡芷宜', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '初中三',
+                students: [
+                    { name: '麥梓淳', id: '', photo: '' },
+                    { name: '鄧旨媃', id: '', photo: '' },
+                    { name: '吳諾暉', id: '', photo: '' },
+                    { name: '許家晞', id: '', photo: '' },
+                    { name: '謝易男', id: '', photo: '' },
+                    { name: '林詩彤', id: '', photo: '' },
+                    { name: '謝嘉謙', id: '', photo: '' },
+                    { name: '梁珀源', id: '', photo: '' },
+                    { name: '張凱祺', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '初中二',
+                students: [
+                    { name: '蔡濠名', id: '', photo: '' },
+                    { name: '許浚銘', id: '', photo: '' },
+                    { name: '賴浚棋', id: '', photo: '' },
+                    { name: '楊臻一', id: '', photo: '' },
+                    { name: '陳進浩', id: '', photo: '' },
+                    { name: '黃崇康', id: '', photo: '' },
+                    { name: '韓俊希', id: '', photo: '' },
+                    { name: '梁心悠', id: '', photo: '' },
+                    { name: '謝梓健', id: '', photo: '' }
+                ]
+            },
+            {
+                class: '初中一',
+                students: [
+                    { name: '許逸峰', id: '', photo: '' },
+                    { name: '林宏晉', id: '', photo: '' },
+                    { name: '錢寶存', id: '', photo: '' },
+                    { name: '雲語嫣', id: '', photo: '' },
+                    { name: '李澤民', id: '', photo: '' },
+                    { name: '陳穎朗', id: '', photo: '' },
+                    { name: '黃逸朗', id: '', photo: '' },
+                    { name: '張倩瑜', id: '', photo: '' },
+                    { name: '盧佩儀', id: '', photo: '' },
+                    { name: '袁培琋', id: '', photo: '' }
+                ]
+            },
+            { class: '高小五', students: [
+                { name: '高烯瑜', id: '', photo: '' },
+                { name: '陳傲雲', id: '', photo: '' },
+                { name: '黎溢鉦', id: '', photo: '' },
+                { name: '林詩藍', id: '', photo: '' },
+                { name: '周奕朗', id: '', photo: '' },
+                { name: '林銳添', id: '', photo: '' },
+                { name: '丁翰鏐', id: '', photo: '' },
+                { name: '吳卓鏗', id: '', photo: '' },
+                { name: '汪俊睎', id: '', photo: '' },
+                { name: '文恩祈', id: '', photo: '' },
+                { name: '陳旨軒', id: '', photo: '' },
+                { name: '張嘉兒', id: '', photo: '' }
             ] },
-            // ... 其餘班級 ...
+            { class: '高小四', students: [
+                { name: '鄧祈佑', id: '', photo: '' },
+                { name: '賴焯熹', id: '', photo: '' },
+                { name: '黃子軒', id: '', photo: '' },
+                { name: '梁茜程', id: '', photo: '' },
+                { name: '黃泳鈺', id: '', photo: '' },
+                { name: '沈柏熹', id: '', photo: '' },
+                { name: '吳梓城', id: '', photo: '' }
+            ] },
+            { class: '高小三', students: [
+                { name: '方君睿', id: '', photo: '' },
+                { name: '麥浩敏', id: '', photo: '' },
+                { name: '李雨蕊', id: '', photo: '' },
+                { name: '余蒂峰', id: '', photo: '' },
+                { name: '楊洛謙', id: '', photo: '' },
+                { name: '林子竣', id: '', photo: '' },
+                { name: '馮樂宏', id: '', photo: '' },
+                { name: '謝韶謙', id: '', photo: '' }
+            ] },
+            { class: '高小二', students: [
+                { name: '梁晉銘', id: '', photo: '' },
+                { name: '徐子淳', id: '', photo: '' },
+                { name: '伍珖灳', id: '', photo: '' },
+                { name: '曾業淳', id: '', photo: '' },
+                { name: '方子仁', id: '', photo: '' },
+                { name: '陳衍叡', id: '', photo: '' },
+                { name: '韓鎮聰', id: '', photo: '' },
+                { name: '馮鎮泓', id: '', photo: '' },
+                { name: '張逸朗', id: '', photo: '' }
+            ] },
+            { class: '高小一', students: [
+                { name: '林熙程', id: '', photo: '' },
+                { name: '李俊熹', id: '', photo: '' },
+                { name: '潘彥旭', id: '', photo: '' },
+                { name: '劉子龍', id: '', photo: '' },
+                { name: '倪灝', id: '', photo: '' },
+                { name: '陳泳霖', id: '', photo: '' },
+                { name: '潘彥東', id: '', photo: '' }
+            ] },
+            { class: '初小四', students: [
+                { name: '蔡澤銘', id: '', photo: '' },
+                { name: '鍾嘉諾', id: '', photo: '' },
+                { name: '譚詠殷', id: '', photo: '' },
+                { name: '鄺芷瑩', id: '', photo: '' },
+                { name: '李卓霖', id: '', photo: '' },
+                { name: '蕭洛希', id: '', photo: '' },
+                { name: '李柏言', id: '', photo: '' },
+                { name: '趙靖昕', id: '', photo: '' },
+                { name: '歐知穎', id: '', photo: '' },
+                { name: '劉星座', id: '', photo: '' },
+                { name: '黃渝婷', id: '', photo: '' }
+            ] },
+            { class: '初小三', students: [
+                { name: '林澤星', id: '', photo: '' },
+                { name: '李高略', id: '', photo: '' },
+                { name: '羅年洲', id: '', photo: '' },
+                { name: '施宇軒', id: '', photo: '' },
+                { name: '陳學禮', id: '', photo: '' },
+                { name: '曾溢知', id: '', photo: '' },
+                { name: '陳家溱', id: '', photo: '' },
+                { name: '蔡瀚毅', id: '', photo: '' },
+                { name: '楊凱琳', id: '', photo: '' },
+                { name: '龍正罡', id: '', photo: '' }
+            ] },
+            { class: '初小二', students: [
+                { name: '張濬霖', id: '', photo: '' },
+                { name: '梁誠軒', id: '', photo: '' },
+                { name: '唐鎧滔', id: '', photo: '' },
+                { name: 'OLIVIA (NCS)', id: '', photo: '' },
+                { name: 'WALEED (NCS)', id: '', photo: '' },
+                { name: '梁梓君', id: '', photo: '' },
+                { name: '許明然', id: '', photo: '' },
+                { name: 'AROUSE (NCS)', id: '', photo: '' },
+                { name: '張皓然', id: '', photo: '' },
+                { name: '陳德添', id: '', photo: '' }
+            ] },
+            { class: '初小一', students: [
+                { name: '林梓宇', id: '', photo: '' },
+                { name: '黃梓鈺', id: '', photo: '' },
+                { name: '黃晉豫', id: '', photo: '' },
+                { name: '鄔浩霖', id: '', photo: '' },
+                { name: '林柏言', id: '', photo: '' },
+                { name: '劉佩諭', id: '', photo: '' },
+                { name: '趙柏然', id: '', photo: '' },
+                { name: '劉星宙', id: '', photo: '' },
+                { name: '葉尚樺', id: '', photo: '' },
+                { name: '謝浩縉', id: '', photo: '' },
+                { name: '鍾應笙', id: '', photo: '' }
+            ] }
         ];
         (function assignStudentIds() {
             let idCounter = 1;
@@ -83,47 +315,283 @@
             renderStudentGrid();
             setupEventListeners();
             loadExistingPhotos();
+            
+            // 定期自動儲存（每30秒）
+            setInterval(() => {
+                saveStudentPhotos();
+            }, 30000);
+            
+            // 頁面離開前自動儲存
+            window.addEventListener('beforeunload', () => {
+                saveStudentPhotos();
+            });
+            
+            // 頁面獲得焦點時重新載入資料
+            window.addEventListener('focus', () => {
+                loadExistingPhotos();
+                renderStudentGrid();
+            });
         });
         function setupEventListeners() {
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
-            uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-            uploadArea.addEventListener('dragleave', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
-            uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFileUpload(Array.from(e.dataTransfer.files)); });
-            fileInput.addEventListener('change', e => { handleFileUpload(Array.from(e.target.files)); });
+            
+            // 拖拉事件處理
+            uploadArea.addEventListener('dragover', e => { 
+                e.preventDefault(); 
+                e.stopPropagation();
+                uploadArea.classList.add('dragover'); 
+            });
+            
+            uploadArea.addEventListener('dragenter', e => {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', e => { 
+                e.preventDefault(); 
+                e.stopPropagation();
+                // 只有當離開上傳區域時才移除樣式
+                if (!uploadArea.contains(e.relatedTarget)) {
+                    uploadArea.classList.remove('dragover'); 
+                }
+            });
+            
+            uploadArea.addEventListener('drop', e => { 
+                e.preventDefault(); 
+                e.stopPropagation();
+                uploadArea.classList.remove('dragover'); 
+                
+                const files = Array.from(e.dataTransfer.files);
+                console.log('拖拉檔案:', files);
+                handleFileUpload(files);
+            });
+            
+            // 檔案選擇事件
+            fileInput.addEventListener('change', e => { 
+                const files = Array.from(e.target.files);
+                console.log('選擇檔案:', files);
+                handleFileUpload(files);
+                // 清空 input 值，允許重複選擇相同檔案
+                e.target.value = '';
+            });
+            
+            // 點擊上傳區域觸發檔案選擇
+            uploadArea.addEventListener('click', (e) => {
+                // 避免與拖拉事件衝突
+                if (e.target === uploadArea || uploadArea.contains(e.target)) {
+                    fileInput.click();
+                }
+            });
+            
+            // 防止整個頁面的拖拉事件干擾
+            document.addEventListener('dragover', e => e.preventDefault());
+            document.addEventListener('drop', e => e.preventDefault());
         }
         function handleFileUpload(files) {
             const imageFiles = files.filter(file => file.type.startsWith('image/'));
-            if (imageFiles.length === 0) { alert('請選擇圖片檔案'); return; }
+            if (imageFiles.length === 0) { 
+                alert('請選擇圖片檔案（支援 JPG、PNG、GIF 等格式）'); 
+                return; 
+            }
+            
+            console.log(`上傳了 ${imageFiles.length} 個圖片檔案`);
+            
             // 自動匹配
+            let processedCount = 0;
             let matched = 0;
-            imageFiles.forEach(file => {
+            let unmatchedFiles = [];
+            let errors = [];
+            
+            // 顯示處理中提示
+            const processingDiv = document.createElement('div');
+            processingDiv.id = 'processingDiv';
+            processingDiv.innerHTML = `
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-spinner fa-spin me-2"></i>正在處理 ${imageFiles.length} 個檔案...
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">檔案名稱清理範例：</small><br>
+                    <small class="text-muted">IMG_001_趙靖昕.jpg → 趙靖昕</small><br>
+                    <small class="text-muted">photo-羅諭琦-2024.jpg → 羅諭琦</small>
+                </div>
+            `;
+            document.querySelector('.container').insertBefore(processingDiv, document.getElementById('studentGrid'));
+            
+            imageFiles.forEach((file, index) => {
                 const reader = new FileReader();
+                
                 reader.onload = function(e) {
-                    // 根據檔名自動匹配學生
-                    const fileName = file.name.toLowerCase();
-                    let found = false;
-                    studentsData.forEach(cls => {
-                        cls.students.forEach(stu => {
-                            if (!stu.photo) {
-                                const stuName = stu.name.toLowerCase();
-                                if (fileName.includes(stuName) || fileName.includes(stuName.replace(/\s+/g, ''))) {
-                                    stu.photo = e.target.result;
-                                    matched++;
-                                    found = true;
+                    try {
+                        // 根據檔名自動匹配學生
+                        const fileName = file.name.toLowerCase();
+                        let bestMatch = null;
+                        let bestMatchScore = 0;
+                        
+                        // 找到最佳匹配的學生
+                        studentsData.forEach(cls => {
+                            cls.students.forEach(stu => {
+                                if (!stu.photo) {
+                                    const stuName = stu.name.toLowerCase();
+                                    let matchScore = 0;
+                                    let matchType = '';
+                                    
+                                    // 清理檔案名稱（移除副檔名和常見前綴）
+                                    const cleanFileName = fileName
+                                        .replace(/\.(jpg|jpeg|png|gif|bmp|webp)$/i, '') // 移除副檔名
+                                        .replace(/^(img_|dsc_|photo_|pic_|image_)/i, '') // 移除常見前綴
+                                        .replace(/[_\-\s]+/g, '') // 移除底線、連字號、空格
+                                        .replace(/[0-9]+/g, ''); // 移除數字
+                                    
+                                    // 清理學生姓名
+                                    const cleanStuName = stuName
+                                        .replace(/\s+/g, '') // 移除空格
+                                        .replace(/[^\u4e00-\u9fa5a-zA-Z]/g, ''); // 只保留中英文字符
+                                    
+                                    // 多種匹配策略
+                                    if (cleanFileName.includes(cleanStuName)) {
+                                        matchScore = cleanStuName.length * 10; // 完整姓名匹配，最高分
+                                        matchType = '完整姓名';
+                                    } else if (fileName.includes(stuName)) {
+                                        matchScore = stuName.length * 8; // 原始姓名匹配
+                                        matchType = '原始姓名';
+                                    } else if (fileName.includes(stuName.replace(/\s+/g, ''))) {
+                                        matchScore = stuName.replace(/\s+/g, '').length * 6; // 無空格匹配
+                                        matchType = '無空格姓名';
+                                    } else if (fileName.includes(stuName.replace(/[^\u4e00-\u9fa5]/g, ''))) {
+                                        matchScore = stuName.replace(/[^\u4e00-\u9fa5]/g, '').length * 4; // 只中文字符匹配
+                                        matchType = '中文字符';
+                                    } else if (cleanStuName.length <= 4 && cleanFileName.includes(cleanStuName)) {
+                                        // 短英文姓名特殊處理（如 Ali, Alvin）
+                                        matchScore = cleanStuName.length * 12; // 短英文姓名最高分
+                                        matchType = '短英文姓名';
+                                    } else if (cleanStuName.length <= 4 && fileName.toLowerCase().includes(cleanStuName.toLowerCase())) {
+                                        // 短英文姓名不區分大小寫匹配
+                                        matchScore = cleanStuName.length * 11;
+                                        matchType = '短英文姓名(不區分大小寫)';
+                                    } else {
+                                        // 嘗試部分匹配（至少2個字符，對英文姓名更寬鬆）
+                                        const minLength = cleanStuName.length <= 4 ? 2 : 3;
+                                        for (let i = minLength; i <= cleanStuName.length; i++) {
+                                            for (let j = 0; j <= cleanStuName.length - i; j++) {
+                                                const part = cleanStuName.substring(j, j + i);
+                                                if (cleanFileName.includes(part)) {
+                                                    const score = part.length * 2;
+                                                    if (score > matchScore) {
+                                                        matchScore = score;
+                                                        matchType = `部分匹配(${part})`;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    // 如果找到更好的匹配，更新最佳匹配
+                                    if (matchScore > bestMatchScore) {
+                                        bestMatchScore = matchScore;
+                                        bestMatch = stu;
+                                        bestMatch.matchType = matchType;
+                                    }
                                 }
-                            }
+                            });
                         });
-                    });
+                        
+                        if (bestMatch && bestMatchScore > 0) {
+                            bestMatch.photo = e.target.result;
+                            matched++;
+                            console.log(`匹配成功：${file.name} -> ${bestMatch.name} (分數: ${bestMatchScore}, 類型: ${bestMatch.matchType})`);
+                        } else {
+                            unmatchedFiles.push(file.name);
+                            console.log(`無法匹配：${file.name}`);
+                        }
+                        
+                        // 立即儲存和更新
+                        saveStudentPhotos();
+                        renderStudentGrid();
+                        
+                    } catch (error) {
+                        console.error('處理檔案時發生錯誤:', error);
+                        errors.push(file.name);
+                    }
+                    
+                    processedCount++;
+                    
+                    // 更新處理進度
+                    if (processingDiv) {
+                        processingDiv.innerHTML = `
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-spinner fa-spin me-2"></i>已處理 ${processedCount}/${imageFiles.length} 個檔案...
+                            </div>
+                        `;
+                    }
+                    
+                    // 所有檔案處理完成
+                    if (processedCount === imageFiles.length) {
+                        // 移除處理中提示
+                        if (processingDiv) {
+                            processingDiv.remove();
+                        }
+                        
+                        let message = `已自動匹配 ${matched} 張相片。`;
+                        if (unmatchedFiles.length > 0) {
+                            message += `\n\n無法匹配的檔案：\n${unmatchedFiles.slice(0, 5).join('\n')}`;
+                            if (unmatchedFiles.length > 5) {
+                                message += `\n... 還有 ${unmatchedFiles.length - 5} 個檔案`;
+                            }
+                            message += '\n\n請確保檔案名稱包含學生姓名，或手動點擊學生頭像上傳。';
+                        }
+                        if (errors.length > 0) {
+                            message += `\n\n處理失敗的檔案：\n${errors.join('\n')}`;
+                        }
+                        
+                        alert(message);
+                    }
                 };
+                
+                reader.onerror = function() {
+                    console.error('讀取檔案失敗:', file.name);
+                    errors.push(file.name);
+                    processedCount++;
+                    
+                    if (processedCount === imageFiles.length) {
+                        if (processingDiv) {
+                            processingDiv.remove();
+                        }
+                        alert(`處理完成，但有 ${errors.length} 個檔案讀取失敗。`);
+                    }
+                };
+                
                 reader.readAsDataURL(file);
             });
-            setTimeout(() => {
-                saveStudentPhotos();
-                renderStudentGrid();
-                alert(`已自動匹配 ${matched} 張相片。`);
-            }, 500);
         }
+        function updatePhotoStats() {
+            let totalStudents = 0;
+            let studentsWithPhotos = 0;
+            
+            studentsData.forEach(cls => {
+                cls.students.forEach(student => {
+                    totalStudents++;
+                    if (student.photo && student.photo !== '') {
+                        studentsWithPhotos++;
+                    }
+                });
+            });
+            
+            const statsElement = document.getElementById('photoStats');
+            const percentage = Math.round((studentsWithPhotos / totalStudents) * 100);
+            statsElement.innerHTML = `<i class="fas fa-camera me-2"></i>${studentsWithPhotos}/${totalStudents} 學生已有相片 (${percentage}%)`;
+            
+            // 根據完成度改變顏色
+            if (percentage >= 80) {
+                statsElement.className = 'badge bg-success fs-6';
+            } else if (percentage >= 50) {
+                statsElement.className = 'badge bg-warning fs-6';
+            } else {
+                statsElement.className = 'badge bg-danger fs-6';
+            }
+        }
+        
         function renderStudentGrid() {
             const grid = document.getElementById('studentGrid');
             let html = '';
@@ -142,22 +610,42 @@
                 });
             });
             grid.innerHTML = html;
+            updatePhotoStats();
         }
         function uploadPhotoForStudent(studentId) {
+            const student = findStudentById(studentId);
+            if (!student) {
+                alert('找不到該學生資料');
+                return;
+            }
+            
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
             input.onchange = function(e) {
                 const file = e.target.files[0];
                 if (file) {
+                    // 檢查檔案大小（限制為 5MB）
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('檔案太大，請選擇小於 5MB 的圖片檔案');
+                        return;
+                    }
+                    
+                    // 檢查檔案類型
+                    if (!file.type.startsWith('image/')) {
+                        alert('請選擇圖片檔案');
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        const student = findStudentById(studentId);
-                        if (student) {
-                            student.photo = e.target.result;
-                            saveStudentPhotos();
-                            renderStudentGrid();
-                        }
+                        student.photo = e.target.result;
+                        saveStudentPhotos();
+                        renderStudentGrid();
+                        console.log(`已為 ${student.name} 上傳相片`);
+                    };
+                    reader.onerror = function() {
+                        alert('讀取檔案時發生錯誤，請重試');
                     };
                     reader.readAsDataURL(file);
                 }
@@ -178,33 +666,84 @@
             let totalToMatch = 0;
             studentsData.forEach(cls => { cls.students.forEach(student => { if (!student.photo || student.photo === '') totalToMatch++; }); });
             if (totalToMatch === 0) { alert('所有學生都已有相片！'); return; }
-            studentsData.forEach(cls => {
-                cls.students.forEach(student => {
-                    if (!student.photo || student.photo === '') {
-                        const matchedFile = uploadedFiles.find(file => {
-                            const fileName = file.name.toLowerCase();
+            
+            // 為每個檔案找到最佳匹配的學生
+            uploadedFiles.forEach(file => {
+                const fileName = file.name.toLowerCase();
+                let bestMatch = null;
+                let bestMatchScore = 0;
+                
+                studentsData.forEach(cls => {
+                    cls.students.forEach(student => {
+                        if (!student.photo || student.photo === '') {
                             const studentName = student.name.toLowerCase();
-                            return fileName.includes(studentName) || fileName.includes(studentName.replace(/\s+/g, ''));
-                        });
-                        if (matchedFile) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                student.photo = e.target.result;
-                                matched++;
-                                saveStudentPhotos();
-                                renderStudentGrid();
-                                if (matched === totalToMatch) {
-                                    alert(`自動匹配完成！成功匹配 ${matched} 張相片`);
-                                }
-                            };
-                            reader.readAsDataURL(matchedFile);
+                            let matchScore = 0;
+                            
+                            // 計算匹配分數
+                            if (fileName.includes(studentName)) {
+                                matchScore = studentName.length; // 完整姓名匹配
+                            } else if (fileName.includes(studentName.replace(/\s+/g, ''))) {
+                                matchScore = studentName.replace(/\s+/g, '').length; // 無空格匹配
+                            } else if (fileName.includes(studentName.replace(/[^\u4e00-\u9fa5]/g, ''))) {
+                                matchScore = studentName.replace(/[^\u4e00-\u9fa5]/g, '').length; // 只中文字符匹配
+                            }
+                            
+                            // 如果找到更好的匹配，更新最佳匹配
+                            if (matchScore > bestMatchScore) {
+                                bestMatchScore = matchScore;
+                                bestMatch = student;
+                            }
                         }
-                    }
+                    });
                 });
+                
+                if (bestMatch && bestMatchScore > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        bestMatch.photo = e.target.result;
+                        matched++;
+                        saveStudentPhotos();
+                        renderStudentGrid();
+                        console.log(`自動匹配成功：${file.name} -> ${bestMatch.name} (分數: ${bestMatchScore})`);
+                        
+                        if (matched === totalToMatch) {
+                            alert(`自動匹配完成！成功匹配 ${matched} 張相片`);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
         }
         function saveStudentPhotos() {
-            localStorage.setItem('studentPhotos', JSON.stringify(studentsData));
+            try {
+                localStorage.setItem('studentPhotos', JSON.stringify(studentsData));
+                console.log('相片資料已儲存到 localStorage');
+                
+                // 顯示儲存成功提示（短暫顯示）
+                const saveIndicator = document.getElementById('saveIndicator') || createSaveIndicator();
+                saveIndicator.style.display = 'block';
+                setTimeout(() => {
+                    saveIndicator.style.display = 'none';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('儲存相片資料失敗:', error);
+                alert('儲存失敗！請檢查瀏覽器儲存空間或重新整理頁面。');
+            }
+        }
+        
+        function createSaveIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'saveIndicator';
+            indicator.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed" 
+                     style="top: 20px; right: 20px; z-index: 9999; min-width: 200px;">
+                    <i class="fas fa-save me-2"></i>相片已自動儲存
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.appendChild(indicator);
+            return indicator;
         }
         function loadExistingPhotos() {
             const saved = localStorage.getItem('studentPhotos');
@@ -232,6 +771,208 @@
             saveStudentPhotos();
             renderStudentGrid();
             alert('已強制同步相片資料！\n\n請在其他頁面按 F5 重新整理或切換標籤頁來查看更新。');
+        }
+        
+        function clearAllPhotos() {
+            if (confirm('確定要清除所有學生的相片嗎？此操作無法復原。')) {
+                studentsData.forEach(cls => {
+                    cls.students.forEach(student => {
+                        student.photo = '';
+                    });
+                });
+                saveStudentPhotos();
+                renderStudentGrid();
+                alert('已清除所有學生相片！');
+            }
+        }
+        
+        function checkDuplicatePhotos() {
+            const photoMap = new Map();
+            const duplicates = [];
+            
+            studentsData.forEach(cls => {
+                cls.students.forEach(student => {
+                    if (student.photo && student.photo !== '') {
+                        if (photoMap.has(student.photo)) {
+                            duplicates.push({
+                                photo: student.photo,
+                                students: [photoMap.get(student.photo), student]
+                            });
+                        } else {
+                            photoMap.set(student.photo, student);
+                        }
+                    }
+                });
+            });
+            
+            if (duplicates.length > 0) {
+                let message = `發現 ${duplicates.length} 組重複相片：\n\n`;
+                duplicates.forEach((dup, index) => {
+                    message += `${index + 1}. 相片被分配給：\n`;
+                    dup.students.forEach(stu => {
+                        message += `   - ${stu.name} (${stu.id})\n`;
+                    });
+                    message += '\n';
+                });
+                message += '建議：清除所有相片後重新上傳，或手動為每個學生上傳正確的相片。';
+                alert(message);
+            } else {
+                alert('沒有發現重複相片！');
+            }
+        }
+        
+        function manualSave() {
+            saveStudentPhotos();
+            alert('相片資料已手動儲存！');
+        }
+        
+        function testFileNameMatching() {
+            const testFileName = prompt('請輸入要測試的檔案名稱（例如：IMG_001_趙靖昕.jpg）：');
+            if (!testFileName) return;
+            
+            const fileName = testFileName.toLowerCase();
+            let bestMatch = null;
+            let bestMatchScore = 0;
+            let bestMatchType = '';
+            
+            // 清理檔案名稱
+            const cleanFileName = fileName
+                .replace(/\.(jpg|jpeg|png|gif|bmp|webp)$/i, '')
+                .replace(/^(img_|dsc_|photo_|pic_|image_)/i, '')
+                .replace(/[_\-\s]+/g, '')
+                .replace(/[0-9]+/g, '');
+            
+            studentsData.forEach(cls => {
+                cls.students.forEach(stu => {
+                    const stuName = stu.name.toLowerCase();
+                    let matchScore = 0;
+                    let matchType = '';
+                    
+                    // 清理學生姓名
+                    const cleanStuName = stuName
+                        .replace(/\s+/g, '')
+                        .replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '');
+                    
+                    // 多種匹配策略
+                    if (cleanFileName.includes(cleanStuName)) {
+                        matchScore = cleanStuName.length * 10;
+                        matchType = '完整姓名';
+                    } else if (fileName.includes(stuName)) {
+                        matchScore = stuName.length * 8;
+                        matchType = '原始姓名';
+                    } else if (fileName.includes(stuName.replace(/\s+/g, ''))) {
+                        matchScore = stuName.replace(/\s+/g, '').length * 6;
+                        matchType = '無空格姓名';
+                    } else if (fileName.includes(stuName.replace(/[^\u4e00-\u9fa5]/g, ''))) {
+                        matchScore = stuName.replace(/[^\u4e00-\u9fa5]/g, '').length * 4;
+                        matchType = '中文字符';
+                    } else if (cleanStuName.length <= 4 && cleanFileName.includes(cleanStuName)) {
+                        matchScore = cleanStuName.length * 12;
+                        matchType = '短英文姓名';
+                    } else if (cleanStuName.length <= 4 && fileName.toLowerCase().includes(cleanStuName.toLowerCase())) {
+                        matchScore = cleanStuName.length * 11;
+                        matchType = '短英文姓名(不區分大小寫)';
+                    } else {
+                        // 嘗試部分匹配
+                        const minLength = cleanStuName.length <= 4 ? 2 : 3;
+                        for (let i = minLength; i <= cleanStuName.length; i++) {
+                            for (let j = 0; j <= cleanStuName.length - i; j++) {
+                                const part = cleanStuName.substring(j, j + i);
+                                if (cleanFileName.includes(part)) {
+                                    const score = part.length * 2;
+                                    if (score > matchScore) {
+                                        matchScore = score;
+                                        matchType = `部分匹配(${part})`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (matchScore > bestMatchScore) {
+                        bestMatchScore = matchScore;
+                        bestMatch = stu;
+                        bestMatchType = matchType;
+                    }
+                });
+            });
+            
+            let result = `檔案名稱：${testFileName}\n`;
+            result += `清理後：${cleanFileName}\n\n`;
+            
+            if (bestMatch && bestMatchScore > 0) {
+                result += `✅ 匹配成功！\n`;
+                result += `學生：${bestMatch.name}\n`;
+                result += `分數：${bestMatchScore}\n`;
+                result += `類型：${bestMatchType}`;
+            } else {
+                result += `❌ 無法匹配任何學生\n`;
+                result += `建議：確保檔案名稱包含學生姓名`;
+            }
+            
+            alert(result);
+        }
+        
+        function checkAvailableStudents() {
+            let totalStudents = 0;
+            let studentsWithPhotos = 0;
+            let studentsWithoutPhotos = [];
+            
+            studentsData.forEach(cls => {
+                cls.students.forEach(stu => {
+                    totalStudents++;
+                    if (stu.photo && stu.photo !== '') {
+                        studentsWithPhotos++;
+                    } else {
+                        studentsWithoutPhotos.push(`${stu.name} (${cls.class})`);
+                    }
+                });
+            });
+            
+            let result = `📊 學生相片統計\n\n`;
+            result += `總學生數：${totalStudents}\n`;
+            result += `已有相片：${studentsWithPhotos}\n`;
+            result += `缺少相片：${studentsWithoutPhotos.length}\n\n`;
+            
+            if (studentsWithoutPhotos.length > 0) {
+                result += `缺少相片的學生：\n`;
+                studentsWithoutPhotos.slice(0, 20).forEach(stu => {
+                    result += `• ${stu}\n`;
+                });
+                if (studentsWithoutPhotos.length > 20) {
+                    result += `... 還有 ${studentsWithoutPhotos.length - 20} 個學生`;
+                }
+            }
+            
+            alert(result);
+        }
+        
+        function forceRematch() {
+            if (confirm('確定要強制重新匹配嗎？這會清除所有現有相片並重新分配。')) {
+                // 清除所有相片
+                studentsData.forEach(cls => {
+                    cls.students.forEach(stu => {
+                        stu.photo = '';
+                    });
+                });
+                
+                saveStudentPhotos();
+                renderStudentGrid();
+                alert('已清除所有相片！現在可以重新上傳檔案進行匹配。');
+            }
+        }
+        
+        // PWA 相關功能
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker 註冊成功:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker 註冊失敗:', error);
+                    });
+            });
         }
     </script>
 </body>
