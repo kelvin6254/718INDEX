@@ -657,6 +657,7 @@ function backToTop() {
                             <i class="fas fa-chalkboard me-1"></i>『繩』目教室
                         </a>
                     </li>
+
                     <!-- 移除上傳影片連結 -->
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="logout()">
@@ -709,17 +710,7 @@ function backToTop() {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="zone-card text-center p-4 bg-white rounded shadow" style="cursor: pointer;" onclick="window.location.href='students-list.html'">
-                            <div class="zone-icon mx-auto mb-2" style="background:#e3f7ea;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                                <i class="fas fa-users" style="font-size:2.5rem;color:#22a06b;"></i>
-                            </div>
-                            <div class="fw-bold mb-2" style="font-size:1.2rem;letter-spacing:2px;color:#374151;">家長專區</div>
-                            <div class="zone-desc text-secondary" style="font-size:1.05rem;line-height:1.7;">
-                                為孩子上傳跳繩表演影片，<br>參與孩子的成長歷程
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-md-4 mb-4">
                         <div class="zone-card text-center p-4 bg-white rounded shadow" style="cursor: pointer;" onclick="window.location.href='rainbow-certificate-detail.html'">
                             <div class="zone-icon mx-auto mb-2" style="background:#e0f2fe;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
@@ -778,7 +769,29 @@ function backToTop() {
                         <div class="col-md-2">
                             <div class="mb-3">
                                 <label for="studentName" class="form-label">學生姓名</label>
-                                <input type="text" class="form-control" id="studentName" placeholder="輸入學生姓名" required>
+                                <select class="form-control" id="studentName" required>
+                                    <option value="">請選擇學生</option>
+                                    <option value="朱耀鋒">朱耀鋒</option>
+                                    <option value="林思恒">林思恒</option>
+                                    <option value="蘇南燊">蘇南燊</option>
+                                    <option value="葉芷汝">葉芷汝</option>
+                                    <option value="吳諾暉">吳諾暉</option>
+                                    <option value="梁珀源">梁珀源</option>
+                                    <option value="黎溢鉦">黎溢鉦</option>
+                                    <option value="黃泳鈺">黃泳鈺</option>
+                                    <option value="楊洛謙">楊洛謙</option>
+                                    <option value="麥浩敏">麥浩敏</option>
+                                    <option value="謝韶謙">謝韶謙</option>
+                                    <option value="馮樂宏">馮樂宏</option>
+                                    <option value="曾業淳">曾業淳</option>
+                                    <option value="馮鎮泓">馮鎮泓</option>
+                                    <option value="倪灝">倪灝</option>
+                                    <option value="林澤星">林澤星</option>
+                                    <option value="蔡瀚毅">蔡瀚毅</option>
+                                    <option value="楊凱琳">楊凱琳</option>
+                                    <option value="龍正罡">龍正罡</option>
+                                    <option value="許明然">許明然</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -841,6 +854,83 @@ function backToTop() {
                 </table>
             </div>
         </section>
+
+        <!-- 最新文章預覽區塊 -->
+        <section class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-newspaper me-2"></i>《HolyJumpVibe》繩刊 - 最新文章</h2>
+                    <p class="text-muted">跳繩隊官方刊物，分享技巧與故事，激發跳繩熱情與團隊精神</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">
+                                    <i class="fas fa-seedling me-2"></i>隊員蛻變
+                                </h5>
+                                <p class="card-text">見證跳繩隊成員的成長歷程，透過進步影片記錄學生從初學者到高手的蛻變過程...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>2024年12月
+                                </small>
+                                <button class="btn btn-primary btn-sm mt-2" onclick="openTransformationModal()">
+                                    <i class="fas fa-play me-1"></i>觀看進步影片
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="fas fa-dumbbell me-2"></i>技巧教學
+                                </h5>
+                                <p class="card-text">專業跳繩技巧分解教學，從基礎到進階，幫助學生提升跳繩技能...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>2024年12月
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">
+                                    <i class="fas fa-trophy me-2"></i>比賽報導
+                                </h5>
+                                <p class="card-text">最新比賽活動報導，記錄跳繩隊在各項賽事中的精彩表現與榮譽時刻...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>2024年12月
+                                </small>
+                                <a href="competition-news.html" class="btn btn-warning btn-sm mt-2">
+                                    <i class="fas fa-newspaper me-1"></i>查看比賽報導
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-info">
+                                    <i class="fas fa-heart me-2"></i>健康專欄
+                                </h5>
+                                <p class="card-text">跳繩運動的健康益處與營養建議，幫助學生建立正確的運動觀念...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>2024年12月
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="holyjumpvibe.html" class="btn btn-outline-primary">
+                        <i class="fas fa-book-open me-2"></i>閱讀完整繩刊
+                    </a>
+                </div>
+            </div>
+        </section>
         
         <div class="attitude-section mb-5" style="background:#6ad0d6;padding:32px 0 8px 0;border-radius:18px;">
           <h2 class="text-center" style="color:#fff;font-weight:700;letter-spacing:4px;font-size:2rem;margin-bottom:28px;">跳繩中帶出六種學習態度</h2>
@@ -885,6 +975,464 @@ function backToTop() {
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- 隊員蛻變模態框 -->
+    <div class="modal fade" id="transformationModal" tabindex="-1" aria-labelledby="transformationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="transformationModalLabel">
+                        <i class="fas fa-butterfly me-2"></i>隊員蛻變 - 進步影片集
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-primary mb-0"><i class="fas fa-users me-2"></i>選擇學生查看進步歷程</h6>
+                                <small class="text-muted">共20位學生</small>
+                            </div>
+                            <div class="student-tabs-container" style="max-height: 200px; overflow-y: auto;">
+                                <ul class="nav nav-tabs flex-wrap" id="studentTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="student1-tab" data-bs-toggle="tab" data-bs-target="#student1" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>朱耀鋒
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student2-tab" data-bs-toggle="tab" data-bs-target="#student2" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>林思恒
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student3-tab" data-bs-toggle="tab" data-bs-target="#student3" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>蘇南燊
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student4-tab" data-bs-toggle="tab" data-bs-target="#student4" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>葉芷汝
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student5-tab" data-bs-toggle="tab" data-bs-target="#student5" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>吳諾暉
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student6-tab" data-bs-toggle="tab" data-bs-target="#student6" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>梁珀源
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student7-tab" data-bs-toggle="tab" data-bs-target="#student7" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>黎溢鉦
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student8-tab" data-bs-toggle="tab" data-bs-target="#student8" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>黃泳鈺
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student9-tab" data-bs-toggle="tab" data-bs-target="#student9" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>楊洛謙
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student10-tab" data-bs-toggle="tab" data-bs-target="#student10" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>麥浩敏
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student11-tab" data-bs-toggle="tab" data-bs-target="#student11" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>謝韶謙
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student12-tab" data-bs-toggle="tab" data-bs-target="#student12" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>馮樂宏
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student13-tab" data-bs-toggle="tab" data-bs-target="#student13" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>曾業淳
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student14-tab" data-bs-toggle="tab" data-bs-target="#student14" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>馮鎮泓
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student15-tab" data-bs-toggle="tab" data-bs-target="#student15" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>倪灝
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student16-tab" data-bs-toggle="tab" data-bs-target="#student16" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>林澤星
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student17-tab" data-bs-toggle="tab" data-bs-target="#student17" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>蔡瀚毅
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student18-tab" data-bs-toggle="tab" data-bs-target="#student18" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>楊凱琳
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student19-tab" data-bs-toggle="tab" data-bs-target="#student19" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>龍正罡
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="student20-tab" data-bs-toggle="tab" data-bs-target="#student20" type="button" role="tab">
+                                            <i class="fas fa-user me-1"></i>許明然
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="studentTabContent">
+                        <!-- 學生1：朱耀鋒 -->
+                        <div class="tab-pane fade show active" id="student1" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-primary"><i class="fas fa-calendar me-1"></i>初期表現 (2024年1月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="初期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">基礎跳繩技巧，30秒前跳成績：35次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-warning"><i class="fas fa-calendar me-1"></i>中期表現 (2024年6月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="中期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階跳繩技巧，30秒前跳成績：52次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-success"><i class="fas fa-calendar me-1"></i>進步表現 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="進步表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階花式跳繩，30秒前跳成績：68次</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-info"><i class="fas fa-calendar me-1"></i>比賽表現 (2024年11月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="比賽表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">校際比賽，團體花式跳繩表演</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-danger"><i class="fas fa-calendar me-1"></i>技巧展示 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="技巧展示" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">高級花式跳繩技巧展示</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-secondary"><i class="fas fa-calendar me-1"></i>訓練日常 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="訓練日常" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">日常訓練片段，展現堅持精神</p>
+                                </div>
+                            </div>
+                            <div class="progress-info mt-3">
+                                <h6 class="text-info"><i class="fas fa-chart-line me-1"></i>進步統計</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-primary">94%</div>
+                                            <small class="text-muted">進步幅度</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-success">33次</div>
+                                            <small class="text-muted">成績提升</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-warning">11個月</div>
+                                            <small class="text-muted">訓練時間</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 學生2：林思恒 -->
+                        <div class="tab-pane fade" id="student2" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-primary"><i class="fas fa-calendar me-1"></i>初期表現 (2024年2月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="初期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">基礎跳繩技巧，30秒前跳成績：28次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-warning"><i class="fas fa-calendar me-1"></i>中期表現 (2024年7月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="中期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階跳繩技巧，30秒前跳成績：58次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-success"><i class="fas fa-calendar me-1"></i>進步表現 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="進步表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階花式跳繩，30秒前跳成績：72次</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-info"><i class="fas fa-calendar me-1"></i>比賽表現 (2024年11月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="比賽表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">校際比賽，個人速度跳繩項目</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-danger"><i class="fas fa-calendar me-1"></i>技巧展示 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="技巧展示" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">高級花式跳繩技巧展示</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-secondary"><i class="fas fa-calendar me-1"></i>訓練日常 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="訓練日常" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">日常訓練片段，展現堅持精神</p>
+                                </div>
+                            </div>
+                            <div class="progress-info mt-3">
+                                <h6 class="text-info"><i class="fas fa-chart-line me-1"></i>進步統計</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-primary">157%</div>
+                                            <small class="text-muted">進步幅度</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-success">44次</div>
+                                            <small class="text-muted">成績提升</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-warning">10個月</div>
+                                            <small class="text-muted">訓練時間</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 學生3：蘇南燊 -->
+                        <div class="tab-pane fade" id="student3" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-primary"><i class="fas fa-calendar me-1"></i>初期表現 (2024年3月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="初期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">基礎跳繩技巧，30秒前跳成績：42次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-warning"><i class="fas fa-calendar me-1"></i>中期表現 (2024年8月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="中期表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階跳繩技巧，30秒前跳成績：65次</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-success"><i class="fas fa-calendar me-1"></i>進步表現 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="進步表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">進階花式跳繩，30秒前跳成績：85次</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-info"><i class="fas fa-calendar me-1"></i>比賽表現 (2024年11月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="比賽表現" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">校際比賽，團體花式跳繩表演</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-danger"><i class="fas fa-calendar me-1"></i>技巧展示 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="技巧展示" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">高級花式跳繩技巧展示</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-secondary"><i class="fas fa-calendar me-1"></i>訓練日常 (2024年12月)</h6>
+                                    <div class="video-container mb-3">
+                                        <iframe class="w-100" style="border-radius: 8px; height: 200px;" 
+                                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                                title="訓練日常" frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    <p class="small text-muted">日常訓練片段，展現堅持精神</p>
+                                </div>
+                            </div>
+                            <div class="progress-info mt-3">
+                                <h6 class="text-info"><i class="fas fa-chart-line me-1"></i>進步統計</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-primary">102%</div>
+                                            <small class="text-muted">進步幅度</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-success">43次</div>
+                                            <small class="text-muted">成績提升</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="h4 text-warning">9個月</div>
+                                            <small class="text-muted">訓練時間</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 其他學生的簡化版本 -->
+                        <div class="tab-pane fade" id="student4" role="tabpanel">
+                            <div class="text-center py-4">
+                                <i class="fas fa-user-graduate text-muted" style="font-size: 3rem;"></i>
+                                <h6 class="text-muted mt-2">葉芷汝的進步歷程</h6>
+                                <p class="text-muted">詳細內容請查看完整繩刊</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="student5" role="tabpanel">
+                            <div class="text-center py-4">
+                                <i class="fas fa-user-graduate text-muted" style="font-size: 3rem;"></i>
+                                <h6 class="text-muted mt-2">吳諾暉的進步歷程</h6>
+                                <p class="text-muted">詳細內容請查看完整繩刊</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 更多學生可以按照相同模式添加 -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1619,6 +2167,12 @@ function backToTop() {
             window.navigator.standalone === true) {
             console.log('APP已安裝');
             // 可以添加已安裝APP的特殊功能
+        }
+        
+        // 打開隊員蛻變模態框
+        function openTransformationModal() {
+            const modal = new bootstrap.Modal(document.getElementById('transformationModal'));
+            modal.show();
         }
     </script>
 </body>

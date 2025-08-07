@@ -365,14 +365,23 @@
                 
                 const files = Array.from(e.dataTransfer.files);
                 console.log('拖拉檔案:', files);
-                handleFileUpload(files);
+                
+                // 確保有檔案才處理
+                if (files.length > 0) {
+                    handleFileUpload(files);
+                }
             });
             
             // 檔案選擇事件
             fileInput.addEventListener('change', e => { 
                 const files = Array.from(e.target.files);
                 console.log('選擇檔案:', files);
-                handleFileUpload(files);
+                
+                // 確保有檔案才處理
+                if (files.length > 0) {
+                    handleFileUpload(files);
+                }
+                
                 // 清空 input 值，允許重複選擇相同檔案
                 e.target.value = '';
             });
@@ -389,7 +398,10 @@
             document.addEventListener('dragover', e => e.preventDefault());
             document.addEventListener('drop', e => e.preventDefault());
         }
+        
         function handleFileUpload(files) {
+            console.log('開始處理檔案:', files);
+            
             const imageFiles = files.filter(file => file.type.startsWith('image/'));
             if (imageFiles.length === 0) { 
                 alert('請選擇圖片檔案（支援 JPG、PNG、GIF 等格式）'); 
@@ -397,6 +409,12 @@
             }
             
             console.log(`上傳了 ${imageFiles.length} 個圖片檔案`);
+            
+            // 移除舊的處理提示
+            const oldProcessingDiv = document.getElementById('processingDiv');
+            if (oldProcessingDiv) {
+                oldProcessingDiv.remove();
+            }
             
             // 自動匹配
             let processedCount = 0;
@@ -417,7 +435,25 @@
                     <small class="text-muted">photo-羅諭琦-2024.jpg → 羅諭琦</small>
                 </div>
             `;
-            document.querySelector('.container').insertBefore(processingDiv, document.getElementById('studentGrid'));
+            
+            // 安全地插入處理提示 - 使用更簡單的方法
+            try {
+                const container = document.querySelector('.container');
+                if (container) {
+                    // 先移除舊的處理提示
+                    const oldProcessingDiv = document.getElementById('processingDiv');
+                    if (oldProcessingDiv) {
+                        oldProcessingDiv.remove();
+                    }
+                    
+                    // 直接添加到容器末尾
+                    container.appendChild(processingDiv);
+                }
+            } catch (error) {
+                console.error('插入處理提示時發生錯誤:', error);
+                // 如果插入失敗，至少顯示一個簡單的提示
+                alert(`開始處理 ${imageFiles.length} 個檔案...`);
+            }
             
             imageFiles.forEach((file, index) => {
                 const reader = new FileReader();
@@ -428,6 +464,8 @@
                         const fileName = file.name.toLowerCase();
                         let bestMatch = null;
                         let bestMatchScore = 0;
+                        
+                        console.log(`處理檔案: ${fileName}`);
                         
                         // 找到最佳匹配的學生
                         studentsData.forEach(cls => {
@@ -449,27 +487,35 @@
                                         .replace(/\s+/g, '') // 移除空格
                                         .replace(/[^\u4e00-\u9fa5a-zA-Z]/g, ''); // 只保留中英文字符
                                     
+                                    console.log(`比較: "${cleanFileName}" vs "${cleanStuName}" (學生: ${stu.name})`);
+                                    
                                     // 多種匹配策略
                                     if (cleanFileName.includes(cleanStuName)) {
                                         matchScore = cleanStuName.length * 10; // 完整姓名匹配，最高分
                                         matchType = '完整姓名';
+                                        console.log(`  ✓ 完整姓名匹配: ${cleanStuName} (分數: ${matchScore})`);
                                     } else if (fileName.includes(stuName)) {
                                         matchScore = stuName.length * 8; // 原始姓名匹配
                                         matchType = '原始姓名';
+                                        console.log(`  ✓ 原始姓名匹配: ${stuName} (分數: ${matchScore})`);
                                     } else if (fileName.includes(stuName.replace(/\s+/g, ''))) {
                                         matchScore = stuName.replace(/\s+/g, '').length * 6; // 無空格匹配
                                         matchType = '無空格姓名';
+                                        console.log(`  ✓ 無空格姓名匹配: ${stuName.replace(/\s+/g, '')} (分數: ${matchScore})`);
                                     } else if (fileName.includes(stuName.replace(/[^\u4e00-\u9fa5]/g, ''))) {
                                         matchScore = stuName.replace(/[^\u4e00-\u9fa5]/g, '').length * 4; // 只中文字符匹配
                                         matchType = '中文字符';
+                                        console.log(`  ✓ 中文字符匹配: ${stuName.replace(/[^\u4e00-\u9fa5]/g, '')} (分數: ${matchScore})`);
                                     } else if (cleanStuName.length <= 4 && cleanFileName.includes(cleanStuName)) {
                                         // 短英文姓名特殊處理（如 Ali, Alvin）
                                         matchScore = cleanStuName.length * 12; // 短英文姓名最高分
                                         matchType = '短英文姓名';
+                                        console.log(`  ✓ 短英文姓名匹配: ${cleanStuName} (分數: ${matchScore})`);
                                     } else if (cleanStuName.length <= 4 && fileName.toLowerCase().includes(cleanStuName.toLowerCase())) {
                                         // 短英文姓名不區分大小寫匹配
                                         matchScore = cleanStuName.length * 11;
                                         matchType = '短英文姓名(不區分大小寫)';
+                                        console.log(`  ✓ 短英文姓名(不區分大小寫)匹配: ${cleanStuName} (分數: ${matchScore})`);
                                     } else {
                                         // 嘗試部分匹配（至少2個字符，對英文姓名更寬鬆）
                                         const minLength = cleanStuName.length <= 4 ? 2 : 3;
@@ -481,6 +527,7 @@
                                                     if (score > matchScore) {
                                                         matchScore = score;
                                                         matchType = `部分匹配(${part})`;
+                                                        console.log(`  ✓ 部分匹配: ${part} (分數: ${score})`);
                                                     }
                                                 }
                                             }
@@ -492,60 +539,75 @@
                                         bestMatchScore = matchScore;
                                         bestMatch = stu;
                                         bestMatch.matchType = matchType;
+                                        console.log(`  → 更新最佳匹配: ${stu.name} (${matchType}, 分數: ${matchScore})`);
                                     }
                                 }
                             });
                         });
                         
                         if (bestMatch && bestMatchScore > 0) {
+                            console.log(`匹配成功: ${fileName} → ${bestMatch.name} (${bestMatch.matchType}, 分數: ${bestMatchScore})`);
                             bestMatch.photo = e.target.result;
                             matched++;
-                            console.log(`匹配成功：${file.name} -> ${bestMatch.name} (分數: ${bestMatchScore}, 類型: ${bestMatch.matchType})`);
                         } else {
+                            console.log(`無法匹配: ${fileName}`);
                             unmatchedFiles.push(file.name);
-                            console.log(`無法匹配：${file.name}`);
                         }
                         
-                        // 立即儲存和更新
-                        saveStudentPhotos();
-                        renderStudentGrid();
+                        processedCount++;
+                        
+                        // 更新處理進度
+                        const processingDiv = document.getElementById('processingDiv');
+                        if (processingDiv) {
+                            processingDiv.innerHTML = `
+                                <div class="alert alert-info text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>正在處理 ${imageFiles.length} 個檔案... (${processedCount}/${imageFiles.length})
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">檔案名稱清理範例：</small><br>
+                                    <small class="text-muted">IMG_001_趙靖昕.jpg → 趙靖昕</small><br>
+                                    <small class="text-muted">photo-羅諭琦-2024.jpg → 羅諭琦</small>
+                                </div>
+                            `;
+                        }
+                        
+                        // 所有檔案處理完成
+                        if (processedCount === imageFiles.length) {
+                            // 移除處理提示
+                            const processingDiv = document.getElementById('processingDiv');
+                            if (processingDiv) {
+                                processingDiv.remove();
+                            }
+                            
+                            // 儲存並重新渲染
+                            saveStudentPhotos();
+                            renderStudentGrid();
+                            
+                            // 顯示結果
+                            let message = `處理完成！\n成功匹配: ${matched} 張相片`;
+                            if (unmatchedFiles.length > 0) {
+                                message += `\n無法匹配: ${unmatchedFiles.length} 個檔案`;
+                                message += `\n\n無法匹配的檔案：\n${unmatchedFiles.join('\n')}`;
+                            }
+                            
+                            alert(message);
+                        }
                         
                     } catch (error) {
                         console.error('處理檔案時發生錯誤:', error);
                         errors.push(file.name);
-                    }
-                    
-                    processedCount++;
-                    
-                    // 更新處理進度
-                    if (processingDiv) {
-                        processingDiv.innerHTML = `
-                            <div class="alert alert-info text-center">
-                                <i class="fas fa-spinner fa-spin me-2"></i>已處理 ${processedCount}/${imageFiles.length} 個檔案...
-                            </div>
-                        `;
-                    }
-                    
-                    // 所有檔案處理完成
-                    if (processedCount === imageFiles.length) {
-                        // 移除處理中提示
-                        if (processingDiv) {
-                            processingDiv.remove();
-                        }
+                        processedCount++;
                         
-                        let message = `已自動匹配 ${matched} 張相片。`;
-                        if (unmatchedFiles.length > 0) {
-                            message += `\n\n無法匹配的檔案：\n${unmatchedFiles.slice(0, 5).join('\n')}`;
-                            if (unmatchedFiles.length > 5) {
-                                message += `\n... 還有 ${unmatchedFiles.length - 5} 個檔案`;
+                        if (processedCount === imageFiles.length) {
+                            const processingDiv = document.getElementById('processingDiv');
+                            if (processingDiv) {
+                                processingDiv.remove();
                             }
-                            message += '\n\n請確保檔案名稱包含學生姓名，或手動點擊學生頭像上傳。';
+                            
+                            if (errors.length > 0) {
+                                alert(`處理完成，但有 ${errors.length} 個檔案發生錯誤：\n${errors.join('\n')}`);
+                            }
                         }
-                        if (errors.length > 0) {
-                            message += `\n\n處理失敗的檔案：\n${errors.join('\n')}`;
-                        }
-                        
-                        alert(message);
                     }
                 };
                 
@@ -555,10 +617,14 @@
                     processedCount++;
                     
                     if (processedCount === imageFiles.length) {
+                        const processingDiv = document.getElementById('processingDiv');
                         if (processingDiv) {
                             processingDiv.remove();
                         }
-                        alert(`處理完成，但有 ${errors.length} 個檔案讀取失敗。`);
+                        
+                        if (errors.length > 0) {
+                            alert(`處理完成，但有 ${errors.length} 個檔案發生錯誤：\n${errors.join('\n')}`);
+                        }
                     }
                 };
                 

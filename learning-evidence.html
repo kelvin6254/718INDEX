@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習顯證欄保留 - 跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .back-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #ea580c;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-title {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .evidence-list {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .list-title {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .evidence-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3b82f6;
+            transition: transform 0.2s;
+        }
+        
+        .evidence-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .evidence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .evidence-date {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .evidence-topic {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .evidence-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            color: #374151;
+        }
+        
+        .evidence-description {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .evidence-highlights {
+            background: #fef3c7;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .highlights-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .no-evidence {
+            text-align: center;
+            color: #6b7280;
+            padding: 3rem 0;
+        }
+        
+        .no-evidence i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .form-section, .evidence-list {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .evidence-info {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .evidence-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-graduation-cap me-2"></i>學習顯證欄保留</h1>
+                <button class="back-btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-arrow-left me-1"></i>返回首頁
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 教師上載表單 -->
+        <div class="form-section">
+            <h2 class="form-title"><i class="fas fa-edit me-2"></i>新增學習顯證</h2>
+            <form id="evidenceForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="classDate" class="form-label">課堂日期</label>
+                        <input type="date" class="form-control" id="classDate" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="classTopic" class="form-label">課堂主題</label>
+                        <input type="text" class="form-control" id="classTopic" placeholder="請輸入課堂主題" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="studentGroup" class="form-label">學生群組</label>
+                        <select class="form-select" id="studentGroup" onchange="updateStudentOptions()">
+                            <option value="">請選擇學生群組</option>
+                            <option value="全體學生">全體學生</option>
+                            <option value="初級組">初級組</option>
+                            <option value="中級組">中級組</option>
+                            <option value="高級組">高級組</option>
+                            <option value="個別學生">個別學生</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="teacher" class="form-label">授課老師</label>
+                        <select class="form-select" id="teacher" required>
+                            <option value="">請選擇授課老師</option>
+                            <option value="周添銘老師">周添銘老師</option>
+                            <option value="蔡袁婷老師">蔡袁婷老師</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row" id="individualStudentRow" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <label for="individualStudent" class="form-label">選擇個別學生</label>
+                        <select class="form-select" id="individualStudent">
+                            <option value="">請選擇學生</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="classDescription" class="form-label">課堂內容描述</label>
+                    <textarea class="form-control" id="classDescription" rows="4" placeholder="請詳細描述課堂內容..." required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="learningHighlights" class="form-label">學習亮點</label>
+                    <textarea class="form-control" id="learningHighlights" rows="3" placeholder="請描述本堂課的學習亮點..." required></textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save me-2"></i>儲存學習顯證
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 學習顯證列表 -->
+        <div class="evidence-list">
+            <h2 class="list-title"><i class="fas fa-list me-2"></i>學習顯證記錄</h2>
+            <div id="evidenceList">
+                <!-- 動態生成的學習顯證卡片將顯示在這裡 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 學生資料
+        const studentsData = [
+            {
+                class: '高中三',
+                students: [
+                    { name: '朱耀鋒', id: '001' }
+                ]
+            },
+            {
+                class: '高中一',
+                students: [
+                    { name: '林思恒', id: '002' },
+                    { name: '蘇南燊', id: '003' }
+                ]
+            },
+            {
+                class: '初中四',
+                students: [
+                    { name: '葉芷汝', id: '004' }
+                ]
+            },
+            {
+                class: '初中三',
+                students: [
+                    { name: '吳諾暉', id: '005' },
+                    { name: '梁珀源', id: '006' }
+                ]
+            },
+            {
+                class: '高小五',
+                students: [
+                    { name: '黎溢鉦', id: '007' }
+                ]
+            },
+            {
+                class: '高小四',
+                students: [
+                    { name: '黃泳鈺', id: '008' }
+                ]
+            },
+            {
+                class: '高小三',
+                students: [
+                    { name: '楊洛謙', id: '009' },
+                    { name: '麥浩敏', id: '010' },
+                    { name: '謝韶謙', id: '011' },
+                    { name: '馮樂宏', id: '012' }
+                ]
+            },
+            {
+                class: '高小二',
+                students: [
+                    { name: '曾業淳', id: '013' },
+                    { name: '馮鎮泓', id: '014' }
+                ]
+            },
+            {
+                class: '高小一',
+                students: [
+                    { name: '倪灝', id: '015' }
+                ]
+            },
+            {
+                class: '初小三',
+                students: [
+                    { name: '林澤星', id: '016' },
+                    { name: '蔡瀚毅', id: '017' },
+                    { name: '楊凱琳', id: '018' },
+                    { name: '龍正罡', id: '019' }
+                ]
+            },
+            {
+                class: '初小二',
+                students: [
+                    { name: '許明然', id: '020' }
+                ]
+            }
+        ];
+        
+        // 儲存學習顯證資料
+        let evidenceData = JSON.parse(localStorage.getItem('learningEvidence')) || [];
+        
+        // 更新學生選項
+        function updateStudentOptions() {
+            const studentGroup = document.getElementById('studentGroup').value;
+            const individualStudentRow = document.getElementById('individualStudentRow');
+            const individualStudent = document.getElementById('individualStudent');
+            
+            if (studentGroup === '個別學生') {
+                individualStudentRow.style.display = 'block';
+                individualStudent.innerHTML = '<option value="">請選擇學生</option>';
+                
+                // 添加所有學生選項
+                studentsData.forEach(cls => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = cls.class;
+                    
+                    cls.students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.name;
+                        option.textContent = student.name;
+                        optgroup.appendChild(option);
+                    });
+                    
+                    individualStudent.appendChild(optgroup);
+                });
+            } else {
+                individualStudentRow.style.display = 'none';
+                individualStudent.value = '';
+            }
+        }
+        
+        // 表單提交處理
+        document.getElementById('evidenceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const studentGroup = document.getElementById('studentGroup').value;
+            const individualStudent = document.getElementById('individualStudent').value;
+            
+            // 驗證學生選擇
+            if (!studentGroup) {
+                showAlert('請選擇學生群組', 'warning');
+                return;
+            }
+            
+            if (studentGroup === '個別學生' && !individualStudent) {
+                showAlert('請選擇個別學生', 'warning');
+                return;
+            }
+            
+            const selectedStudents = studentGroup === '個別學生' ? individualStudent : studentGroup;
+            
+            const evidence = {
+                id: Date.now(),
+                classDate: document.getElementById('classDate').value,
+                classTopic: document.getElementById('classTopic').value,
+                students: selectedStudents,
+                teacher: document.getElementById('teacher').value,
+                classDescription: document.getElementById('classDescription').value,
+                learningHighlights: document.getElementById('learningHighlights').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            // 新增到資料陣列
+            evidenceData.unshift(evidence);
+            
+            // 儲存到 localStorage
+            localStorage.setItem('learningEvidence', JSON.stringify(evidenceData));
+            
+            // 重新顯示列表
+            displayEvidenceList();
+            
+            // 重置表單
+            this.reset();
+            
+            // 顯示成功訊息
+            showAlert('學習顯證已成功儲存！', 'success');
+        });
+        
+        // 顯示學習顯證列表
+        function displayEvidenceList() {
+            const evidenceList = document.getElementById('evidenceList');
+            
+            if (evidenceData.length === 0) {
+                evidenceList.innerHTML = `
+                    <div class="no-evidence">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>目前還沒有學習顯證記錄</p>
+                        <p class="text-muted">請使用上方表單新增學習顯證</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            evidenceList.innerHTML = evidenceData.map(evidence => `
+                <div class="evidence-card">
+                    <div class="evidence-header">
+                        <div class="evidence-date">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${formatDate(evidence.classDate)}
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEvidence(${evidence.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="evidence-topic">
+                        <i class="fas fa-star me-2"></i>${evidence.classTopic}
+                    </div>
+                    
+                    <div class="evidence-info">
+                        <div class="info-item">
+                            <span class="info-label">學生：</span>
+                            <span class="info-value">${evidence.students}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">授課老師：</span>
+                            <span class="info-value">${evidence.teacher}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="evidence-description">
+                        <strong>課堂內容描述：</strong><br>
+                        ${evidence.classDescription}
+                    </div>
+                    
+                    <div class="evidence-highlights">
+                        <div class="highlights-title">
+                            <i class="fas fa-lightbulb me-2"></i>學習亮點
+                        </div>
+                        ${evidence.learningHighlights}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 刪除學習顯證
+        function deleteEvidence(id) {
+            if (confirm('確定要刪除這筆學習顯證記錄嗎？')) {
+                evidenceData = evidenceData.filter(evidence => evidence.id !== id);
+                localStorage.setItem('learningEvidence', JSON.stringify(evidenceData));
+                displayEvidenceList();
+                showAlert('學習顯證已刪除', 'info');
+            }
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-TW', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // 顯示提示訊息
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // 3秒後自動移除
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+        
+        // 頁面載入時顯示列表
+        document.addEventListener('DOMContentLoaded', function() {
+            displayEvidenceList();
+            
+            // 設定今天的日期為預設值
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('classDate').value = today;
+        });
+    </script>
+</body>
+</html>

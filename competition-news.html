@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>比賽報導 - 跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background-color: #2563eb !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        
+        .navbar-nav .nav-link {
+            color: white !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .content-section {
+            padding: 60px 0;
+            background: white;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .competition-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .competition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        .event-date {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .medal-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .medal-gold {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #8b6914;
+        }
+        
+        .medal-silver {
+            background: linear-gradient(45deg, #c0c0c0, #e5e5e5);
+            color: #696969;
+        }
+        
+        .medal-bronze {
+            background: linear-gradient(45deg, #cd7f32, #daa520);
+            color: #8b4513;
+        }
+        
+        .back-btn {
+            background: #2563eb;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            padding: 30px 0;
+            margin-bottom: 40px;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #2563eb;
+            color: #2563eb;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .card-image {
+                height: 200px;
+            }
+            
+            .event-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-home me-2"></i>跳繩平台
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">主頁</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="students-list.html">學生名單</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="learning-evidence.html">學習記錄</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="student-zone.html">學生專區</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 頁面標題 -->
+    <div class="page-header">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-newspaper me-3"></i>比賽報導
+            </h1>
+            <p class="page-subtitle">
+                最新跳繩比賽活動報導，記錄學生在各項賽事中的精彩表現
+            </p>
+        </div>
+    </div>
+
+    <!-- 篩選區域 -->
+    <div class="filter-section">
+        <div class="container">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-filter me-2"></i>篩選比賽類型
+            </h4>
+            <div class="text-center">
+                <button class="btn filter-btn active" data-filter="all">全部比賽</button>
+                <button class="btn filter-btn" data-filter="invitational">邀請賽</button>
+                <button class="btn filter-btn" data-filter="inter-school">校際賽</button>
+                <button class="btn filter-btn" data-filter="speed">速度賽</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <div class="content-section">
+        <div class="container">
+            <div class="row">
+                <!-- 比賽卡片1：香港跳繩邀請錦標賽 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="invitational">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/2563eb/ffffff?text=香港跳繩邀請錦標賽');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">香港跳繩邀請錦標賽 2025</div>
+                                <div class="event-date">社區參與賽事「齊跳高飛大繩挑戰盃」</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">香港跳繩邀請錦標賽 2025 | 社區參與賽事「齊跳高飛大繩挑戰盃」| 全港大型跳繩比賽</h5>
+                            <p class="card-description">
+                                由中國香港跳繩總會主辦的年度盛事，設有個人及團體項目，
+                                促進社區交流，推廣跳繩運動。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">15</div>
+                                    <div class="stat-label">比賽項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">3</div>
+                                    <div class="stat-label">獎牌</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="medal-badge medal-gold">冠軍</span>
+                                <span class="medal-badge medal-silver">亞軍</span>
+                                <span class="medal-badge medal-bronze">季軍</span>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="viewCompetitionDetails(1)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 比賽卡片2：跳繩強心校際速度跳繩比賽 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="inter-school speed">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/10b981/ffffff?text=跳繩強心校際賽');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">跳繩強心校際速度跳繩比賽 2025</div>
+                                <div class="event-date">校際花式跳繩比賽 速度賽</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">跳繩強心校際速度跳繩比賽 2025 | 全港大型跳繩比賽 | 跳繩速度賽</h5>
+                            <p class="card-description">
+                                專為學校跳繩隊設計的校際比賽，設有速度跳和花式跳兩個主要項目，
+                                促進學校間交流，提升跳繩技術水平。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">8</div>
+                                    <div class="stat-label">比賽項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">2</div>
+                                    <div class="stat-label">獎牌</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="medal-badge medal-gold">冠軍</span>
+                                <span class="medal-badge medal-silver">亞軍</span>
+                            </div>
+                            <button class="btn btn-success w-100" onclick="viewCompetitionDetails(2)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 比賽卡片3：JRM全港速度跳繩比賽 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="speed">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/f59e0b/ffffff?text=JRM速度賽');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">JRM全港速度跳繩比賽 2025</div>
+                                <div class="event-date">香港跳繩協會 | 全港大型速度跳繩比賽</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">JRM全港速度跳繩比賽 2025 | 香港跳繩協會 | 全港大型速度跳繩比賽</h5>
+                            <p class="card-description">
+                                由香港跳繩協會主辦的專業速度跳繩比賽，
+                                設有個人及團體速度項目，展現跳繩運動的競技魅力。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">12</div>
+                                    <div class="stat-label">比賽項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">4</div>
+                                    <div class="stat-label">獎牌</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="medal-badge medal-gold">冠軍</span>
+                                <span class="medal-badge medal-silver">亞軍</span>
+                                <span class="medal-badge medal-bronze">季軍</span>
+                                <span class="medal-badge medal-bronze">殿軍</span>
+                            </div>
+                            <button class="btn btn-warning w-100" onclick="viewCompetitionDetails(3)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- 比賽卡片5：全港跳繩精英挑戰賽 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="invitational speed">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/ef4444/ffffff?text=精英挑戰賽');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">全港跳繩精英挑戰賽 2025</div>
+                                <div class="event-date">高水平競技平台</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">全港跳繩精英挑戰賽 2025 | 高水平競技平台 | 速度與技巧的巔峰對決</h5>
+                            <p class="card-description">
+                                專為高水平跳繩運動設計的比賽，
+                                在速度、技巧和創意方面展開激烈競爭。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">10</div>
+                                    <div class="stat-label">比賽項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">獎牌</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="medal-badge medal-gold">冠軍</span>
+                                <span class="medal-badge medal-silver">亞軍</span>
+                                <span class="medal-badge medal-bronze">季軍</span>
+                                <span class="medal-badge medal-bronze">殿軍</span>
+                                <span class="medal-badge medal-bronze">第五名</span>
+                            </div>
+                            <button class="btn btn-danger w-100" onclick="viewCompetitionDetails(5)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 比賽卡片6：青少年跳繩發展賽 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="inter-school">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/06b6d4/ffffff?text=青少年發展賽');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">青少年跳繩發展賽 2025</div>
+                                <div class="event-date">培養未來跳繩之星</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">青少年跳繩發展賽 2025 | 培養未來跳繩之星 | 基礎技巧與潛力發掘</h5>
+                            <p class="card-description">
+                                專為青少年跳繩運動設計的發展性比賽，注重基礎技巧培養和潛力發掘，
+                                為跳繩運動培養未來的新星。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">8</div>
+                                    <div class="stat-label">比賽項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">3</div>
+                                    <div class="stat-label">獎牌</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="medal-badge medal-gold">冠軍</span>
+                                <span class="medal-badge medal-silver">亞軍</span>
+                                <span class="medal-badge medal-bronze">季軍</span>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="viewCompetitionDetails(6)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 返回按鈕 -->
+            <div class="text-center">
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left me-2"></i>返回主頁
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 篩選功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const competitionCards = document.querySelectorAll('[data-category]');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按鈕的active類
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // 添加當前按鈕的active類
+                    this.classList.add('active');
+
+                    const filter = this.getAttribute('data-filter');
+
+                    competitionCards.forEach(card => {
+                        const categories = card.getAttribute('data-category').split(' ');
+                        
+                        if (filter === 'all' || categories.includes(filter)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // 添加動畫效果
+            const cards = document.querySelectorAll('.competition-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        // 查看比賽詳細報導
+        function viewCompetitionDetails(competitionId) {
+            // 這裡可以跳轉到具體的比賽詳細頁面
+            alert(`查看比賽 ${competitionId} 的詳細報導`);
+            // 實際應用中可以跳轉到具體的比賽詳細頁面
+            // window.location.href = `competition-detail-${competitionId}.html`;
+        }
+    </script>
+</body>
+</html>

@@ -290,49 +290,7 @@
             <p class="text-muted">（請在此嵌入電子書、PDF閱讀器或相關內容...）</p>
         </div>
         
-        <!-- 最新文章預覽區塊 -->
-        <div class="intro-block mb-4" style="max-width:700px;">
-            <div class="tag">最新文章</div>
-            <h3 class="mb-3" style="margin-top:18px;">最新一期內容預覽</h3>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary"><i class="fas fa-user-graduate me-2"></i>隊員專訪</h5>
-                            <p class="card-text">深入了解跳繩隊成員的訓練心得與成長故事，分享他們在跳繩路上的點點滴滴...</p>
-                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>2024年12月</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-success"><i class="fas fa-dumbbell me-2"></i>技巧教學</h5>
-                            <p class="card-text">專業跳繩技巧分解教學，從基礎到進階，幫助學生提升跳繩技能...</p>
-                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>2024年12月</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-warning"><i class="fas fa-trophy me-2"></i>比賽報導</h5>
-                            <p class="card-text">最新比賽活動報導，記錄跳繩隊在各項賽事中的精彩表現與榮譽時刻...</p>
-                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>2024年12月</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-info"><i class="fas fa-heart me-2"></i>健康專欄</h5>
-                            <p class="card-text">跳繩運動的健康益處與營養建議，幫助學生建立正確的運動觀念...</p>
-                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>2024年12月</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         
 
         
@@ -382,6 +340,20 @@
         </div>
     </div>
 
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 開啟隊員蛻變模態框
+        function openTransformationModal() {
+            const modal = new bootstrap.Modal(document.getElementById('transformationModal'));
+            modal.show();
+        }
+        
+        // 頁面載入完成後的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('《HolyJumpVibe》繩刊頁面已載入');
+        });
+    </script>
 </body>
 </html> 

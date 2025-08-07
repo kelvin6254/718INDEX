@@ -255,37 +255,9 @@
             }
         }
         
-        /* 學習顯證相關樣式 */
-        .learning-evidence-card {
-            transition: transform 0.2s ease-in-out;
-        }
+
         
-        .learning-evidence-card:hover {
-            transform: translateY(-2px);
-        }
-        
-        .evidence-video {
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .evidence-badge {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-        }
-        
-        .evidence-actions {
-            border-top: 1px solid #e9ecef;
-            padding-top: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .form-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
+
     </style>
 </head>
 <body>
@@ -326,122 +298,9 @@
                         </div>
                     </div>
                 </form>
-                <!-- 彩虹章別計劃自學專區：彩虹章別計劃影片提交及教師意見表格 -->
-                <div id="parentUploadSection" style="display:none;">
-                    <div id="parentUploadFormCard" class="card mt-4 mb-3" style="display:none;">
-                        <div class="card-header bg-info text-white">彩虹章別計劃影片提交</div>
-                        <div class="card-body">
-                            <form id="selfStudyUploadForm">
-                                <div class="mb-3">
-                                    <label for="selfStudyVideo" class="form-label">選擇影片</label>
-                                    <input type="file" class="form-control" id="selfStudyVideo" accept="video/*" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="selfStudyDesc" class="form-label">簡短說明</label>
-                                    <input type="text" class="form-control" id="selfStudyDesc" maxlength="100" placeholder="請簡述影片內容">
-                                </div>
-                                <button type="submit" class="btn btn-success">上傳影片</button>
-                                <div id="selfStudyUploadMsg" class="mt-2"></div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="card mb-3">
-                        <div class="card-header bg-secondary text-white">彩虹章別計劃影片與教師意見</div>
-                        <div class="card-body" id="videoFeedbackSection">
-                            <!-- 動態渲染彩虹章別計劃影片與教師意見 -->
-                        </div>
-                    </div>
-                </div>
+
                 
-                <!-- 學生學習顯證欄：老師上載當天課堂學習影片 -->
-                <div id="learningEvidenceSection" class="mt-4">
-                    <div class="card learning-evidence-card">
-                        <div class="card-header bg-primary text-white">
-                            <i class="fas fa-video me-2"></i>學生學習顯證欄
-                        </div>
-                        <div class="card-body">
-                            <!-- 老師上載表單 -->
-                            <div class="form-section">
-                                <h5 class="text-primary mb-3">
-                                    <i class="fas fa-upload me-2"></i>上載當天課堂學習影片
-                                </h5>
-                                <form id="learningEvidenceForm">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="lessonDate" class="form-label">課堂日期</label>
-                                            <input type="date" class="form-control" id="lessonDate" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="lessonSubject" class="form-label">課堂主題</label>
-                                            <select class="form-select" id="lessonSubject" required>
-                                                <option value="">請選擇課堂主題</option>
-                                                <option value="基礎跳繩技巧">基礎跳繩技巧</option>
-                                                <option value="進階跳繩技巧">進階跳繩技巧</option>
-                                                <option value="花式跳繩">花式跳繩</option>
-                                                <option value="跳繩比賽訓練">跳繩比賽訓練</option>
-                                                <option value="跳繩體能訓練">跳繩體能訓練</option>
-                                                <option value="跳繩團隊合作">跳繩團隊合作</option>
-                                                <option value="其他">其他</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="lessonClass" class="form-label">班級</label>
-                                            <select class="form-select" id="lessonClass" required>
-                                                <option value="">請選擇班級</option>
-                                                <option value="高中三">高中三</option>
-                                                <option value="高中二">高中二</option>
-                                                <option value="高中一">高中一</option>
-                                                <option value="初中四">初中四</option>
-                                                <option value="初中三">初中三</option>
-                                                <option value="初中二">初中二</option>
-                                                <option value="初中一">初中一</option>
-                                                <option value="高小五">高小五</option>
-                                                <option value="高小四">高小四</option>
-                                                <option value="高小三">高小三</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="lessonTeacher" class="form-label">授課老師</label>
-                                            <input type="text" class="form-control" id="lessonTeacher" placeholder="請輸入老師姓名" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="lessonVideo" class="form-label">課堂學習影片</label>
-                                        <input type="file" class="form-control" id="lessonVideo" accept="video/*" required>
-                                        <div class="form-text">支援 MP4, AVI, MOV 等格式，檔案大小不超過 100MB</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="lessonDescription" class="form-label">課堂內容描述</label>
-                                        <textarea class="form-control" id="lessonDescription" rows="3" placeholder="請描述當天課堂的主要內容、學習重點和學生表現"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="lessonHighlights" class="form-label">學習亮點</label>
-                                        <textarea class="form-control" id="lessonHighlights" rows="2" placeholder="請記錄學生的優秀表現或需要改進的地方"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>上載學習顯證
-                                    </button>
-                                    <div id="uploadMessage" class="mt-2"></div>
-                                </form>
-                            </div>
-                            
-                            <!-- 已上載的學習顯證列表 -->
-                            <div class="mt-4">
-                                <h5 class="text-success mb-3">
-                                    <i class="fas fa-list me-2"></i>已上載的學習顯證
-                                </h5>
-                                <div id="learningEvidenceList">
-                                    <!-- 動態渲染已上載的學習顯證 -->
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>尚未有學習顯證記錄
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <div class="student-info">
@@ -460,10 +319,7 @@
                     <div class="info-label">學生姓名</div>
                     <div class="info-value" id="studentName">張小明</div>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">學生編號</div>
-                    <div class="info-value" id="studentId"></div>
-                </div>
+
                 <div class="info-item">
                     <div class="info-label">班級</div>
                     <div class="info-value" id="studentClass"></div>
@@ -474,6 +330,8 @@
                 </div>
             </div>
         </div>
+
+
 
         <div class="tables-section">
             <div class="table-container">
@@ -601,198 +459,81 @@
     <script>
     // 完整 studentsData 結構，與 students-list.html 保持一致
     const studentsData = [
-        { class: '高中三', students: [
-            { name: '羅諭琦', id: '', photo: '' },
-            { name: '盧諄霖', id: '', photo: '' },
-            { name: '洪俊豪', id: '', photo: '' },
-            { name: '歐陽浩田', id: '', photo: '' },
-            { name: '黎耀駿', id: '', photo: '' },
-            { name: '伍康舜', id: '', photo: '' },
-            { name: '施汪濤', id: '', photo: '' },
-            { name: '郭鈞焯', id: '', photo: '' },
-            { name: 'Ali', id: '', photo: '' },
-            { name: '丁嘉瑩', id: '', photo: '' },
-            { name: '白樂天', id: '', photo: '' },
-            { name: '朱耀鋒', id: '', photo: '' },
-            { name: 'Inderveer', id: '', photo: '' }
-        ] },
-        { class: '高中二', students: [
-            { name: '黃樂源', id: '', photo: '' },
-            { name: '吳凱婷', id: '', photo: '' },
-            { name: 'Sudais', id: '', photo: '' },
-            { name: '歐陽芷穎', id: '', photo: '' },
-            { name: '伍浩霖', id: '', photo: '' },
-            { name: '李信楠', id: '', photo: '' },
-            { name: '陳成鑫', id: '', photo: '' },
-            { name: '張善婷', id: '', photo: '' },
-            { name: '梁毅韜', id: '', photo: '' },
-            { name: '林建廷', id: '', photo: '' },
-            { name: 'Alvin', id: '', photo: '' },
-            { name: '吳漢棋', id: '', photo: '' },
-            { name: '黃仲恒', id: '', photo: '' }
-        ] },
-        { class: '高中一', students: [
-            { name: '余明亮', id: '', photo: '' },
-            { name: '葉海澄', id: '', photo: '' },
-            { name: '李心悅', id: '', photo: '' },
-            { name: '黃心怡', id: '', photo: '' },
-            { name: '梅昕晴', id: '', photo: '' },
-            { name: '朱穎心', id: '', photo: '' },
-            { name: '蘇南燊', id: '', photo: '' },
-            { name: '王弘希', id: '', photo: '' },
-            { name: '鄭凱文', id: '', photo: '' },
-            { name: '陳昱均', id: '', photo: '' },
-            { name: '唐梓珊', id: '', photo: '' },
-            { name: '巫曉峰', id: '', photo: '' },
-            { name: '林思恒', id: '', photo: '' }
-        ] },
-        { class: '初中四', students: [
-            { name: '周晉琛', id: '', photo: '' },
-            { name: '陳澔亮', id: '', photo: '' },
-            { name: '葉芷汝', id: '', photo: '' },
-            { name: '林家朗', id: '', photo: '' },
-            { name: '關祈章', id: '', photo: '' },
-            { name: '洪宇軒', id: '', photo: '' },
-            { name: '鍾政希', id: '', photo: '' },
-            { name: '蔡芷宜', id: '', photo: '' }
-        ] },
-        { class: '初中三', students: [
-            { name: '麥梓淳', id: '', photo: '' },
-            { name: '鄧旨媃', id: '', photo: '' },
-            { name: '吳諾暉', id: '', photo: '' },
-            { name: '許家晞', id: '', photo: '' },
-            { name: '謝易男', id: '', photo: '' },
-            { name: '林詩彤', id: '', photo: '' },
-            { name: '謝嘉謙', id: '', photo: '' },
-            { name: '梁珀源', id: '', photo: '' },
-            { name: '張凱祺', id: '', photo: '' }
-        ] },
-        { class: '初中二', students: [
-            { name: '蔡濠名', id: '', photo: '' },
-            { name: '許浚銘', id: '', photo: '' },
-            { name: '賴浚棋', id: '', photo: '' },
-            { name: '楊臻一', id: '', photo: '' },
-            { name: '陳進浩', id: '', photo: '' },
-            { name: '黃崇康', id: '', photo: '' },
-            { name: '韓俊希', id: '', photo: '' },
-            { name: '梁心悠', id: '', photo: '' },
-            { name: '謝梓健', id: '', photo: '' }
-        ] },
-        { class: '初中一', students: [
-            { name: '許逸峰', id: '', photo: '' },
-            { name: '林宏晉', id: '', photo: '' },
-            { name: '錢寶存', id: '', photo: '' },
-            { name: '雲語嫣', id: '', photo: '' },
-            { name: '李澤民', id: '', photo: '' },
-            { name: '陳穎朗', id: '', photo: '' },
-            { name: '黃逸朗', id: '', photo: '' },
-            { name: '張倩瑜', id: '', photo: '' },
-            { name: '盧佩儀', id: '', photo: '' },
-            { name: '袁培琋', id: '', photo: '' }
-        ] },
-        { class: '高小五', students: [
-            { name: '高烯瑜', id: '', photo: '' },
-            { name: '陳傲雲', id: '', photo: '' },
-            { name: '黎溢鉦', id: '', photo: '' },
-            { name: '林詩藍', id: '', photo: '' },
-            { name: '周奕朗', id: '', photo: '' },
-            { name: '林銳添', id: '', photo: '' },
-            { name: '丁翰鏐', id: '', photo: '' },
-            { name: '吳卓鏗', id: '', photo: '' },
-            { name: '汪俊睎', id: '', photo: '' },
-            { name: '文恩祈', id: '', photo: '' },
-            { name: '陳旨軒', id: '', photo: '' },
-            { name: '張嘉兒', id: '', photo: '' }
-        ] },
-        { class: '高小四', students: [
-            { name: '鄧祈佑', id: '', photo: '' },
-            { name: '賴焯熹', id: '', photo: '' },
-            { name: '黃子軒', id: '', photo: '' },
-            { name: '梁茜程', id: '', photo: '' },
-            { name: '黃泳鈺', id: '', photo: '' },
-            { name: '沈柏熹', id: '', photo: '' },
-            { name: '吳梓城', id: '', photo: '' }
-        ] },
-        { class: '高小三', students: [
-            { name: '方君睿', id: '', photo: '' },
-            { name: '麥浩敏', id: '', photo: '' },
-            { name: '李雨蕊', id: '', photo: '' },
-            { name: '余蒂峰', id: '', photo: '' },
-            { name: '楊洛謙', id: '', photo: '' },
-            { name: '林子竣', id: '', photo: '' },
-            { name: '馮樂宏', id: '', photo: '' },
-            { name: '謝韶謙', id: '', photo: '' }
-        ] },
-        { class: '高小二', students: [
-            { name: '梁晉銘', id: '', photo: '' },
-            { name: '徐子淳', id: '', photo: '' },
-            { name: '伍珖灳', id: '', photo: '' },
-            { name: '曾業淳', id: '', photo: '' },
-            { name: '方子仁', id: '', photo: '' },
-            { name: '陳衍叡', id: '', photo: '' },
-            { name: '韓鎮聰', id: '', photo: '' },
-            { name: '馮鎮泓', id: '', photo: '' },
-            { name: '張逸朗', id: '', photo: '' }
-        ] },
-        { class: '高小一', students: [
-            { name: '林熙程', id: '', photo: '' },
-            { name: '李俊熹', id: '', photo: '' },
-            { name: '潘彥旭', id: '', photo: '' },
-            { name: '劉子龍', id: '', photo: '' },
-            { name: '倪灝', id: '', photo: '' },
-            { name: '陳泳霖', id: '', photo: '' },
-            { name: '潘彥東', id: '', photo: '' }
-        ] },
-        { class: '初小四', students: [
-            { name: '蔡澤銘', id: '', photo: '' },
-            { name: '鍾嘉諾', id: '', photo: '' },
-            { name: '譚詠殷', id: '', photo: '' },
-            { name: '鄺芷瑩', id: '', photo: '' },
-            { name: '李卓霖', id: '', photo: '' },
-            { name: '蕭洛希', id: '', photo: '' },
-            { name: '李柏言', id: '', photo: '' },
-            { name: '趙靖昕', id: '', photo: '' },
-            { name: '歐知穎', id: '', photo: '' },
-            { name: '劉星座', id: '', photo: '' },
-            { name: '黃渝婷', id: '', photo: '' }
-        ] },
-        { class: '初小三', students: [
-            { name: '林澤星', id: '', photo: '' },
-            { name: '李高略', id: '', photo: '' },
-            { name: '羅年洲', id: '', photo: '' },
-            { name: '施宇軒', id: '', photo: '' },
-            { name: '陳學禮', id: '', photo: '' },
-            { name: '曾溢知', id: '', photo: '' },
-            { name: '陳家溱', id: '', photo: '' },
-            { name: '蔡瀚毅', id: '', photo: '' },
-            { name: '楊凱琳', id: '', photo: '' },
-            { name: '龍正罡', id: '', photo: '' }
-        ] },
-        { class: '初小二', students: [
-            { name: '張濬霖', id: '', photo: '' },
-            { name: '梁誠軒', id: '', photo: '' },
-            { name: '唐鎧滔', id: '', photo: '' },
-            { name: 'OLIVIA (NCS)', id: '', photo: '' },
-            { name: 'WALEED (NCS)', id: '', photo: '' },
-            { name: '梁梓君', id: '', photo: '' },
-            { name: '許明然', id: '', photo: '' },
-            { name: 'AROUSE (NCS)', id: '', photo: '' },
-            { name: '張皓然', id: '', photo: '' },
-            { name: '陳德添', id: '', photo: '' }
-        ] },
-        { class: '初小一', students: [
-            { name: '林梓宇', id: '', photo: '' },
-            { name: '黃梓鈺', id: '', photo: '' },
-            { name: '黃晉豫', id: '', photo: '' },
-            { name: '鄔浩霖', id: '', photo: '' },
-            { name: '林柏言', id: '', photo: '' },
-            { name: '劉佩諭', id: '', photo: '' },
-            { name: '趙柏然', id: '', photo: '' },
-            { name: '劉星宙', id: '', photo: '' },
-            { name: '葉尚樺', id: '', photo: '' },
-            { name: '謝浩縉', id: '', photo: '' },
-            { name: '鍾應笙', id: '', photo: '' }
-        ] }
+        {
+            class: '高中三',
+            students: [
+                { name: '朱耀鋒', id: '朱耀鋒', photo: '' }
+            ]
+        },
+        {
+            class: '高中一',
+            students: [
+                { name: '林思恒', id: '林思恒', photo: '' },
+                { name: '蘇南燊', id: '蘇南燊', photo: '' }
+            ]
+        },
+        {
+            class: '初中四',
+            students: [
+                { name: '葉芷汝', id: '葉芷汝', photo: '' }
+            ]
+        },
+        {
+            class: '初中三',
+            students: [
+                { name: '吳諾暉', id: '吳諾暉', photo: '' },
+                { name: '梁珀源', id: '梁珀源', photo: '' }
+            ]
+        },
+        {
+            class: '高小五',
+            students: [
+                { name: '黎溢鉦', id: '黎溢鉦', photo: '' }
+            ]
+        },
+        {
+            class: '高小四',
+            students: [
+                { name: '黃泳鈺', id: '黃泳鈺', photo: '' }
+            ]
+        },
+        {
+            class: '高小三',
+            students: [
+                { name: '楊洛謙', id: '楊洛謙', photo: '' },
+                { name: '麥浩敏', id: '麥浩敏', photo: '' },
+                { name: '謝韶謙', id: '謝韶謙', photo: '' },
+                { name: '馮樂宏', id: '馮樂宏', photo: '' }
+            ]
+        },
+        {
+            class: '高小二',
+            students: [
+                { name: '曾業淳', id: '曾業淳', photo: '' },
+                { name: '馮鎮泓', id: '馮鎮泓', photo: '' }
+            ]
+        },
+        {
+            class: '高小一',
+            students: [
+                { name: '倪灝', id: '倪灝', photo: '' }
+            ]
+        },
+        {
+            class: '初小三',
+            students: [
+                { name: '林澤星', id: '林澤星', photo: '' },
+                { name: '蔡瀚毅', id: '蔡瀚毅', photo: '' },
+                { name: '楊凱琳', id: '楊凱琳', photo: '' },
+                { name: '龍正罡', id: '龍正罡', photo: '' }
+            ]
+        },
+        {
+            class: '初小二',
+            students: [
+                { name: '許明然', id: '許明然', photo: '' }
+            ]
+        }
     ];
 
     // 自動為所有學生補上唯一 id（1~200 依序遞增）
@@ -949,9 +690,13 @@
                 const value = parseInt(document.getElementById('scoreValue').value);
                 const date = document.getElementById('scoreDate').value;
                 if(type && !isNaN(value) && date) {
-                    scoreData[type].push({ value, date });
+                    // 確保全局 scoreData 存在
+                    if (!window.scoreData) {
+                        window.scoreData = { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [] };
+                    }
+                    window.scoreData[type].push({ value, date });
                     // 依日期排序
-                    scoreData[type].sort((a,b)=>a.date.localeCompare(b.date));
+                    window.scoreData[type].sort((a,b)=>a.date.localeCompare(b.date));
                     renderChart();
                     renderTables();
                     // ===== 新增：同步寫入首頁成績格式到 localStorage 'scores' =====
@@ -961,10 +706,10 @@
                         let scores = JSON.parse(localStorage.getItem('scores') || '[]');
                         // 取得該生當日所有四大項分數
                         let front = 0, jack = 0, ski = 0, bike = 0;
-                        scoreData.frontJump.forEach(s => { if(s.date === date) front = s.value; });
-                        scoreData.jumpingJack.forEach(s => { if(s.date === date) jack = s.value; });
-                        scoreData.skiJump.forEach(s => { if(s.date === date) ski = s.value; });
-                        scoreData.bicycleStep.forEach(s => { if(s.date === date) bike = s.value; });
+                        window.scoreData.frontJump.forEach(s => { if(s.date === date) front = s.value; });
+                        window.scoreData.jumpingJack.forEach(s => { if(s.date === date) jack = s.value; });
+                        window.scoreData.skiJump.forEach(s => { if(s.date === date) ski = s.value; });
+                        window.scoreData.bicycleStep.forEach(s => { if(s.date === date) bike = s.value; });
                         let total = front + jack + ski + bike;
                         // 只覆蓋同名同日的成績，不同日就新增
                         const existingIndex = scores.findIndex(score => score.name === student.name && score.date === date);
@@ -1045,211 +790,7 @@
         document.getElementById('totalTests').textContent = scores ? scores.length + '次' : '0次';
     }
 
-    // 儲存自學影片到 localStorage
-    function saveSelfStudyVideo(studentId, videoUrl, desc, date) {
-        try {
-            let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
-            let stu = all.find(s => s.studentId === studentId);
-            if (!stu) {
-                stu = { studentId, videos: [] };
-                all.push(stu);
-            }
-            
-            // 新增影片記錄
-            const videoRecord = {
-                url: videoUrl,
-                desc: desc || '彩虹章別計劃影片',
-                date: date,
-                feedback: [],
-                status: 'pending', // 待審核狀態
-                uploadTime: new Date().toISOString(),
-                fileName: `彩虹章影片_${date}_${Date.now()}`
-            };
-            
-            stu.videos.push(videoRecord);
-            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
-            
-            // 同時儲存到伺服器模擬儲存 (實際應用中會上傳到伺服器)
-            saveToServerStorage(studentId, videoRecord);
-            
-            console.log('影片已成功儲存:', videoRecord);
-            return true;
-        } catch (error) {
-            console.error('儲存影片失敗:', error);
-            return false;
-        }
-    }
-    
-    // 上傳影片到伺服器
-    async function uploadVideoToServer(studentId, videoFile, description) {
-        const formData = new FormData();
-        formData.append('video', videoFile);
-        formData.append('studentId', studentId);
-        formData.append('description', description);
-        
-        try {
-            // 檢查伺服器是否可用
-            const healthCheck = await fetch('http://localhost:3000/api/health');
-            if (!healthCheck.ok) {
-                throw new Error('伺服器連線失敗，請確認後端服務是否啟動');
-            }
-            
-            const response = await fetch('http://localhost:3000/api/upload-video', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || '上傳失敗');
-            }
-            
-            const result = await response.json();
-            if (result.success) {
-                console.log('✅ 影片上傳成功:', result.videoUrl);
-                return result.videoUrl;
-            } else {
-                throw new Error(result.error || '上傳失敗');
-            }
-        } catch (error) {
-            console.error('❌ 上傳失敗:', error);
-            throw error;
-        }
-    }
-    
-    // 從伺服器取得影片列表
-    async function getVideosFromServer(studentId = null) {
-        try {
-            const url = studentId 
-                ? `http://localhost:3000/api/videos/student/${studentId}`
-                : 'http://localhost:3000/api/videos';
-            
-            const response = await fetch(url);
-            const videos = await response.json();
-            return videos;
-        } catch (error) {
-            console.error('取得影片失敗:', error);
-            return [];
-        }
-    }
-    
-    // 老師審核影片
-    async function reviewVideo(videoId, status, comment, teacherId) {
-        try {
-            const response = await fetch(`http://localhost:3000/api/videos/${videoId}/review`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    status,
-                    comment,
-                    teacherId
-                })
-            });
-            
-            const result = await response.json();
-            if (result.success) {
-                return result.video;
-            } else {
-                throw new Error(result.error || '審核失敗');
-            }
-        } catch (error) {
-            console.error('審核失敗:', error);
-            throw error;
-        }
-    }
-    
-    // 模擬伺服器儲存 (實際應用中會上傳到真實伺服器)
-    function saveToServerStorage(studentId, videoRecord) {
-        // 這裡可以加入實際的伺服器上傳邏輯
-        // 目前模擬儲存到 localStorage 的 serverVideos 中
-        let serverVideos = JSON.parse(localStorage.getItem('serverVideos') || '[]');
-        serverVideos.push({
-            ...videoRecord,
-            studentId: studentId,
-            serverId: Date.now(),
-            serverStatus: 'uploaded'
-        });
-        localStorage.setItem('serverVideos', JSON.stringify(serverVideos));
-    }
-    
-    // 影片審核功能
-    function approveVideo(studentId, videoIdx) {
-        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
-        let stu = all.find(s => s.studentId === studentId);
-        if (stu && stu.videos[videoIdx]) {
-            stu.videos[videoIdx].status = 'approved';
-            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
-            renderVideoFeedbackSection(studentId);
-            showAlert('影片已通過審核！', 'success');
-        }
-    }
-    
-    function rejectVideo(studentId, videoIdx) {
-        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
-        let stu = all.find(s => s.studentId === studentId);
-        if (stu && stu.videos[videoIdx]) {
-            stu.videos[videoIdx].status = 'rejected';
-            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
-            renderVideoFeedbackSection(studentId);
-            showAlert('影片已拒絕！', 'warning');
-        }
-    }
-    
-    // 影片下載功能
-    function downloadVideo(videoUrl, fileName) {
-        try {
-            const link = document.createElement('a');
-            link.href = videoUrl;
-            link.download = fileName + '.mp4';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showAlert('影片下載已開始！', 'success');
-        } catch (error) {
-            console.error('下載失敗:', error);
-            showAlert('下載失敗，請重試！', 'danger');
-        }
-    }
-    
-    // 顯示提示訊息
-    function showAlert(message, type = 'info') {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        // 插入到頁面頂部
-        const container = document.querySelector('.container');
-        if (container) {
-            container.insertBefore(alertDiv, container.firstChild);
-            
-            // 3秒後自動移除
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 3000);
-        }
-    }
-    // 取得學生所有自學影片
-    function getSelfStudyVideos(studentId) {
-        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
-        let stu = all.find(s => s.studentId === studentId);
-        return stu ? stu.videos : [];
-    }
-    // 新增教師意見
-    function addTeacherFeedback(studentId, videoIdx, teacher, comment) {
-        let all = JSON.parse(localStorage.getItem('selfStudyVideos') || '[]');
-        let stu = all.find(s => s.studentId === studentId);
-        if (stu && stu.videos[videoIdx]) {
-            stu.videos[videoIdx].feedback.push({ teacher, comment, date: new Date().toISOString().slice(0,10) });
-            localStorage.setItem('selfStudyVideos', JSON.stringify(all));
-        }
-    }
+
     // 渲染影片與教師意見
     function renderVideoFeedbackSection(studentId) {
         const section = document.getElementById('videoFeedbackSection');
@@ -1449,150 +990,7 @@
         renderVideoFeedbackSection(id);
     }
     
-    // 學習顯證相關功能
-    function saveLearningEvidence(evidenceData) {
-        let allEvidence = JSON.parse(localStorage.getItem('learningEvidence') || '[]');
-        evidenceData.id = Date.now(); // 使用時間戳作為唯一ID
-        evidenceData.uploadDate = new Date().toISOString().slice(0, 10);
-        allEvidence.push(evidenceData);
-        localStorage.setItem('learningEvidence', JSON.stringify(allEvidence));
-    }
-    
-    function getLearningEvidence() {
-        return JSON.parse(localStorage.getItem('learningEvidence') || '[]');
-    }
-    
-    function renderLearningEvidenceList() {
-        const evidenceList = document.getElementById('learningEvidenceList');
-        const allEvidence = getLearningEvidence();
-        
-        if (!evidenceList) return;
-        
-        if (allEvidence.length === 0) {
-            evidenceList.innerHTML = `
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>尚未有學習顯證記錄
-                </div>
-            `;
-            return;
-        }
-        
-        // 按日期排序，最新的在前面
-        allEvidence.sort((a, b) => new Date(b.lessonDate) - new Date(a.lessonDate));
-        
-        evidenceList.innerHTML = allEvidence.map(evidence => `
-            <div class="card mb-3 border-0 shadow-sm learning-evidence-card">
-                <div class="card-header bg-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 text-primary">
-                            <i class="fas fa-calendar me-2"></i>${evidence.lessonDate}
-                        </h6>
-                        <span class="badge bg-success evidence-badge">${evidence.lessonClass}</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h6 class="text-primary mb-2">
-                                <i class="fas fa-book me-2"></i>${evidence.lessonSubject}
-                            </h6>
-                            <p class="mb-2"><strong>授課老師：</strong>${evidence.lessonTeacher}</p>
-                            <p class="mb-2"><strong>課堂內容：</strong>${evidence.lessonDescription || '無描述'}</p>
-                            <p class="mb-2"><strong>學習亮點：</strong>${evidence.lessonHighlights || '無記錄'}</p>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="text-center">
-                                <video src="${evidence.videoUrl}" controls style="max-width:100%;height:150px;" class="mb-2 evidence-video"></video>
-                                <div class="small text-muted">課堂學習影片</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="evidence-actions">
-                        <button class="btn btn-sm btn-outline-primary me-2" onclick="downloadVideo('${evidence.videoUrl}', '${evidence.lessonSubject}_${evidence.lessonDate}')">
-                            <i class="fas fa-download me-1"></i>下載影片
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteLearningEvidence(${evidence.id})">
-                            <i class="fas fa-trash me-1"></i>刪除記錄
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    function downloadVideo(videoUrl, filename) {
-        const link = document.createElement('a');
-        link.href = videoUrl;
-        link.download = filename + '.mp4';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-    
-    function deleteLearningEvidence(evidenceId) {
-        if (confirm('確定要刪除此學習顯證記錄嗎？')) {
-            let allEvidence = getLearningEvidence();
-            allEvidence = allEvidence.filter(evidence => evidence.id !== evidenceId);
-            localStorage.setItem('learningEvidence', JSON.stringify(allEvidence));
-            renderLearningEvidenceList();
-        }
-    }
-    
-    function initLearningEvidenceSection() {
-        const uploadForm = document.getElementById('learningEvidenceForm');
-        if (uploadForm) {
-            uploadForm.onsubmit = function(e) {
-                e.preventDefault();
-                
-                const formData = {
-                    lessonDate: document.getElementById('lessonDate').value,
-                    lessonSubject: document.getElementById('lessonSubject').value,
-                    lessonClass: document.getElementById('lessonClass').value,
-                    lessonTeacher: document.getElementById('lessonTeacher').value,
-                    lessonDescription: document.getElementById('lessonDescription').value,
-                    lessonHighlights: document.getElementById('lessonHighlights').value
-                };
-                
-                const videoFile = document.getElementById('lessonVideo').files[0];
-                if (!videoFile) {
-                    document.getElementById('uploadMessage').innerHTML = '<div class="alert alert-danger">請選擇課堂學習影片</div>';
-                    return;
-                }
-                
-                // 檢查檔案大小（100MB限制）
-                if (videoFile.size > 100 * 1024 * 1024) {
-                    document.getElementById('uploadMessage').innerHTML = '<div class="alert alert-danger">影片檔案大小不能超過 100MB</div>';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    formData.videoUrl = evt.target.result;
-                    saveLearningEvidence(formData);
-                    
-                    document.getElementById('uploadMessage').innerHTML = '<div class="alert alert-success">學習顯證上載成功！</div>';
-                    uploadForm.reset();
-                    renderLearningEvidenceList();
-                    
-                    // 3秒後清除成功訊息
-                    setTimeout(() => {
-                        document.getElementById('uploadMessage').innerHTML = '';
-                    }, 3000);
-                };
-                reader.readAsDataURL(videoFile);
-            };
-        }
-        
-        // 初始渲染學習顯證列表
-        renderLearningEvidenceList();
-        
-        // 設定預設日期為今天
-        const today = new Date().toISOString().slice(0, 10);
-        const dateInput = document.getElementById('lessonDate');
-        if (dateInput) {
-            dateInput.value = today;
-        }
-    }
+
 
     // 初始化
     function goBack() {
@@ -1606,7 +1004,6 @@
         if (student) {
             // 更新學生資訊
             document.getElementById('studentName').textContent = student.name;
-            document.getElementById('studentId').textContent = student.id;
             document.getElementById('studentClass').textContent = student.class;
             
             // 更新所有表格中的學生姓名
@@ -1636,7 +1033,6 @@
             }
         } else {
             document.getElementById('studentName').textContent = '查無此學生';
-            document.getElementById('studentId').textContent = '';
             document.getElementById('studentClass').textContent = '';
             document.getElementById('totalTests').textContent = '0次';
         }
@@ -1654,8 +1050,7 @@
             }
         }
         
-        // 初始化學習顯證功能
-        initLearningEvidenceSection();
+
         
         // 初始化彩虹章別計劃影片區塊
         initSelfStudyVideoSection();
@@ -1751,9 +1146,15 @@
                     });
                 });
             }
-        }
+            }
+    
 
-        // 初始化相片
+    
+
+    
+
+
+    // 初始化相片
         loadStudentPhotos();
         loadStudentPhoto();
         
