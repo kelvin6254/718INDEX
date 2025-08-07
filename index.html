@@ -1364,16 +1364,142 @@ function backToTop() {
             let description = document.getElementById('videoDescription').value;
             
             if (studentName && videoFile) {
-                showAlert('影片上傳成功！我們會盡快審核您的影片。', 'success');
+                // 檢查檔案大小（限制為100MB）
+                if (videoFile.size > 100 * 1024 * 1024) {
+                    showAlert('影片檔案太大，請選擇小於100MB的檔案', 'danger');
+                    return;
+                }
+                
+                // 檢查檔案類型
+                const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv'];
+                if (!allowedTypes.includes(videoFile.type)) {
+                    showAlert('請選擇支援的影片格式（MP4、AVI、MOV、WMV、FLV）', 'danger');
+                    return;
+                }
+                
+                // 顯示上傳進度
+                showUploadProgress();
+                
+                // 模擬影片上傳過程
+                uploadVideo(studentName, videoFile, description);
+                
+            } else {
+                showAlert('請選擇學生姓名和影片文件', 'danger');
+            }
+        });
+        
+        // 影片上傳功能
+        function uploadVideo(studentName, videoFile, description) {
+            // 創建 FormData 對象
+            const formData = new FormData();
+            formData.append('studentName', studentName);
+            formData.append('videoFile', videoFile);
+            formData.append('description', description);
+            formData.append('uploadTime', new Date().toISOString());
+            
+            // 模擬上傳過程（實際應用中這裡會發送到伺服器）
+            setTimeout(() => {
+                // 儲存到 localStorage 作為臨時儲存
+                const uploads = JSON.parse(localStorage.getItem('videoUploads') || '[]');
+                const newUpload = {
+                    id: Date.now(),
+                    studentName: studentName,
+                    fileName: videoFile.name,
+                    fileSize: videoFile.size,
+                    description: description,
+                    uploadTime: new Date().toISOString(),
+                    status: 'pending', // pending, approved, rejected
+                    teacherComment: ''
+                };
+                
+                uploads.push(newUpload);
+                localStorage.setItem('videoUploads', JSON.stringify(uploads));
+                
+                // 隱藏進度條
+                hideUploadProgress();
+                
+                // 顯示成功訊息
+                showAlert(`影片上傳成功！學生：${studentName}，檔案：${videoFile.name}。我們會盡快審核您的影片。`, 'success');
                 
                 // 清空表單
                 document.getElementById('studentNameUpload').value = '';
                 document.getElementById('videoFile').value = '';
                 document.getElementById('videoDescription').value = '';
-            } else {
-                showAlert('請選擇學生姓名和影片文件', 'danger');
+                
+                // 更新上傳列表（如果頁面有顯示的話）
+                updateUploadList();
+                
+            }, 2000); // 模擬2秒上傳時間
+        }
+        
+        // 顯示上傳進度
+        function showUploadProgress() {
+            const progressDiv = document.createElement('div');
+            progressDiv.id = 'uploadProgress';
+            progressDiv.className = 'alert alert-info text-center position-fixed';
+            progressDiv.style.cssText = 'top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; min-width: 300px;';
+            progressDiv.innerHTML = `
+                <i class="fas fa-upload me-2"></i>正在上傳影片...
+                <div class="progress mt-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                </div>
+            `;
+            document.body.appendChild(progressDiv);
+            
+            // 模擬進度條動畫
+            const progressBar = progressDiv.querySelector('.progress-bar');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 200);
+            
+            // 儲存 interval ID 以便停止
+            progressDiv.dataset.interval = interval;
+        }
+        
+        // 隱藏上傳進度
+        function hideUploadProgress() {
+            const progressDiv = document.getElementById('uploadProgress');
+            if (progressDiv) {
+                clearInterval(parseInt(progressDiv.dataset.interval));
+                progressDiv.remove();
             }
-        });
+        }
+        
+        // 更新上傳列表
+        function updateUploadList() {
+            const uploads = JSON.parse(localStorage.getItem('videoUploads') || '[]');
+            const uploadListContainer = document.getElementById('uploadList');
+            
+            if (uploadListContainer) {
+                let html = '';
+                uploads.forEach(upload => {
+                    const statusClass = upload.status === 'approved' ? 'success' : 
+                                     upload.status === 'rejected' ? 'danger' : 'warning';
+                    const statusText = upload.status === 'approved' ? '已通過' : 
+                                     upload.status === 'rejected' ? '已拒絕' : '待審核';
+                    
+                    html += `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">${upload.studentName}</h6>
+                                <p class="card-text">${upload.description || '無描述'}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">${upload.fileName}</small>
+                                    <span class="badge bg-${statusClass}">${statusText}</span>
+                                </div>
+                                <small class="text-muted">上傳時間：${new Date(upload.uploadTime).toLocaleString()}</small>
+                                ${upload.teacherComment ? `<div class="mt-2"><small class="text-info">老師評語：${upload.teacherComment}</small></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                uploadListContainer.innerHTML = html || '<p class="text-muted">暫無上傳記錄</p>';
+            }
+        }
 
         // 添加角色狀態顯示
         function updateRoleStatus() {
