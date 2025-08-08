@@ -415,7 +415,7 @@
     </script>
 <script src="js/firebase-config.js"></script>
 <script type="module">
-  import { ensureAuth, db, storage } from './js/firebase.js';
+  import { db, storage } from './js/firebase.js';
   import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
   import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
 
@@ -435,28 +435,36 @@
   }
 
   async function hydratePhotosFromCloud() {
+    // 第一階段：不需登入，直接從 Storage 依姓名嘗試取得圖片；取不到就用本地 PIC 回退
+    if (window.studentsData && Array.isArray(window.studentsData)) {
+      for (const cls of window.studentsData) {
+        for (const stu of (cls.students || [])) {
+          const name = stu.name || '';
+          let url = '';
+          if (name) url = await tryStorageByName(name);
+          if (!url) url = `PIC/${encodeURIComponent(name)}.jpg`;
+          stu.photo = url;
+        }
+      }
+      if (typeof window.renderStudentList === 'function') {
+        window.renderStudentList('all');
+      }
+    }
+
+    // 第二階段：若 Firestore 可讀，覆蓋為 photoUrl（若有）
     try {
-      await ensureAuth();
       const snap = await getDocs(collection(db, 'students'));
       const nameToPhoto = {};
       snap.forEach(d => {
         const s = d.data() || {};
-        if (s.name) nameToPhoto[s.name] = s.photoUrl || '';
+        if (s.name && s.photoUrl) nameToPhoto[s.name] = s.photoUrl;
       });
-      // 將雲端 photoUrl 或本地/Storage 回退寫回現有資料並重新渲染
-      if (window.studentsData && Array.isArray(window.studentsData)) {
+      if (Object.keys(nameToPhoto).length && window.studentsData) {
         for (const cls of window.studentsData) {
           for (const stu of (cls.students || [])) {
-            const name = stu.name || '';
-            // 1) Firestore photoUrl
-            let url = nameToPhoto[name] || '';
-            // 2) 若沒有，嘗試到 Storage 依常見副檔名與 students/ 前綴尋找
-            if (!url && name) {
-              url = await tryStorageByName(name);
+            if (nameToPhoto[stu.name]) {
+              stu.photo = nameToPhoto[stu.name];
             }
-            // 3) 若仍沒有，用本地 PIC 回退
-            if (!url) url = `PIC/${encodeURIComponent(name)}.jpg`;
-            stu.photo = url;
           }
         }
         if (typeof window.renderStudentList === 'function') {
@@ -464,8 +472,7 @@
         }
       }
     } catch (e) {
-      // 讀雲端失敗不阻塞，本地仍可顯示
-      console.warn('讀取雲端學生相片失敗：', e.message);
+      // Firestore 不可讀時忽略
     }
   }
 
