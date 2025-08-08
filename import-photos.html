@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>匯入學生相片到 Firebase</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-3 fw-bold" style="color:#2339d6;letter-spacing:1px;">批次匯入學生相片</h2>
+    <p class="text-muted mb-3">
+      檔名請用「學生姓名」命名，例如：<code>吳諾暉.jpg</code>、<code>葉芷汝.png</code>。系統會：
+      <br>1) 以姓名尋找或建立 <code>students</code> 文件
+      <br>2) 將圖片上傳到 Storage <code>students/{studentId}/</code>
+      <br>3) 把下載連結寫回文件欄位 <code>photoUrl</code>
+    </p>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">教師登入（可選，若規則限制寫入）</label>
+            <input type="email" id="email" class="form-control" placeholder="teacher@example.com" />
+          </div>
+          <div class="col-md-3">
+            <input type="password" id="password" class="form-control" placeholder="密碼" />
+          </div>
+          <div class="col-md-2">
+            <button id="loginBtn" class="btn btn-outline-primary w-100"><i class="fas fa-sign-in-alt me-1"></i>登入</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-7">
+            <label class="form-label">選擇相片檔（可多選）</label>
+            <input type="file" id="photoInput" class="form-control" accept="image/*" multiple />
+          </div>
+          <div class="col-md-3">
+            <button id="importBtn" class="btn btn-primary w-100"><i class="fas fa-cloud-upload-alt me-1"></i>開始匯入</button>
+          </div>
+          <div class="col-md-2 text-end">
+            <a href="students-list.html" class="btn btn-secondary"><i class="fas fa-list me-1"></i>返回名單</a>
+          </div>
+        </div>
+        <div id="status" class="mt-3 small text-muted"></div>
+        <div id="log" class="mt-3" style="white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module">
+    import { ensureAuth, uploadStudentPhoto } from './js/firebase.js';
+    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+    const auth = getAuth();
+    const db = getFirestore();
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const photoInput = document.getElementById('photoInput');
+
+    const setStatus = m => statusEl.textContent = m;
+    const log = m => { logEl.textContent += m + '\n'; };
+
+    async function loginIfNeeded() {
+      const email = (document.getElementById('email').value || '').trim();
+      const password = (document.getElementById('password').value || '').trim();
+      if (email && password) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await ensureAuth();
+      }
+    }
+
+    async function getOrCreateStudentByName(name) {
+      const colRef = collection(db, 'students');
+      const q = query(colRef, where('name', '==', name));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].id;
+      const d = await addDoc(colRef, { name, class: '未分班', createdAt: serverTimestamp() });
+      return d.id;
+    }
+
+    function normalizeNameFromFile(file) {
+      const base = file.name.replace(/\.[^.]+$/, '');
+      return base.trim();
+    }
+
+    document.getElementById('loginBtn').onclick = async () => {
+      try { await loginIfNeeded(); setStatus('登入成功'); } catch (e) { setStatus('登入失敗：' + e.message); }
+    };
+
+    document.getElementById('importBtn').onclick = async () => {
+      const files = Array.from(photoInput.files || []);
+      if (!files.length) { setStatus('請先選擇相片'); return; }
+      setStatus('處理中...'); logEl.textContent = '';
+      try {
+        await loginIfNeeded();
+        let ok = 0, fail = 0;
+        for (const f of files) {
+          try {
+            const name = normalizeNameFromFile(f);
+            const studentId = await getOrCreateStudentByName(name);
+            await uploadStudentPhoto(studentId, f);
+            ok++;
+            log(`✔ 已上傳：${name} (${f.name})`);
+          } catch (e) {
+            fail++;
+            log(`✖ 失敗：${f.name} - ${e.message}`);
+          }
+        }
+        setStatus(`完成，上傳成功 ${ok} 張，相片失敗 ${fail} 張。`);
+      } catch (e) {
+        console.error(e);
+        setStatus('匯入失敗：' + e.message);
+      }
+    };
+  </script>
+</body>
+</html>
+
+
