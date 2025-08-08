@@ -436,6 +436,41 @@
           background: #0ea5e9 !important;
           color: #fff !important;
         }
+        
+        /* 手機上模態框優化 */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                margin: 10px;
+                max-width: calc(100% - 20px);
+            }
+            
+            .modal-content {
+                border-radius: 12px;
+            }
+            
+            .modal-header {
+                padding: 15px 20px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+            
+            .student-tabs-container {
+                max-height: 150px !important;
+            }
+            
+            .nav-tabs .nav-link {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+            
+            .video-container {
+                height: 200px !important;
+            }
+        }
 /* ====== 全站美化 ====== */
 body {
   background: #f4f8fb;
@@ -874,7 +909,7 @@ function backToTop() {
                                 <small class="text-muted">
                                     <i class="fas fa-calendar me-1"></i>2024年12月
                                 </small>
-                                <button class="btn btn-primary btn-sm mt-2" onclick="openTransformationModal()">
+                                <button class="btn btn-primary btn-sm mt-2" onclick="openTransformationModal()" style="min-height: 44px; min-width: 120px; touch-action: manipulation;">
                                     <i class="fas fa-play me-1"></i>觀看進步影片
                                 </button>
                             </div>
@@ -2177,9 +2212,95 @@ function backToTop() {
         
         // 打開隊員蛻變模態框
         function openTransformationModal() {
-            const modal = new bootstrap.Modal(document.getElementById('transformationModal'));
-            modal.show();
+            try {
+                const modalElement = document.getElementById('transformationModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    console.error('找不到模態框元素');
+                    // 備用方案：直接顯示模態框
+                    const modal = document.getElementById('transformationModal');
+                    if (modal) {
+                        modal.classList.add('show');
+                        modal.style.display = 'block';
+                        modal.setAttribute('aria-hidden', 'false');
+                        document.body.classList.add('modal-open');
+                        
+                        // 添加背景遮罩
+                        const backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                    }
+                }
+            } catch (error) {
+                console.error('打開模態框時發生錯誤:', error);
+                // 備用方案：使用原生JavaScript
+                const modal = document.getElementById('transformationModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('modal-open');
+                    
+                    // 添加背景遮罩
+                    const backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    document.body.appendChild(backdrop);
+                }
+            }
         }
+        
+        // 關閉模態框
+        function closeTransformationModal() {
+            try {
+                const modalElement = document.getElementById('transformationModal');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    } else {
+                        // 備用方案：直接隱藏模態框
+                        modalElement.classList.remove('show');
+                        modalElement.style.display = 'none';
+                        modalElement.setAttribute('aria-hidden', 'true');
+                        document.body.classList.remove('modal-open');
+                        
+                        // 移除背景遮罩
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('關閉模態框時發生錯誤:', error);
+                // 備用方案：使用原生JavaScript
+                const modal = document.getElementById('transformationModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                    modal.setAttribute('aria-hidden', 'true');
+                    document.body.classList.remove('modal-open');
+                    
+                    // 移除背景遮罩
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                }
+            }
+        }
+        
+        // 為關閉按鈕添加事件監聽器
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    closeTransformationModal();
+                });
+            });
+        });
     </script>
 </body>
 </html> 
