@@ -415,8 +415,9 @@
     </script>
 <script src="js/firebase-config.js"></script>
 <script type="module">
-  import { ensureAuth, db } from './js/firebase.js';
+  import { ensureAuth, db, storage } from './js/firebase.js';
   import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+  import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
 
   async function hydratePhotosFromCloud() {
     try {
@@ -427,15 +428,25 @@
         const s = d.data() || {};
         if (s.name) nameToPhoto[s.name] = s.photoUrl || '';
       });
-      // 將雲端 photoUrl 或本地 PIC 回退寫回現有資料並重新渲染
+      // 將雲端 photoUrl 或本地/Storage 回退寫回現有資料並重新渲染
       if (window.studentsData && Array.isArray(window.studentsData)) {
-        window.studentsData.forEach(cls => {
-          (cls.students || []).forEach(stu => {
+        for (const cls of window.studentsData) {
+          for (const stu of (cls.students || [])) {
             const name = stu.name || '';
-            const url = nameToPhoto[name] || `PIC/${encodeURIComponent(name)}.jpg`;
+            // 1) Firestore photoUrl
+            let url = nameToPhoto[name] || '';
+            // 2) 若沒有，嘗試到 Storage 根目錄以「姓名.jpg」取下載網址
+            if (!url && name) {
+              try {
+                const r = ref(storage, `${name}.jpg`);
+                url = await getDownloadURL(r);
+              } catch {}
+            }
+            // 3) 若仍沒有，用本地 PIC 回退
+            if (!url) url = `PIC/${encodeURIComponent(name)}.jpg`;
             stu.photo = url;
-          });
-        });
+          }
+        }
         if (typeof window.renderStudentList === 'function') {
           window.renderStudentList('all');
         }
