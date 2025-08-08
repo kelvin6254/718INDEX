@@ -97,8 +97,17 @@
         }
         nameEl.textContent = stu.name || '未命名';
         klassEl.textContent = stu.class || '未分班';
-        avatarEl.src = stu.photoUrl || '';
-        avatarEl.onerror = () => { avatarEl.src=''; avatarEl.style.background='#e9ecef'; };
+        const safeName = encodeURIComponent(stu.name || '');
+        avatarEl.src = stu.photoUrl || `PIC/${safeName}.jpg`;
+        avatarEl.onerror = () => {
+          if (!avatarEl.dataset.fallback) {
+            avatarEl.dataset.fallback = '1';
+            avatarEl.src = `PIC/${safeName}.jpg`;
+          } else {
+            avatarEl.src='';
+            avatarEl.style.background='#e9ecef';
+          }
+        };
 
         statusEl.textContent = '監聽雲端成績中...';
         listenStudentScores(id, byType => {

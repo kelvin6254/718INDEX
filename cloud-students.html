@@ -60,13 +60,14 @@
         return;
       }
       for (const s of filtered) {
+        const safeName = encodeURIComponent(s.name || '');
         const col = document.createElement('div');
         col.className = 'col-12 col-md-6 col-lg-4';
         col.innerHTML = `
           <a class="text-decoration-none text-reset" href="cloud-student?id=${s.id}">
             <div class="student-card card shadow-sm">
               <div class="card-body d-flex align-items-center gap-3">
-                <img class="avatar" src="${s.photoUrl || ''}" onerror="this.src='';this.style.background='#e9ecef'" alt="avatar">
+                <img class="avatar" src="${s.photoUrl || `PIC/${safeName}.jpg`}" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='PIC/${safeName}.jpg';}else{this.src='';this.style.background='#e9ecef';}" alt="avatar">
                 <div>
                   <div class="fw-bold">${s.name || '未命名'}</div>
                   <div class="text-muted small">${s.class || '未分班'}</div>
