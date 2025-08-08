@@ -77,6 +77,10 @@
       } else {
         await ensureAuth();
       }
+      // 強制刷新 ID Token，確保剛設定的自訂權限（role=teacher）已帶入
+      if (auth.currentUser) {
+        try { await auth.currentUser.getIdToken(true); } catch {}
+      }
     }
 
     async function getOrCreateStudentByName(name) {
