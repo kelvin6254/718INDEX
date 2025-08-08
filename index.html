@@ -626,19 +626,19 @@ body {
   .attitude-grid { gap: 12px !important; }
   .zone-card { min-height: 180px; }
 }
-</style>
-<script>
-// 返回頂部按鈕
-window.addEventListener('scroll', function() {
-  const btn = document.getElementById('backToTopBtn');
-  if (window.scrollY > 300) btn.style.display = 'flex';
-  else btn.style.display = 'none';
-});
-function backToTop() {
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-</script>
-<button id="backToTopBtn" onclick="backToTop()" title="返回頂部"><i class="fas fa-arrow-up"></i></button>
+    </style>
+    <script>
+        // 返回頂部按鈕
+        window.addEventListener('scroll', function() {
+          const btn = document.getElementById('backToTopBtn');
+          if (window.scrollY > 300) btn.style.display = 'flex';
+          else btn.style.display = 'none';
+        });
+        function backToTop() {
+          window.scrollTo({top:0,behavior:'smooth'});
+        }
+    </script>
+    <button id="backToTopBtn" onclick="backToTop()" title="返回頂部"><i class="fas fa-arrow-up"></i></button>
 </head>
 <body>
     <!-- 頂部導航欄 -->
@@ -782,7 +782,23 @@ function backToTop() {
                 </div>
             
             <div class="table-container">
-                <h3 class="mb-4">當前成績</h3>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>當前成績</h3>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="exportScores()" title="匯出成績資料">
+                            <i class="fas fa-download me-1"></i>匯出資料
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="importScores()" title="匯入成績資料">
+                            <i class="fas fa-upload me-1"></i>匯入資料
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="restoreBackup()" title="恢復備份">
+                            <i class="fas fa-undo me-1"></i>恢復備份
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="autoBackup()" title="手動備份">
+                            <i class="fas fa-save me-1"></i>手動備份
+                        </button>
+                    </div>
+                </div>
                 <table id="scoresTable" class="table table-hover">
                     <thead class="table-dark">
                         <tr>
@@ -1485,12 +1501,152 @@ function backToTop() {
         // 初始化數據
         let scores = JSON.parse(localStorage.getItem('scores') || '[]');
         
+        // 新增：自動備份功能
+        function autoBackup() {
+            try {
+                // 建立備份時間戳
+                const backupTime = new Date().toISOString();
+                const backupData = {
+                    timestamp: backupTime,
+                    scores: scores,
+                    version: '1.0'
+                };
+                
+                // 儲存到 localStorage 備份
+                localStorage.setItem('scores_backup', JSON.stringify(backupData));
+                
+                // 同時儲存到 sessionStorage 作為額外備份
+                sessionStorage.setItem('scores_session_backup', JSON.stringify(backupData));
+                
+                console.log('成績資料已自動備份');
+            } catch (error) {
+                console.error('備份失敗:', error);
+            }
+        }
+        
+        // 新增：恢復備份資料
+        function restoreBackup() {
+            try {
+                // 嘗試從 localStorage 備份恢復
+                const backupData = localStorage.getItem('scores_backup');
+                if (backupData) {
+                    const parsed = JSON.parse(backupData);
+                    if (parsed.scores && Array.isArray(parsed.scores)) {
+                        scores = parsed.scores;
+                        localStorage.setItem('scores', JSON.stringify(scores));
+                        console.log('已從備份恢復成績資料');
+                        return true;
+                    }
+                }
+                
+                // 嘗試從 sessionStorage 恢復
+                const sessionBackup = sessionStorage.getItem('scores_session_backup');
+                if (sessionBackup) {
+                    const parsed = JSON.parse(sessionBackup);
+                    if (parsed.scores && Array.isArray(parsed.scores)) {
+                        scores = parsed.scores;
+                        localStorage.setItem('scores', JSON.stringify(scores));
+                        console.log('已從 session 備份恢復成績資料');
+                        return true;
+                    }
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('恢復備份失敗:', error);
+                return false;
+            }
+        }
+        
+        // 新增：匯出成績資料
+        function exportScores() {
+            try {
+                const exportData = {
+                    exportTime: new Date().toISOString(),
+                    totalRecords: scores.length,
+                    scores: scores
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `學生成績資料_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showAlert('成績資料已成功匯出！', 'success');
+            } catch (error) {
+                console.error('匯出失敗:', error);
+                showAlert('匯出失敗，請重試！', 'danger');
+            }
+        }
+        
+        // 新增：匯入成績資料
+        function importScores() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.scores && Array.isArray(importedData.scores)) {
+                            // 合併匯入的資料與現有資料
+                            const existingNames = new Set(scores.map(s => s.name));
+                            const newScores = importedData.scores.filter(s => !existingNames.has(s.name));
+                            
+                            scores = [...scores, ...newScores];
+                            localStorage.setItem('scores', JSON.stringify(scores));
+                            autoBackup();
+                            
+                            renderScores();
+                            renderRankings();
+                            
+                            showAlert(`成功匯入 ${newScores.length} 筆成績資料！`, 'success');
+                        } else {
+                            showAlert('匯入的檔案格式不正確！', 'danger');
+                        }
+                    } catch (error) {
+                        console.error('匯入失敗:', error);
+                        showAlert('匯入失敗，檔案格式錯誤！', 'danger');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 新增：檢查資料完整性
+        function checkDataIntegrity() {
+            const mainScores = JSON.parse(localStorage.getItem('scores') || '[]');
+            const backupScores = localStorage.getItem('scores_backup');
+            
+            if (mainScores.length === 0 && backupScores) {
+                console.log('主要資料為空，嘗試恢復備份...');
+                if (restoreBackup()) {
+                    showAlert('已從備份恢復成績資料！', 'success');
+                    renderScores();
+                    renderRankings();
+                }
+            }
+        }
+        
         // 設置今天的日期為默認值
         document.getElementById('scoreDate').valueAsDate = new Date();
         
         // 頁面載入時顯示角色選擇
         window.addEventListener('load', function() {
             showRoleSelection();
+            checkDataIntegrity(); // 檢查資料完整性
+            autoBackup(); // 自動備份
         });
 
         function renderScores() {
@@ -1848,13 +2004,14 @@ function backToTop() {
                     
                     // 更新成績
                     scores[index] = { name, front, jack, ski, bike, total, date };
-                    localStorage.setItem('scores', JSON.stringify(scores));
-                    
-                    closeModal();
-                    renderScores();
-                    renderRankings();
-                    
-                    showAlert('成績已成功更新！', 'success');
+                                    localStorage.setItem('scores', JSON.stringify(scores));
+                autoBackup(); // 自動備份
+                
+                closeModal();
+                renderScores();
+                renderRankings();
+                
+                showAlert('成績已成功更新！', 'success');
                 } else {
                     showAlert('請輸入完整的成績資料！', 'danger');
                 }
@@ -1879,6 +2036,7 @@ function backToTop() {
                 // 移除成績
                 scores.splice(index, 1);
                 localStorage.setItem('scores', JSON.stringify(scores));
+                autoBackup(); // 自動備份
                 
                 renderScores();
                 renderRankings();
@@ -1924,6 +2082,7 @@ function backToTop() {
                 }
                 
                 localStorage.setItem('scores', JSON.stringify(scores));
+                autoBackup(); // 自動備份
                 renderScores();
                 renderRankings();
                 

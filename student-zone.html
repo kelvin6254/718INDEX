@@ -719,6 +719,21 @@
                             scores.push({ name: student.name, front, jack, ski, bike, total, date });
                         }
                         localStorage.setItem('scores', JSON.stringify(scores));
+                        
+                        // 新增：自動備份功能
+                        try {
+                            const backupTime = new Date().toISOString();
+                            const backupData = {
+                                timestamp: backupTime,
+                                scores: scores,
+                                version: '1.0'
+                            };
+                            localStorage.setItem('scores_backup', JSON.stringify(backupData));
+                            sessionStorage.setItem('scores_session_backup', JSON.stringify(backupData));
+                            console.log('成績資料已自動備份');
+                        } catch (error) {
+                            console.error('備份失敗:', error);
+                        }
                     }
                     // ===== END =====
                     form.reset();
