@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>雲端學生（Firebase）</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .avatar { width: 96px; height: 96px; object-fit: cover; border-radius: 50%; background: #f2f2f2; }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="fw-bold m-0" style="color:#2339d6;letter-spacing:1px;">雲端學生（Firebase）</h2>
+      <a class="btn btn-secondary" href="cloud-students.html">返回雲端清單</a>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-body d-flex align-items-center gap-3">
+        <img id="avatar" class="avatar" alt="avatar">
+        <div>
+          <div id="name" class="fw-bold fs-5">姓名</div>
+          <div id="klass" class="text-muted">班級</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="fw-bold">雲端成績</div>
+          <div class="small text-muted" id="status">載入中...</div>
+        </div>
+        <div class="table-responsive mt-3">
+          <table class="table table-sm table-striped align-middle mb-0">
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>前跳 frontJump</th>
+                <th>開合 jumpingJack</th>
+                <th>雪撬 skiJump</th>
+                <th>踏車 bicycleStep</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module">
+    import { ensureAuth, getStudent, listenStudentScores } from './js/firebase.js';
+
+    const qs = new URLSearchParams(location.search);
+    const id = qs.get('id');
+
+    const statusEl = document.getElementById('status');
+    const nameEl = document.getElementById('name');
+    const klassEl = document.getElementById('klass');
+    const avatarEl = document.getElementById('avatar');
+    const tbody = document.getElementById('tbody');
+
+    function renderTable(byType) {
+      // 收集所有日期
+      const allDates = new Set();
+      for (const t of Object.values(byType)) {
+        for (const r of t) allDates.add(r.date);
+      }
+      const dates = Array.from(allDates).sort();
+      tbody.innerHTML = '';
+      for (const d of dates) {
+        const f = (byType.frontJump.find(x => x.date === d)?.value) ?? '';
+        const j = (byType.jumpingJack.find(x => x.date === d)?.value) ?? '';
+        const s = (byType.skiJump.find(x => x.date === d)?.value) ?? '';
+        const b = (byType.bicycleStep.find(x => x.date === d)?.value) ?? '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${d}</td><td>${f}</td><td>${j}</td><td>${s}</td><td>${b}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    (async () => {
+      if (!id) {
+        statusEl.textContent = '缺少 id 參數';
+        return;
+      }
+      try {
+        statusEl.textContent = '登入中...';
+        await ensureAuth();
+        const stu = await getStudent(id);
+        if (!stu) {
+          statusEl.textContent = '找不到學生';
+          return;
+        }
+        nameEl.textContent = stu.name || '未命名';
+        klassEl.textContent = stu.class || '未分班';
+        avatarEl.src = stu.photoUrl || '';
+        avatarEl.onerror = () => { avatarEl.src=''; avatarEl.style.background='#e9ecef'; };
+
+        statusEl.textContent = '監聽雲端成績中...';
+        listenStudentScores(id, byType => {
+          statusEl.textContent = '已更新';
+          renderTable(byType);
+        });
+      } catch (e) {
+        statusEl.textContent = '載入失敗：' + e.message;
+      }
+    })();
+  </script>
+</body>
+</html>
+
+

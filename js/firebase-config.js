@@ -5,7 +5,7 @@ window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyAvSweuuD3odri6LIstAjMH6h7k473lVGQ",
   authDomain: "holystrideeduhk.firebaseapp.com",
   projectId: "holystrideeduhk",
-  storageBucket: "holystrideeduhk.firebasestorage.app",
+  storageBucket: "holystrideeduhk.appspot.com",
   messagingSenderId: "584127626276",
   appId: "1:584127626276:web:6e0b5a77b2d2cac1bd2cb1",
   measurementId: "G-9BC9TZX4TH"
