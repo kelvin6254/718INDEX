@@ -419,6 +419,21 @@
   import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
   import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
 
+  async function tryStorageByName(name) {
+    const candidates = [
+      `${name}.jpg`, `${name}.jpeg`, `${name}.png`, `${name}.webp`,
+      `students/${name}.jpg`, `students/${name}.jpeg`, `students/${name}.png`, `students/${name}.webp`
+    ];
+    for (const p of candidates) {
+      try {
+        const r = ref(storage, p);
+        const url = await getDownloadURL(r);
+        return url;
+      } catch {}
+    }
+    return '';
+  }
+
   async function hydratePhotosFromCloud() {
     try {
       await ensureAuth();
@@ -435,12 +450,9 @@
             const name = stu.name || '';
             // 1) Firestore photoUrl
             let url = nameToPhoto[name] || '';
-            // 2) 若沒有，嘗試到 Storage 根目錄以「姓名.jpg」取下載網址
+            // 2) 若沒有，嘗試到 Storage 依常見副檔名與 students/ 前綴尋找
             if (!url && name) {
-              try {
-                const r = ref(storage, `${name}.jpg`);
-                url = await getDownloadURL(r);
-              } catch {}
+              url = await tryStorageByName(name);
             }
             // 3) 若仍沒有，用本地 PIC 回退
             if (!url) url = `PIC/${encodeURIComponent(name)}.jpg`;

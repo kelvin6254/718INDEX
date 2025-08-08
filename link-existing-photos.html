@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>批次連結現有相片 → Firestore</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { padding: 24px; }
+    .log { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h3 class="mb-3">批次連結現有相片（Storage 根目錄 → Firestore.students.photoUrl）</h3>
+
+    <div class="alert alert-warning">
+      - 需要以老師帳號登入（具 <code>role=teacher</code>）才能寫入 Firestore。<br/>
+      - 會掃描 Storage 根目錄所有檔案，檔名去副檔名後視為學生姓名（例：<code>朱耀鋒.jpg</code>）。
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">老師登入 Email</label>
+            <input id="email" type="email" class="form-control" placeholder="teacher@example.com" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">密碼</label>
+            <input id="password" type="password" class="form-control" />
+          </div>
+          <div class="col-md-2">
+            <button id="loginBtn" class="btn btn-primary w-100">登入</button>
+          </div>
+          <div class="col-md-3">
+            <div id="authStatus" class="small text-muted">未登入</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-2 align-items-end mb-3">
+      <div class="col-md-4">
+        <label class="form-label">掃描資料夾（prefix，可留空代表根目錄）</label>
+        <input id="prefix" class="form-control" placeholder="例如：students/" />
+      </div>
+      <div class="col-md-8 d-flex gap-2">
+        <button id="startBtn" class="btn btn-success" disabled>開始匹配並寫回</button>
+        <button id="testListBtn" class="btn btn-outline-secondary">僅列出待匹配檔名</button>
+      </div>
+    </div>
+
+    <div id="summary" class="mb-3"></div>
+    <div class="border rounded p-3 log" id="log"></div>
+  </div>
+
+  <script type="module">
+    import { auth, db, storage, ensureAuth, signInWithEmailAndPassword } from './js/firebase.js';
+    import { collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+    import { ref, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
+
+    const logEl = document.getElementById('log');
+    const summaryEl = document.getElementById('summary');
+    const startBtn = document.getElementById('startBtn');
+    const testListBtn = document.getElementById('testListBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const emailEl = document.getElementById('email');
+    const passwordEl = document.getElementById('password');
+    const authStatusEl = document.getElementById('authStatus');
+
+    function log(msg) {
+      logEl.textContent += (msg + '\n');
+    }
+
+    async function showAuthStatus() {
+      const user = auth.currentUser || await ensureAuth().catch(()=>null);
+      if (!user) {
+        authStatusEl.textContent = '未登入';
+        startBtn.disabled = true;
+        return;
+      }
+      const token = await user.getIdTokenResult(true);
+      const role = token.claims.role || '(無角色)';
+      authStatusEl.textContent = `已登入：${user.email || '匿名'}，role=${role}`;
+      startBtn.disabled = role !== 'teacher';
+    }
+
+    loginBtn.onclick = async () => {
+      try {
+        await signInWithEmailAndPassword(auth, emailEl.value.trim(), passwordEl.value.trim());
+        await showAuthStatus();
+        log('登入成功');
+      } catch (e) {
+        log('登入失敗：' + e.message);
+      }
+    };
+
+    function getTargetRef() {
+      const p = (document.getElementById('prefix').value || '').trim();
+      return p ? ref(storage, p) : ref(storage);
+    }
+
+    async function listRootFiles() {
+      const rootRef = getTargetRef();
+      try {
+        const res = await listAll(rootRef);
+        return res; // { items, prefixes }
+      } catch (e) {
+        log('列出根目錄失敗：' + e.message);
+        throw e;
+      }
+    }
+
+    function baseName(filename) {
+      const idx = filename.lastIndexOf('.');
+      return idx > 0 ? filename.slice(0, idx) : filename;
+    }
+
+    async function findStudentIdByName(name) {
+      const q = query(collection(db, 'students'), where('name', '==', name));
+      const snap = await getDocs(q);
+      if (snap.size === 1) return snap.docs[0].id;
+      if (snap.size > 1) return { conflict: true, count: snap.size };
+      return null;
+    }
+
+    async function linkAll() {
+      startBtn.disabled = true;
+      logEl.textContent = '';
+      summaryEl.textContent = '';
+
+      const res = await listRootFiles();
+      const items = res.items || [];
+      const prefixes = res.prefixes || [];
+      log(`目前 bucket：${(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.storageBucket) || '(未知)'}\n`);
+      if (prefixes.length) {
+        log('子資料夾：');
+        prefixes.forEach(p => log('  [dir] ' + (p.fullPath || '(unknown)')));
+      }
+      log(`發現檔案 ${items.length} 筆`);
+      let linked = 0, skipped = 0, conflicts = 0, notFound = 0, errors = 0;
+
+      for (const item of items) {
+        const name = baseName(item.name);
+        // 僅處理常見圖片
+        if (!/\.(jpg|jpeg|png|webp)$/i.test(item.name)) {
+          log(`跳過（非圖片）：${item.name}`);
+          skipped++; continue;
+        }
+        const sid = await findStudentIdByName(name);
+        if (!sid) {
+          log(`找不到學生：${name}（檔：${item.name}）`);
+          notFound++; continue;
+        }
+        if (typeof sid === 'object' && sid.conflict) {
+          log(`姓名重複（${name}），共 ${sid.count} 筆，已跳過`);
+          conflicts++; continue;
+        }
+        try {
+          const url = await getDownloadURL(item);
+          await updateDoc(doc(db, 'students', sid), {
+            photoUrl: url,
+            photoPath: item.fullPath || item.name,
+            photoUpdatedAt: serverTimestamp()
+          });
+          linked++;
+          log(`已連結：${name} ← ${item.name}`);
+        } catch (e) {
+          errors++;
+          log(`失敗：${name} ← ${item.name}：${e.message}`);
+        }
+      }
+
+      summaryEl.innerHTML = `
+        <div class="alert alert-info mb-0">
+          已完成。成功 ${linked}，找不到 ${notFound}，姓名重複 ${conflicts}，跳過 ${skipped}，錯誤 ${errors}。
+        </div>`;
+      startBtn.disabled = false;
+    }
+
+    async function justList() {
+      logEl.textContent = '';
+      try {
+        const res = await listRootFiles();
+        const items = res.items || [];
+        const prefixes = res.prefixes || [];
+        log(`目前 bucket：${(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.storageBucket) || '(未知)'}\n`);
+        if (prefixes.length) {
+          log('子資料夾：');
+          prefixes.forEach(p => log('  [dir] ' + (p.fullPath || '(unknown)')));
+        }
+        if (items.length) {
+          items.forEach(i => log(i.name));
+        } else {
+          log('根目錄沒有檔案');
+        }
+        summaryEl.innerHTML = `<div class="alert alert-secondary mb-0">共 ${items.length} 個檔案</div>`;
+      } catch (e) {
+        summaryEl.innerHTML = `<div class="alert alert-danger mb-0">列出失敗：${e.message}</div>`;
+      }
+    }
+
+    startBtn.onclick = linkAll;
+    testListBtn.onclick = justList;
+    showAuthStatus();
+  </script>
+</body>
+</html>
+
+
