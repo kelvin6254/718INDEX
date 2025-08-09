@@ -184,6 +184,7 @@
     </div>
     <script>
     // 假資料，實際可從後端獲取
+    const PIC_VERSION = '20250809a';
     const studentsData = [
         {
             class: '高中三',
@@ -314,10 +315,13 @@
             col.setAttribute('data-class', cls.class);
             col.innerHTML = `<div class="class-title">${cls.class}</div>`;
             cls.students.forEach(stu => {
-                const photoSrc = stu.photo && stu.photo !== '' ? stu.photo : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+';
+                const safeName = encodeURIComponent(stu.name || '');
+                const fallbackPic = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                const hasPhoto = !!(stu.photo && stu.photo !== '');
+                const photoSrc = hasPhoto ? stu.photo : fallbackPic;
                 col.innerHTML += `
                     <div class="student-item">
-                        <img src="${photoSrc}" class="student-photo" alt="${stu.name}" title="點擊查看成績" onclick="goToStudentZone('${stu.id}')">
+                        <img src="${photoSrc}" class="student-photo" alt="${stu.name}" title="點擊查看成績" ${hasPhoto ? '' : 'data-fallback="1"'} onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='PIC/${safeName}.jpg?v=${PIC_VERSION}';}else{this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+';}" onclick="goToStudentZone('${stu.id}')">
                         <div class="student-name">${stu.name}</div>
                     </div>
                 `;
@@ -345,6 +349,10 @@
             filterContainer.appendChild(button);
         });
     }
+
+    // 將資料與渲染方法暴露給其他腳本（例如雲端補圖模組）
+    window.studentsData = studentsData;
+    window.renderStudentList = renderStudentList;
 
     // 初始化頁面
     loadStudentPhotos();
