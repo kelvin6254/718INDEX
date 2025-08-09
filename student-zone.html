@@ -457,6 +457,7 @@
     </div>
 
     <script>
+    const PIC_VERSION = '20250809a';
     // 完整 studentsData 結構，與 students-list.html 保持一致
     const studentsData = [
         {
@@ -1016,7 +1017,7 @@
         const id = getQueryParam('id');
         const student = findStudentById(id);
         
-        if (student) {
+            if (student) {
             // 更新學生資訊
             document.getElementById('studentName').textContent = student.name;
             document.getElementById('studentClass').textContent = student.class;
@@ -1040,11 +1041,25 @@
             const studentScores = getStudentScores(student.name);
             const totalTests = studentScores ? studentScores.length : 0;
             document.getElementById('totalTests').textContent = `${totalTests}次`;
-            
-            if (student.photo && student.photo !== '' && document.getElementById('studentPhoto')) {
-                document.getElementById('studentPhoto').src = student.photo;
-                document.getElementById('studentPhoto').style.display = 'block';
-                document.getElementById('photoPlaceholder').style.display = 'none';
+
+            // 相片：預設先以本地 PIC/姓名.jpg，之後由雲端補圖模組覆蓋
+            const imgEl = document.getElementById('studentPhoto');
+            const placeholderEl = document.getElementById('photoPlaceholder');
+            const safeName = encodeURIComponent(student.name || '');
+            if (imgEl && placeholderEl) {
+                imgEl.onerror = function(){
+                  if (!this.dataset.fallback) {
+                    this.dataset.fallback = '1';
+                    this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                  } else {
+                    this.style.display = 'none';
+                    placeholderEl.style.display = 'flex';
+                  }
+                };
+                const initialSrc = (student.photo && student.photo !== '') ? student.photo : `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                imgEl.src = initialSrc;
+                imgEl.style.display = 'block';
+                placeholderEl.style.display = 'none';
             }
         } else {
             document.getElementById('studentName').textContent = '查無此學生';
@@ -1088,13 +1103,26 @@
             const id = getQueryParam('id');
             const student = findStudentById(id);
             
-            if (student && student.photo && student.photo !== '') {
-                studentPhoto.src = student.photo;
-                studentPhoto.style.display = 'block';
-                photoPlaceholder.style.display = 'none';
+            const safeName = encodeURIComponent(student?.name || '');
+            if (studentPhoto) {
+              studentPhoto.onerror = function(){
+                if (!this.dataset.fallback) {
+                  this.dataset.fallback = '1';
+                  this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                } else {
+                  this.style.display = 'none';
+                  photoPlaceholder.style.display = 'flex';
+                }
+              };
+            }
+            const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpg?v=${PIC_VERSION}` : '');
+            if (src) {
+              studentPhoto.src = src;
+              studentPhoto.style.display = 'block';
+              photoPlaceholder.style.display = 'none';
             } else {
-                studentPhoto.style.display = 'none';
-                photoPlaceholder.style.display = 'flex';
+              studentPhoto.style.display = 'none';
+              photoPlaceholder.style.display = 'flex';
             }
         }
 
