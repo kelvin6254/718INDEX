@@ -1049,8 +1049,11 @@
             if (imgEl && placeholderEl) {
                 imgEl.onerror = function(){
                   if (!this.dataset.fallback) {
-                    this.dataset.fallback = '1';
+                    this.dataset.fallback = 'jpg';
                     this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                  } else if (this.dataset.fallback === 'jpg') {
+                    this.dataset.fallback = 'JPG';
+                    this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
                   } else {
                     this.style.display = 'none';
                     placeholderEl.style.display = 'flex';
@@ -1107,8 +1110,11 @@
             if (studentPhoto) {
               studentPhoto.onerror = function(){
                 if (!this.dataset.fallback) {
-                  this.dataset.fallback = '1';
+                  this.dataset.fallback = 'jpg';
                   this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                } else if (this.dataset.fallback === 'jpg') {
+                  this.dataset.fallback = 'JPG';
+                  this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
                 } else {
                   this.style.display = 'none';
                   photoPlaceholder.style.display = 'flex';
