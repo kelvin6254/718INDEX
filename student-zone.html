@@ -1230,12 +1230,12 @@
             if (imgEl && placeholderEl) {
                 imgEl.onerror = function(){
                   if (!this.dataset.fallback) {
-                    this.dataset.fallback = 'jpg';
-                    this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
-                  } else if (this.dataset.fallback === 'jpg') {
                     this.dataset.fallback = 'jpeg';
                     this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
                   } else if (this.dataset.fallback === 'jpeg') {
+                    this.dataset.fallback = 'jpg';
+                    this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                  } else if (this.dataset.fallback === 'jpg') {
                     this.dataset.fallback = 'JPG';
                     this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
                   } else {
@@ -1243,7 +1243,7 @@
                     placeholderEl.style.display = 'flex';
                   }
                 };
-                const initialSrc = (student.photo && student.photo !== '') ? student.photo : `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                const initialSrc = (student.photo && student.photo !== '') ? student.photo : `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
                 imgEl.src = initialSrc;
                 imgEl.style.display = 'block';
                 placeholderEl.style.display = 'none';
@@ -1306,12 +1306,12 @@
             if (studentPhoto) {
               studentPhoto.onerror = function(){
                 if (!this.dataset.fallback) {
-                  this.dataset.fallback = 'jpg';
-                  this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
-                } else if (this.dataset.fallback === 'jpg') {
                   this.dataset.fallback = 'jpeg';
                   this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
                 } else if (this.dataset.fallback === 'jpeg') {
+                  this.dataset.fallback = 'jpg';
+                  this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+                } else if (this.dataset.fallback === 'jpg') {
                   this.dataset.fallback = 'JPG';
                   this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
                 } else {
@@ -1320,7 +1320,7 @@
                 }
               };
             }
-            const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpg?v=${PIC_VERSION}` : '');
+            const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpeg?v=${PIC_VERSION}` : '');
             if (src) {
               studentPhoto.src = src;
               studentPhoto.style.display = 'block';
