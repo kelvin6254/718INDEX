@@ -753,7 +753,7 @@
             if (arr && arr.length > 0) {
                 tbody.innerHTML = arr.map(s => `<tr><td>${s.value}</td><td>${s.date}</td><td>${name}</td></tr>`).join('');
             } else {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-data">暫無資料</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">未參加此項目</td></tr>';
             }
         };
         
@@ -886,13 +886,14 @@
             const studentScores = getStudentScores(student.name);
             if (studentScores && studentScores.length > 0) {
                 studentScores.forEach(s => {
-                    scoreData.frontJump.push({ value: s.front, date: s.date });
-                    scoreData.jumpingJack.push({ value: s.jack, date: s.date });
-                    scoreData.skiJump.push({ value: s.ski, date: s.date });
-                    scoreData.bicycleStep.push({ value: s.bike, date: s.date });
-                    scoreData.crossRope.push({ value: s.cross || 0, date: s.date });
-                    scoreData.crossOpen.push({ value: s.crossOpen || 0, date: s.date });
-                    scoreData.doubleJump.push({ value: s.double || 0, date: s.date });
+                    // 只記錄非零成績，避免 0 分影響趨勢圖
+                    if (s.front && s.front > 0) scoreData.frontJump.push({ value: s.front, date: s.date });
+                    if (s.jack && s.jack > 0) scoreData.jumpingJack.push({ value: s.jack, date: s.date });
+                    if (s.ski && s.ski > 0) scoreData.skiJump.push({ value: s.ski, date: s.date });
+                    if (s.bike && s.bike > 0) scoreData.bicycleStep.push({ value: s.bike, date: s.date });
+                    if (s.cross && s.cross > 0) scoreData.crossRope.push({ value: s.cross, date: s.date });
+                    if (s.crossOpen && s.crossOpen > 0) scoreData.crossOpen.push({ value: s.crossOpen, date: s.date });
+                    if (s.double && s.double > 0) scoreData.doubleJump.push({ value: s.double, date: s.date });
                 });
             } else {
                 // 如果沒有成績資料，顯示預設資料
@@ -1372,13 +1373,14 @@
                     const data = doc.data();
                     if (!data.deleted) { // 忽略已刪除的成績
                         const date = data.date;
-                        if (data.front) scoreData.frontJump.push({ value: data.front, date });
-                        if (data.jack) scoreData.jumpingJack.push({ value: data.jack, date });
-                        if (data.ski) scoreData.skiJump.push({ value: data.ski, date });
-                        if (data.bike) scoreData.bicycleStep.push({ value: data.bike, date });
-                        if (data.cross) scoreData.crossRope.push({ value: data.cross, date });
-                        if (data.crossOpen) scoreData.crossOpen.push({ value: data.crossOpen, date });
-                        if (data.double) scoreData.doubleJump.push({ value: data.double, date });
+                        // 只記錄非零成績，避免 0 分影響趨勢圖
+                        if (data.front && data.front > 0) scoreData.frontJump.push({ value: data.front, date });
+                        if (data.jack && data.jack > 0) scoreData.jumpingJack.push({ value: data.jack, date });
+                        if (data.ski && data.ski > 0) scoreData.skiJump.push({ value: data.ski, date });
+                        if (data.bike && data.bike > 0) scoreData.bicycleStep.push({ value: data.bike, date });
+                        if (data.cross && data.cross > 0) scoreData.crossRope.push({ value: data.cross, date });
+                        if (data.crossOpen && data.crossOpen > 0) scoreData.crossOpen.push({ value: data.crossOpen, date });
+                        if (data.double && data.double > 0) scoreData.doubleJump.push({ value: data.double, date });
                     }
                 });
                 

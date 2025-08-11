@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進階成績輸入 - 跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        .score-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .project-type {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .project-type:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+        .project-type.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .project-type.optional {
+            border-color: #f59e0b;
+        }
+        .project-type.optional.selected {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+        .score-input {
+            display: none;
+        }
+        .score-input.show {
+            display: block;
+        }
+        .optional-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        .required-badge {
+            background: #dc2626;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-edit me-3"></i>進階成績輸入
+                </h1>
+                <div class="text-center mb-4">
+                    <a href="index.html" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>返回首頁
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-section">
+            <h3><i class="fas fa-user me-2"></i>學生資訊</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="studentName" class="form-label">學生姓名</label>
+                    <select class="form-select" id="studentName" required>
+                        <option value="">請選擇學生</option>
+                        <option value="朱耀鋒">朱耀鋒</option>
+                        <option value="林思恒">林思恒</option>
+                        <option value="蘇南燊">蘇南燊</option>
+                        <option value="葉芷汝">葉芷汝</option>
+                        <option value="吳諾暉">吳諾暉</option>
+                        <option value="梁珀源">梁珀源</option>
+                        <option value="黎溢鉦">黎溢鉦</option>
+                        <option value="黃泳鈺">黃泳鈺</option>
+                        <option value="楊洛謙">楊洛謙</option>
+                        <option value="麥浩敏">麥浩敏</option>
+                        <option value="謝韶謙">謝韶謙</option>
+                        <option value="馮樂宏">馮樂宏</option>
+                        <option value="曾業淳">曾業淳</option>
+                        <option value="馮鎮泓">馮鎮泓</option>
+                        <option value="倪灝">倪灝</option>
+                        <option value="林澤星">林澤星</option>
+                        <option value="蔡瀚毅">蔡瀚毅</option>
+                        <option value="楊凱琳">楊凱琳</option>
+                        <option value="龍正罡">龍正罡</option>
+                        <option value="許明然">許明然</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="scoreDate" class="form-label">測試日期</label>
+                    <input type="date" class="form-control" id="scoreDate" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-section">
+            <h3><i class="fas fa-list me-2"></i>項目選擇</h3>
+            <p class="text-muted">請選擇本次測試包含的項目：</p>
+            
+            <div class="project-type selected" data-project="front">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒前跳</strong>
+                        <span class="required-badge">必填</span>
+                    </div>
+                    <i class="fas fa-check text-success"></i>
+                </div>
+                <small class="text-muted">基礎跳繩項目，所有學生都必須參加</small>
+            </div>
+
+            <div class="project-type selected" data-project="jack">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒開合跳</strong>
+                        <span class="required-badge">必填</span>
+                    </div>
+                    <i class="fas fa-check text-success"></i>
+                </div>
+                <small class="text-muted">基礎跳繩項目，所有學生都必須參加</small>
+            </div>
+
+            <div class="project-type selected" data-project="ski">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒滑雪跳</strong>
+                        <span class="required-badge">必填</span>
+                    </div>
+                    <i class="fas fa-check text-success"></i>
+                </div>
+                <small class="text-muted">基礎跳繩項目，所有學生都必須參加</small>
+            </div>
+
+            <div class="project-type selected" data-project="bike">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒單車步</strong>
+                        <span class="required-badge">必填</span>
+                    </div>
+                    <i class="fas fa-check text-success"></i>
+                </div>
+                <small class="text-muted">基礎跳繩項目，所有學生都必須參加</small>
+            </div>
+
+            <div class="project-type optional" data-project="cross">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒交叉繩</strong>
+                        <span class="optional-badge">選填</span>
+                    </div>
+                    <i class="fas fa-times text-muted"></i>
+                </div>
+                <small class="text-muted">進階跳繩項目，可選擇性參加</small>
+            </div>
+
+            <div class="project-type optional" data-project="crossOpen">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒交叉打開</strong>
+                        <span class="optional-badge">選填</span>
+                    </div>
+                    <i class="fas fa-times text-muted"></i>
+                </div>
+                <small class="text-muted">進階跳繩項目，可選擇性參加</small>
+            </div>
+
+            <div class="project-type optional" data-project="double">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>30秒二重跳</strong>
+                        <span class="optional-badge">選填</span>
+                    </div>
+                    <i class="fas fa-times text-muted"></i>
+                </div>
+                <small class="text-muted">進階跳繩項目，可選擇性參加</small>
+            </div>
+        </div>
+
+        <div class="score-section">
+            <h3><i class="fas fa-edit me-2"></i>成績輸入</h3>
+            
+            <div class="score-input show" id="front-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreFront" class="form-label">30秒前跳</label>
+                        <input type="number" class="form-control" id="scoreFront" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input show" id="jack-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreJack" class="form-label">30秒開合跳</label>
+                        <input type="number" class="form-control" id="scoreJack" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input show" id="ski-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreSki" class="form-label">30秒滑雪跳</label>
+                        <input type="number" class="form-control" id="scoreSki" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input show" id="bike-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreBike" class="form-label">30秒單車步</label>
+                        <input type="number" class="form-control" id="scoreBike" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input" id="cross-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreCross" class="form-label">30秒交叉繩</label>
+                        <input type="number" class="form-control" id="scoreCross" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input" id="crossOpen-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreCrossOpen" class="form-label">30秒交叉打開</label>
+                        <input type="number" class="form-control" id="scoreCrossOpen" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-input" id="double-input">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="scoreDouble" class="form-label">30秒二重跳</label>
+                        <input type="number" class="form-control" id="scoreDouble" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="button" class="btn btn-primary btn-lg" onclick="submitScore()">
+                    <i class="fas fa-save me-2"></i>提交成績
+                </button>
+            </div>
+        </div>
+
+        <div class="score-section">
+            <h3><i class="fas fa-info-circle me-2"></i>說明</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>必填項目</h5>
+                    <ul>
+                        <li>30秒前跳</li>
+                        <li>30秒開合跳</li>
+                        <li>30秒滑雪跳</li>
+                        <li>30秒單車步</li>
+                    </ul>
+                    <p class="text-muted">這些是基礎項目，所有學生都必須參加並記錄成績。</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>選填項目</h5>
+                    <ul>
+                        <li>30秒交叉繩</li>
+                        <li>30秒交叉打開</li>
+                        <li>30秒二重跳</li>
+                    </ul>
+                    <p class="text-muted">這些是進階項目，學生可以選擇性參加。未參加的項目不會影響趨勢圖。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 設置今天日期
+        document.getElementById('scoreDate').valueAsDate = new Date();
+
+        // 項目選擇邏輯
+        document.querySelectorAll('.project-type').forEach(type => {
+            type.addEventListener('click', function() {
+                const project = this.dataset.project;
+                const isOptional = this.classList.contains('optional');
+                
+                if (isOptional) {
+                    this.classList.toggle('selected');
+                    const icon = this.querySelector('i');
+                    const input = document.getElementById(project + '-input');
+                    
+                    if (this.classList.contains('selected')) {
+                        icon.className = 'fas fa-check text-success';
+                        input.classList.add('show');
+                        input.querySelector('input').required = true;
+                    } else {
+                        icon.className = 'fas fa-times text-muted';
+                        input.classList.remove('show');
+                        input.querySelector('input').required = false;
+                        input.querySelector('input').value = '';
+                    }
+                }
+            });
+        });
+
+        // 提交成績
+        function submitScore() {
+            const name = document.getElementById('studentName').value;
+            const date = document.getElementById('scoreDate').value;
+            
+            if (!name || !date) {
+                alert('請選擇學生和日期！');
+                return;
+            }
+
+            // 收集必填項目成績
+            const front = parseInt(document.getElementById('scoreFront').value) || 0;
+            const jack = parseInt(document.getElementById('scoreJack').value) || 0;
+            const ski = parseInt(document.getElementById('scoreSki').value) || 0;
+            const bike = parseInt(document.getElementById('scoreBike').value) || 0;
+
+            if (!front || !jack || !ski || !bike) {
+                alert('請填寫所有必填項目的成績！');
+                return;
+            }
+
+            // 收集選填項目成績
+            const cross = document.querySelector('.project-type[data-project="cross"]').classList.contains('selected') 
+                ? (parseInt(document.getElementById('scoreCross').value) || 0) : 0;
+            const crossOpen = document.querySelector('.project-type[data-project="crossOpen"]').classList.contains('selected') 
+                ? (parseInt(document.getElementById('scoreCrossOpen').value) || 0) : 0;
+            const double = document.querySelector('.project-type[data-project="double"]').classList.contains('selected') 
+                ? (parseInt(document.getElementById('scoreDouble').value) || 0) : 0;
+
+            const total = front + jack + ski + bike + cross + crossOpen + double;
+
+            // 創建成績物件
+            const scoreData = {
+                name: name,
+                front: front,
+                jack: jack,
+                ski: ski,
+                bike: bike,
+                cross: cross,
+                crossOpen: crossOpen,
+                double: double,
+                total: total,
+                date: date
+            };
+
+            // 儲存到 localStorage
+            let scores = JSON.parse(localStorage.getItem('scores') || '[]');
+            const existingIndex = scores.findIndex(score => score.name === name && score.date === date);
+            
+            if (existingIndex !== -1) {
+                scores[existingIndex] = scoreData;
+                alert(`已更新 ${name} ${date} 的成績！`);
+            } else {
+                scores.push(scoreData);
+                alert('成績已成功提交！');
+            }
+            
+            localStorage.setItem('scores', JSON.stringify(scores));
+
+            // 同步到 Firebase（如果可用）
+            if (window.syncScoreToFirebase) {
+                window.syncScoreToFirebase(scoreData).then(success => {
+                    if (success) {
+                        alert('成績已同步到雲端！');
+                    }
+                });
+            }
+
+            // 重置表單
+            document.getElementById('studentName').value = '';
+            document.getElementById('scoreFront').value = '';
+            document.getElementById('scoreJack').value = '';
+            document.getElementById('scoreSki').value = '';
+            document.getElementById('scoreBike').value = '';
+            document.getElementById('scoreCross').value = '';
+            document.getElementById('scoreCrossOpen').value = '';
+            document.getElementById('scoreDouble').value = '';
+            document.getElementById('scoreDate').valueAsDate = new Date();
+
+            // 重置選填項目選擇
+            document.querySelectorAll('.project-type.optional').forEach(type => {
+                type.classList.remove('selected');
+                type.querySelector('i').className = 'fas fa-times text-muted';
+                const project = type.dataset.project;
+                const input = document.getElementById(project + '-input');
+                input.classList.remove('show');
+                input.querySelector('input').required = false;
+            });
+        }
+    </script>
+</body>
+</html>
