@@ -1604,6 +1604,116 @@ body {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script type="module">
+        import { db, storage } from './js/firebase.js';
+        import { collection, getDocs, doc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+        
+        // 將 Firebase 功能設為全域
+        window.firebaseDB = db;
+        window.firebaseStorage = storage;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseUpdateDoc = updateDoc;
+        window.firebaseServerTimestamp = serverTimestamp;
+        window.firebaseDoc = doc;
+        
+        // 同步成績到 Firebase
+        window.syncScoreToFirebase = async function(scoreData) {
+            try {
+                // 確保學生存在於 Firebase
+                const studentRef = doc(db, 'students', scoreData.name);
+                await setDoc(studentRef, {
+                    name: scoreData.name,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                
+                // 儲存成績到 Firebase
+                const scoreRef = doc(db, 'students', scoreData.name, 'scores', scoreData.date);
+                await setDoc(scoreRef, {
+                    front: scoreData.front || 0,
+                    jack: scoreData.jack || 0,
+                    ski: scoreData.ski || 0,
+                    bike: scoreData.bike || 0,
+                    cross: scoreData.cross || 0,
+                    crossOpen: scoreData.crossOpen || 0,
+                    double: scoreData.double || 0,
+                    total: scoreData.total,
+                    date: scoreData.date,
+                    updatedAt: serverTimestamp()
+                });
+                
+                console.log('成績已同步到 Firebase:', scoreData.name, scoreData.date);
+                return true;
+            } catch (error) {
+                console.error('同步到 Firebase 失敗:', error);
+                return false;
+            }
+        };
+        
+        // 從 Firebase 載入成績
+        window.loadScoresFromFirebase = async function() {
+            try {
+                const studentsRef = collection(db, 'students');
+                const snapshot = await getDocs(studentsRef);
+                const allScores = [];
+                
+                for (const studentDoc of snapshot.docs) {
+                    const studentData = studentDoc.data();
+                    const scoresRef = collection(db, 'students', studentDoc.id, 'scores');
+                    const scoresSnapshot = await getDocs(scoresRef);
+                    
+                    scoresSnapshot.forEach(scoreDoc => {
+                        const scoreData = scoreDoc.data();
+                        allScores.push({
+                            name: studentData.name,
+                            front: scoreData.front || 0,
+                            jack: scoreData.jack || 0,
+                            ski: scoreData.ski || 0,
+                            bike: scoreData.bike || 0,
+                            cross: scoreData.cross || 0,
+                            crossOpen: scoreData.crossOpen || 0,
+                            double: scoreData.double || 0,
+                            total: scoreData.total || 0,
+                            date: scoreData.date
+                        });
+                    });
+                }
+                
+                return allScores;
+            } catch (error) {
+                console.error('從 Firebase 載入成績失敗:', error);
+                return [];
+            }
+        };
+        
+        // 頁面載入時從 Firebase 載入成績
+        document.addEventListener('DOMContentLoaded', async function() {
+            const firebaseScores = await window.loadScoresFromFirebase();
+            if (firebaseScores.length > 0) {
+                // 合併 Firebase 成績到本地
+                const localScores = JSON.parse(localStorage.getItem('scores') || '[]');
+                const mergedScores = [...localScores];
+                
+                firebaseScores.forEach(fbScore => {
+                    const existingIndex = mergedScores.findIndex(s => s.name === fbScore.name && s.date === fbScore.date);
+                    if (existingIndex === -1) {
+                        mergedScores.push(fbScore);
+                    } else {
+                        mergedScores[existingIndex] = fbScore;
+                    }
+                });
+                
+                localStorage.setItem('scores', JSON.stringify(mergedScores));
+                window.scores = mergedScores;
+                
+                // 重新渲染
+                if (typeof renderScores === 'function') renderScores();
+                if (typeof renderRankings === 'function') renderRankings();
+                
+                console.log('已從 Firebase 載入', firebaseScores.length, '筆成績');
+            }
+        });
+    </script>
     <script>
         // 全局變量
         let currentRole = null;
@@ -2127,7 +2237,7 @@ body {
             document.body.appendChild(modal);
             
             // 添加表單提交事件
-            document.getElementById('editScoreForm').addEventListener('submit', function(e) {
+            document.getElementById('editScoreForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const name = document.getElementById('editStudentName').value;
@@ -2143,16 +2253,33 @@ body {
                 if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && !isNaN(cross) && !isNaN(crossOpen) && !isNaN(double) && date) {
                     const total = front + jack + ski + bike + cross + crossOpen + double;
                     
+                    const scoreData = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
+                    
                     // 更新成績
-                    scores[index] = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
-                                    localStorage.setItem('scores', JSON.stringify(scores));
-                autoBackup(); // 自動備份
-                
-                closeModal();
-                renderScores();
-                renderRankings();
-                
-                showAlert('成績已成功更新！', 'success');
+                    scores[index] = scoreData;
+                    localStorage.setItem('scores', JSON.stringify(scores));
+                    autoBackup(); // 自動備份
+                    
+                    // 同步到 Firebase
+                    if (window.syncScoreToFirebase) {
+                        try {
+                            const syncResult = await window.syncScoreToFirebase(scoreData);
+                            if (syncResult) {
+                                showAlert('成績已更新並同步到雲端！', 'success');
+                            } else {
+                                showAlert('本地成績已更新，但雲端同步失敗。', 'warning');
+                            }
+                        } catch (error) {
+                            console.error('Firebase 同步錯誤:', error);
+                            showAlert('本地成績已更新，但雲端同步失敗。', 'warning');
+                        }
+                    } else {
+                        showAlert('成績已成功更新！', 'success');
+                    }
+                    
+                    closeModal();
+                    renderScores();
+                    renderRankings();
                 } else {
                     showAlert('請輸入完整的成績資料！', 'danger');
                 }
@@ -2160,7 +2287,7 @@ body {
         }
 
         // 移除成績
-        function removeScore(index) {
+        async function removeScore(index) {
             if (!isTeacherLoggedIn) {
                 showAlert('只有已登入的老師可以移除成績！', 'warning');
                 return;
@@ -2174,15 +2301,32 @@ body {
             
             // 顯示確認對話框
             if (confirm(`確定要移除 ${score.name} 的成績嗎？\n\n學生：${score.name}\n總分：${score.total}\n日期：${score.date}\n\n此操作無法復原！`)) {
+                const removedScore = scores[index];
+                
                 // 移除成績
                 scores.splice(index, 1);
                 localStorage.setItem('scores', JSON.stringify(scores));
                 autoBackup(); // 自動備份
                 
+                // 從 Firebase 移除成績
+                if (window.firebaseDB && window.firebaseSetDoc) {
+                    try {
+                        const scoreRef = window.firebaseDoc(window.firebaseDB, 'students', removedScore.name, 'scores', removedScore.date);
+                        await window.firebaseSetDoc(scoreRef, {
+                            deleted: true,
+                            deletedAt: window.firebaseServerTimestamp()
+                        });
+                        showAlert('成績已移除並同步到雲端！', 'success');
+                    } catch (error) {
+                        console.error('Firebase 移除錯誤:', error);
+                        showAlert('本地成績已移除，但雲端同步失敗。', 'warning');
+                    }
+                } else {
+                    showAlert('成績已成功移除！', 'success');
+                }
+                
                 renderScores();
                 renderRankings();
-                
-                showAlert('成績已成功移除！', 'success');
             }
         }
 
@@ -2191,7 +2335,7 @@ body {
         renderRankings();
 
         // 表單處理
-        document.getElementById('scoreForm').addEventListener('submit', function(event) {
+        document.getElementById('scoreForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             // 檢查老師登入狀態
@@ -2215,18 +2359,36 @@ body {
                 
                 // 只覆蓋同名同日的成績，不同日就新增
                 const existingIndex = scores.findIndex(score => score.name === name && score.date === date);
+                const scoreData = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
+                
                 if (existingIndex !== -1) {
                     // 覆蓋現有成績
-                    scores[existingIndex] = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
+                    scores[existingIndex] = scoreData;
                     showAlert(`已更新 ${name} ${date} 的成績！`, 'success');
                 } else {
                     // 添加新成績
-                    scores.push({ name, front, jack, ski, bike, cross, crossOpen, double, total, date });
+                    scores.push(scoreData);
                     showAlert('成績已成功提交！', 'success');
                 }
                 
                 localStorage.setItem('scores', JSON.stringify(scores));
                 autoBackup(); // 自動備份
+                
+                // 同步到 Firebase
+                if (window.syncScoreToFirebase) {
+                    try {
+                        const syncResult = await window.syncScoreToFirebase(scoreData);
+                        if (syncResult) {
+                            showAlert('成績已同步到雲端！手機和電腦都能即時看到更新。', 'success');
+                        } else {
+                            showAlert('本地成績已儲存，但雲端同步失敗。', 'warning');
+                        }
+                    } catch (error) {
+                        console.error('Firebase 同步錯誤:', error);
+                        showAlert('本地成績已儲存，但雲端同步失敗。', 'warning');
+                    }
+                }
+                
                 renderScores();
                 renderRankings();
                 

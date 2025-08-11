@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase 整合測試</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase 整合測試</h1>
+        
+        <div class="test-section info">
+            <h3>📋 測試說明</h3>
+            <p>此頁面用於測試 Firebase 整合功能是否正常運作。</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 Firebase 連接測試</h3>
+            <button class="btn btn-primary" onclick="testFirebaseConnection()">測試連接</button>
+            <div id="connectionResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📝 成績同步測試</h3>
+            <button class="btn btn-success" onclick="testScoreSync()">測試成績同步</button>
+            <div id="syncResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 成績載入測試</h3>
+            <button class="btn btn-info" onclick="testScoreLoad()">載入成績</button>
+            <div id="loadResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔗 快速連結</h3>
+            <a href="index.html" class="btn btn-outline-primary">返回首頁</a>
+            <a href="student-zone.html?id=001" class="btn btn-outline-secondary">學生專區測試</a>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script type="module">
+        import { db, storage } from './js/firebase.js';
+        import { collection, getDocs, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+        
+        // 測試 Firebase 連接
+        window.testFirebaseConnection = async function() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">正在測試連接...</div>';
+            
+            try {
+                const testRef = doc(db, 'test', 'connection');
+                await setDoc(testRef, {
+                    timestamp: serverTimestamp(),
+                    message: '連接測試成功'
+                });
+                
+                resultDiv.innerHTML = '<div class="alert alert-success">✅ Firebase 連接成功！</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ 連接失敗：${error.message}</div>`;
+            }
+        };
+        
+        // 測試成績同步
+        window.testScoreSync = async function() {
+            const resultDiv = document.getElementById('syncResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">正在測試成績同步...</div>';
+            
+            try {
+                const testScore = {
+                    name: '測試學生',
+                    front: 50,
+                    jack: 45,
+                    ski: 40,
+                    bike: 35,
+                    cross: 30,
+                    crossOpen: 25,
+                    double: 20,
+                    total: 245,
+                    date: new Date().toISOString().split('T')[0]
+                };
+                
+                // 同步到 Firebase
+                const studentRef = doc(db, 'students', testScore.name);
+                await setDoc(studentRef, {
+                    name: testScore.name,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                
+                const scoreRef = doc(db, 'students', testScore.name, 'scores', testScore.date);
+                await setDoc(scoreRef, {
+                    front: testScore.front,
+                    jack: testScore.jack,
+                    ski: testScore.ski,
+                    bike: testScore.bike,
+                    cross: testScore.cross,
+                    crossOpen: testScore.crossOpen,
+                    double: testScore.double,
+                    total: testScore.total,
+                    date: testScore.date,
+                    updatedAt: serverTimestamp()
+                });
+                
+                resultDiv.innerHTML = '<div class="alert alert-success">✅ 成績同步測試成功！</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ 同步失敗：${error.message}</div>`;
+            }
+        };
+        
+        // 測試成績載入
+        window.testScoreLoad = async function() {
+            const resultDiv = document.getElementById('loadResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">正在載入成績...</div>';
+            
+            try {
+                const studentsRef = collection(db, 'students');
+                const snapshot = await getDocs(studentsRef);
+                let totalScores = 0;
+                
+                for (const studentDoc of snapshot.docs) {
+                    const studentData = studentDoc.data();
+                    const scoresRef = collection(db, 'students', studentDoc.id, 'scores');
+                    const scoresSnapshot = await getDocs(scoresRef);
+                    totalScores += scoresSnapshot.size;
+                }
+                
+                resultDiv.innerHTML = `<div class="alert alert-success">✅ 載入成功！共找到 ${snapshot.size} 位學生，${totalScores} 筆成績記錄。</div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ 載入失敗：${error.message}</div>`;
+            }
+        };
+    </script>
+</body>
+</html>

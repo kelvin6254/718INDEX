@@ -772,7 +772,7 @@
         const form = document.getElementById('scoreInputForm');
         if(localStorage.getItem('userRole') === 'teacher') {
             form.style.display = '';
-            form.onsubmit = function(e) {
+            form.onsubmit = async function(e) {
                 e.preventDefault();
                 const type = document.getElementById('scoreType').value;
                 const value = parseInt(document.getElementById('scoreValue').value);
@@ -785,6 +785,23 @@
                     window.scoreData[type].push({ value, date });
                     // 依日期排序
                     window.scoreData[type].sort((a,b)=>a.date.localeCompare(b.date));
+                    
+                    // 同步到 Firebase
+                    const id = getQueryParam('id');
+                    const student = findStudentById(id);
+                    if (student && window.syncSingleScoreToFirebase) {
+                        try {
+                            const syncResult = await window.syncSingleScoreToFirebase(student.name, type, value, date);
+                            if (syncResult) {
+                                console.log('單項成績已同步到 Firebase');
+                            } else {
+                                console.error('單項成績同步失敗');
+                            }
+                        } catch (error) {
+                            console.error('Firebase 同步錯誤:', error);
+                        }
+                    }
+                    
                     renderChart();
                     renderTables();
                     // ===== 新增：同步寫入首頁成績格式到 localStorage 'scores' =====
@@ -1330,8 +1347,80 @@
 
     // ===== END =====
     </script>
-<script src="js/firebase-config.js"></script>
-<script type="module">
+    <script src="js/firebase-config.js"></script>
+    <script type="module">
+        import { db, storage } from './js/firebase.js';
+        import { collection, getDocs, doc, setDoc, updateDoc, serverTimestamp, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+        
+        // 即時監聽學生成績變化
+        function listenStudentScoresRealtime(studentName, onDataChange) {
+            const scoresRef = collection(db, 'students', studentName, 'scores');
+            const q = query(scoresRef, orderBy('date', 'asc'));
+            
+            return onSnapshot(q, (snapshot) => {
+                const scoreData = { 
+                    frontJump: [], 
+                    jumpingJack: [], 
+                    skiJump: [], 
+                    bicycleStep: [],
+                    crossRope: [],
+                    crossOpen: [],
+                    doubleJump: []
+                };
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (!data.deleted) { // 忽略已刪除的成績
+                        const date = data.date;
+                        if (data.front) scoreData.frontJump.push({ value: data.front, date });
+                        if (data.jack) scoreData.jumpingJack.push({ value: data.jack, date });
+                        if (data.ski) scoreData.skiJump.push({ value: data.ski, date });
+                        if (data.bike) scoreData.bicycleStep.push({ value: data.bike, date });
+                        if (data.cross) scoreData.crossRope.push({ value: data.cross, date });
+                        if (data.crossOpen) scoreData.crossOpen.push({ value: data.crossOpen, date });
+                        if (data.double) scoreData.doubleJump.push({ value: data.double, date });
+                    }
+                });
+                
+                window.scoreData = scoreData;
+                onDataChange(scoreData);
+            });
+        }
+        
+        // 同步單項成績到 Firebase
+        window.syncSingleScoreToFirebase = async function(studentName, scoreType, value, date) {
+            try {
+                const scoreRef = doc(db, 'students', studentName, 'scores', date);
+                await setDoc(scoreRef, {
+                    [scoreType]: value,
+                    date: date,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                
+                console.log('單項成績已同步到 Firebase:', studentName, scoreType, value, date);
+                return true;
+            } catch (error) {
+                console.error('單項成績同步失敗:', error);
+                return false;
+            }
+        };
+        
+        // 頁面載入時設置即時監聽
+        document.addEventListener('DOMContentLoaded', function() {
+            const id = getQueryParam('id');
+            const student = findStudentById(id);
+            
+            if (student && window.listenStudentScoresRealtime) {
+                // 設置即時監聽
+                listenStudentScoresRealtime(student.name, (scoreData) => {
+                    renderChart();
+                    renderTables();
+                    updateStudentInfo(student.name, Object.values(scoreData).flat());
+                });
+            }
+        });
+    </script>
+    <script type="module">
   import { ensureAuth, db } from './js/firebase.js';
   import { collection, query, where, getDocs, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
