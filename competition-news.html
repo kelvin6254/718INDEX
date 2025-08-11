@@ -176,6 +176,31 @@
             color: #8b4513;
         }
         
+        .performance-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .performance-primary {
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+            color: white;
+        }
+        
+        .performance-secondary {
+            background: linear-gradient(45deg, #06b6d4, #0891b2);
+            color: white;
+        }
+        
+        .performance-accent {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
         .back-btn {
             background: #2563eb;
             color: white;
@@ -291,7 +316,7 @@
                 <!-- 比賽卡片1：「無限盃」跳繩比賽 -->
                 <div class="col-lg-4 col-md-6 mb-4" data-category="invitational">
                     <div class="competition-card">
-                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/2563eb/ffffff?text=無限盃跳繩比賽');">
+                        <div class="card-image" style="background-image: url('https://i.imgur.com/pCfY0fs.jpeg');">
                             <div class="card-image-overlay">
                                 <div class="event-title">「無限盃」跳繩比賽 2025</div>
                                 <div class="event-date">「跳出無限，擁抱多元」</div>
@@ -329,7 +354,7 @@
                 <!-- 比賽卡片2：JRM全港速度跳繩比賽 -->
                 <div class="col-lg-4 col-md-6 mb-4" data-category="speed">
                     <div class="competition-card">
-                        <div class="card-image" style="background-image: url('https://via.placeholder.com/400x250/10b981/ffffff?text=JRM速度賽');">
+                        <div class="card-image" style="background-image: url('https://i.imgur.com/pCfY0fs.jpeg');">
                             <div class="card-image-overlay">
                                 <div class="event-title">JRM全港速度跳繩比賽 2024</div>
                                 <div class="event-date">香港跳繩協會 | 全港大型速度跳繩比賽</div>
@@ -430,6 +455,45 @@
                                 <span class="medal-badge medal-bronze">殿軍</span>
                             </div>
                             <button class="btn btn-warning w-100" onclick="viewCompetitionDetails(4)">
+                                <i class="fas fa-eye me-2"></i>查看詳細報導
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 比賽卡片5：香港花卉展覽跳繩表演 -->
+                <div class="col-lg-4 col-md-6 mb-4" data-category="performance">
+                    <div class="competition-card">
+                        <div class="card-image" style="background-image: url('https://i.imgur.com/MGGkOwT.jpeg');">
+                            <div class="card-image-overlay">
+                                <div class="event-title">香港花卉展覽跳繩表演 2025</div>
+                                <div class="event-date">『花香四溢、繩舞翩翩』</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">香港花卉展覽跳繩表演 2025 | 康樂及文化事務署 | 『花香四溢、繩舞翩翩』</h5>
+                            <p class="card-description">
+                                本校跳繩隊獲康樂及文化事務署邀請參與香港花卉展覽跳繩表演。是次表演主題為『花香四溢、繩舞翩翩』跳繩隊為觀眾表演不同花式，包括：「時光隧道」、「雙人同步」及「雙人連鎖跳」，配合花卉展「綻放英姿」的主題,學生們透過舞台綻放光彩。
+                            </p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">表演項目</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">1</div>
+                                    <div class="stat-label">表演場次</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="performance-badge performance-primary">時光隧道</span>
+                                <span class="performance-badge performance-secondary">雙人同步</span>
+                                <span class="performance-badge performance-accent">雙人連鎖跳</span>
+                                <span class="performance-badge performance-primary">個人花式</span>
+                                <span class="performance-badge performance-secondary">大繩</span>
+                                <span class="performance-badge performance-accent">繩中繩</span>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="viewCompetitionDetails(5)">
                                 <i class="fas fa-eye me-2"></i>查看詳細報導
                             </button>
                         </div>
