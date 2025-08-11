@@ -1870,23 +1870,56 @@ body {
         
         // 頁面載入時顯示角色選擇
         window.addEventListener('load', function() {
+            // 恢復老師登入狀態
+            const savedRole = localStorage.getItem('userRole');
+            if (savedRole === 'teacher') {
+                isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+            }
+            
             showRoleSelection();
             checkDataIntegrity(); // 檢查資料完整性
             autoBackup(); // 自動備份
             updateFormVisibility(); // 更新表單可見性
+            
+            // 重新渲染表格以確保操作欄正確顯示
+            renderScores();
+            renderRankings();
+        });
+        
+        // 頁面獲得焦點時檢查操作欄狀態
+        window.addEventListener('focus', function() {
+            // 恢復老師登入狀態
+            const savedRole = localStorage.getItem('userRole');
+            if (savedRole === 'teacher') {
+                isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+            }
+            
+            // 更新操作欄可見性
+            updateActionColumnVisibility();
+            updateFormVisibility();
+        });
+        
+        // 頁面可見性變化時檢查操作欄狀態
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // 恢復老師登入狀態
+                const savedRole = localStorage.getItem('userRole');
+                if (savedRole === 'teacher') {
+                    isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+                }
+                
+                // 更新操作欄可見性
+                updateActionColumnVisibility();
+                updateFormVisibility();
+            }
         });
 
         function renderScores() {
             let tableBody = document.querySelector('#scoresTable tbody');
-            let actionHeader = document.getElementById('actionHeader');
             let html = '';
             
-            // 根據教師登入狀態顯示/隱藏操作欄位
-            if (isTeacherLoggedIn) {
-                actionHeader.style.display = 'table-cell';
-            } else {
-                actionHeader.style.display = 'none';
-            }
+            // 更新操作欄可見性
+            updateActionColumnVisibility();
             
             scores.forEach(function(item, index) {
                 html += `
@@ -1901,7 +1934,7 @@ body {
                         <td><span class="score-badge">${item.double || 0}</span></td>
                         <td><span class="score-badge total-score">${item.total}</span></td>
                         <td>${item.date}</td>
-                        <td style="${isTeacherLoggedIn ? 'display: table-cell;' : 'display: none;'}">
+                        <td style="${(localStorage.getItem('userRole') === 'teacher' && localStorage.getItem('isTeacherLoggedIn') === 'true') ? 'display: table-cell;' : 'display: none;'}">
                             <button class="btn btn-sm btn-info me-1" onclick="editScore(${index})" title="編輯成績">
                                 <i class="fas fa-edit"></i>✏️
                             </button>
@@ -1961,6 +1994,8 @@ body {
                 currentRole = savedRole;
                 if (savedRole === 'teacher') {
                     isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+                } else {
+                    isTeacherLoggedIn = false;
                 }
                 updateRoleStatus && updateRoleStatus();
                 updateFormVisibility(); // 更新表單可見性
@@ -2112,6 +2147,21 @@ body {
             } else {
                 // 家長角色或老師未登入，隱藏輸入表格
                 scoreInputForm.style.display = 'none';
+            }
+        }
+        
+        // 更新操作欄可見性
+        function updateActionColumnVisibility() {
+            const actionHeader = document.getElementById('actionHeader');
+            const userRole = localStorage.getItem('userRole');
+            const isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+            
+            if (userRole === 'teacher' && isTeacherLoggedIn) {
+                // 老師角色且已登入，顯示操作欄
+                actionHeader.style.display = 'table-cell';
+            } else {
+                // 家長角色或老師未登入，隱藏操作欄
+                actionHeader.style.display = 'none';
             }
         }
         
