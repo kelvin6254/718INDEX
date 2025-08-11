@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase 連接測試</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2>Firebase 連接測試</h2>
+    
+    <div class="card">
+      <div class="card-body">
+        <h5>系統狀態</h5>
+        <div id="status">檢查中...</div>
+        
+        <hr>
+        
+        <h5>測試功能</h5>
+        <button id="testAuth" class="btn btn-primary me-2">測試認證</button>
+        <button id="testWrite" class="btn btn-success me-2">測試寫入</button>
+        <button id="testRead" class="btn btn-info">測試讀取</button>
+        
+        <hr>
+        
+        <h5>日誌</h5>
+        <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module">
+    import { ensureAuth, db } from './js/firebase.js';
+    import { collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.innerHTML += `[${timestamp}] ${msg}<br>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function checkSystem() {
+      try {
+        log('檢查 Firebase 配置...');
+        
+        if (!window.FIREBASE_CONFIG) {
+          statusEl.innerHTML = '<span class="text-danger">❌ Firebase 配置未找到</span>';
+          log('錯誤: Firebase 配置未找到');
+          return false;
+        }
+        
+        log('Firebase 配置找到');
+        log(`專案 ID: ${window.FIREBASE_CONFIG.projectId}`);
+        
+        statusEl.innerHTML = '<span class="text-success">✅ Firebase 配置正常</span>';
+        return true;
+      } catch (error) {
+        statusEl.innerHTML = `<span class="text-danger">❌ 系統檢查失敗: ${error.message}</span>`;
+        log(`錯誤: ${error.message}`);
+        return false;
+      }
+    }
+
+    document.getElementById('testAuth').onclick = async () => {
+      try {
+        log('測試認證...');
+        await ensureAuth();
+        log('✅ 認證成功');
+      } catch (error) {
+        log(`❌ 認證失敗: ${error.message}`);
+      }
+    };
+
+    document.getElementById('testWrite').onclick = async () => {
+      try {
+        log('測試寫入...');
+        await ensureAuth();
+        
+        const testData = {
+          name: '測試學生',
+          class: '測試班級',
+          createdAt: serverTimestamp()
+        };
+        
+        const docRef = await addDoc(collection(db, 'students'), testData);
+        log(`✅ 寫入成功，文件 ID: ${docRef.id}`);
+      } catch (error) {
+        log(`❌ 寫入失敗: ${error.message}`);
+      }
+    };
+
+    document.getElementById('testRead').onclick = async () => {
+      try {
+        log('測試讀取...');
+        await ensureAuth();
+        
+        const querySnapshot = await getDocs(collection(db, 'students'));
+        const count = querySnapshot.size;
+        log(`✅ 讀取成功，找到 ${count} 個學生文件`);
+        
+        querySnapshot.forEach((doc) => {
+          log(`  - ${doc.id}: ${doc.data().name || '未命名'}`);
+        });
+      } catch (error) {
+        log(`❌ 讀取失敗: ${error.message}`);
+      }
+    };
+
+    // 頁面載入時檢查系統
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSystem();
+    });
+  </script>
+</body>
+</html>

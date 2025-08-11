@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>匯入學生成績到 Firebase (修復版)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .debug-info {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .error {
+      color: #dc3545;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .success {
+      color: #155724;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-3 fw-bold" style="color:#2339d6;letter-spacing:1px;">
+      <i class="fas fa-tools me-2"></i>匯入學生成績到 Firebase (修復版)
+    </h2>
+    
+    <div class="alert alert-info">
+      <h5><i class="fas fa-info-circle me-2"></i>系統狀態檢查</h5>
+      <div id="systemStatus">檢查中...</div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Firebase 連接設定</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">教師登入（可選）</label>
+            <input type="email" id="email" class="form-control" placeholder="teacher@example.com" />
+          </div>
+          <div class="col-md-3">
+            <input type="password" id="password" class="form-control" placeholder="密碼" />
+          </div>
+          <div class="col-md-2">
+            <button id="loginBtn" class="btn btn-outline-primary w-100">
+              <i class="fas fa-sign-in-alt me-1"></i>登入
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button id="testConnectionBtn" class="btn btn-outline-info w-100">
+              <i class="fas fa-wifi me-1"></i>測試連接
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-upload me-2"></i>成績匯入</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label">選擇 JSON 檔</label>
+            <input type="file" id="fileInput" class="form-control" accept="application/json" />
+            <div class="form-text">JSON 格式：{"scores": [{"name": "姓名", "front": 10, "jack": 15, "ski": 20, "bike": 25, "date": "2024-01-15"}]}</div>
+          </div>
+          <div class="col-md-3">
+            <button id="importBtn" class="btn btn-primary w-100">
+              <i class="fas fa-cloud-upload-alt me-1"></i>開始匯入
+            </button>
+          </div>
+          <div class="col-md-3 text-end">
+            <a href="students-list.html" class="btn btn-secondary">
+              <i class="fas fa-list me-1"></i>返回學生名單
+            </a>
+          </div>
+        </div>
+        <div id="status" class="mt-3 small text-muted"></div>
+        <div id="log" class="mt-3" style="white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-database me-2"></i>資料庫操作</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <button id="checkStudentsBtn" class="btn btn-outline-secondary w-100">
+              <i class="fas fa-users me-1"></i>檢查現有學生
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button id="createSampleBtn" class="btn btn-outline-warning w-100">
+              <i class="fas fa-plus me-1"></i>建立範例資料
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button id="clearDataBtn" class="btn btn-outline-danger w-100">
+              <i class="fas fa-trash me-1"></i>清除所有資料
+            </button>
+          </div>
+        </div>
+        <div id="dbStatus" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module">
+    import { ensureAuth, db, addStudentScore, signInWithEmailAndPassword } from './js/firebase.js';
+    import { collection, query, where, getDocs, addDoc, setDoc, doc, serverTimestamp, deleteDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+
+    const auth = getAuth();
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const systemStatusEl = document.getElementById('systemStatus');
+    const dbStatusEl = document.getElementById('dbStatus');
+
+    function log(msg) { 
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.textContent += `[${timestamp}] ${msg}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function setStatus(msg) { statusEl.textContent = msg; }
+    function setSystemStatus(msg, type = 'info') {
+      systemStatusEl.innerHTML = `<span class="text-${type}">${msg}</span>`;
+    }
+
+    // 系統狀態檢查
+    async function checkSystemStatus() {
+      try {
+        setSystemStatus('檢查 Firebase 配置...', 'warning');
+        
+        if (!window.FIREBASE_CONFIG) {
+          setSystemStatus('❌ Firebase 配置未找到', 'danger');
+          return false;
+        }
+        
+        setSystemStatus('檢查 Firebase 連接...', 'warning');
+        await ensureAuth();
+        
+        setSystemStatus('✅ Firebase 連接正常', 'success');
+        log('系統狀態檢查完成');
+        return true;
+      } catch (error) {
+        setSystemStatus(`❌ 連接失敗: ${error.message}`, 'danger');
+        log(`系統檢查錯誤: ${error.message}`);
+        return false;
+      }
+    }
+
+    async function loginIfNeeded() {
+      const email = (document.getElementById('email').value || '').trim();
+      const password = (document.getElementById('password').value || '').trim();
+      if (email && password) {
+        await signInWithEmailAndPassword(auth, email, password);
+        log(`已登入: ${email}`);
+      } else {
+        await ensureAuth(); // 匿名登入
+        log('使用匿名登入');
+      }
+    }
+
+    async function getOrCreateStudentByName(name) {
+      const colRef = collection(db, 'students');
+      const q = query(colRef, where('name', '==', name));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const d = snap.docs[0];
+        log(`找到現有學生: ${name} (ID: ${d.id})`);
+        return d.id;
+      }
+      const newDoc = await addDoc(colRef, { 
+        name, 
+        class: '未分班', 
+        createdAt: serverTimestamp() 
+      });
+      log(`建立新學生: ${name} (ID: ${newDoc.id})`);
+      return newDoc.id;
+    }
+
+    async function importFromJson(json) {
+      const scores = Array.isArray(json?.scores) ? json.scores : [];
+      if (scores.length === 0) {
+        throw new Error('JSON 中沒有找到 scores 陣列或陣列為空');
+      }
+      
+      let processed = 0;
+      let errors = 0;
+      
+      for (const row of scores) {
+        try {
+          const name = (row.name || '').trim();
+          const date = row.date;
+          if (!name || !date) { 
+            log(`⚠️ 略過：缺少 name 或 date -> ${JSON.stringify(row)}`); 
+            errors++;
+            continue; 
+          }
+          
+          const studentId = await getOrCreateStudentByName(name);
+          
+          if (Number.isFinite(Number(row.front))) {
+            await addStudentScore(studentId, 'frontJump', Number(row.front), date);
+            log(`✅ ${name} - 前跳: ${row.front}`);
+          }
+          if (Number.isFinite(Number(row.jack))) {
+            await addStudentScore(studentId, 'jumpingJack', Number(row.jack), date);
+            log(`✅ ${name} - 開合跳: ${row.jack}`);
+          }
+          if (Number.isFinite(Number(row.ski))) {
+            await addStudentScore(studentId, 'skiJump', Number(row.ski), date);
+            log(`✅ ${name} - 雪撬跳: ${row.ski}`);
+          }
+          if (Number.isFinite(Number(row.bike))) {
+            await addStudentScore(studentId, 'bicycleStep', Number(row.bike), date);
+            log(`✅ ${name} - 單車步: ${row.bike}`);
+          }
+          
+          processed++;
+        } catch (error) {
+          log(`❌ 處理 ${row.name || '未知'} 時發生錯誤: ${error.message}`);
+          errors++;
+        }
+      }
+      
+      return { processed, errors };
+    }
+
+    // 事件處理器
+    document.getElementById('loginBtn').onclick = async () => {
+      try {
+        await loginIfNeeded();
+        setStatus('登入成功');
+        log('登入成功');
+      } catch (e) {
+        setStatus('登入失敗：' + e.message);
+        log(`登入失敗: ${e.message}`);
+      }
+    };
+
+    document.getElementById('testConnectionBtn').onclick = async () => {
+      try {
+        await checkSystemStatus();
+      } catch (e) {
+        log(`連接測試失敗: ${e.message}`);
+      }
+    };
+
+    document.getElementById('importBtn').onclick = async () => {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) { 
+        setStatus('請先選擇 JSON 檔'); 
+        return; 
+      }
+      
+      setStatus('處理中...'); 
+      logEl.textContent = '';
+      log('開始匯入程序...');
+      
+      try {
+        await loginIfNeeded();
+        const text = await file.text();
+        const json = JSON.parse(text);
+        log(`JSON 解析成功，找到 ${json.scores?.length || 0} 筆成績資料`);
+        
+        const result = await importFromJson(json);
+        setStatus(`完成！已處理 ${result.processed} 列成績，${result.errors} 個錯誤。`);
+        log(`匯入完成: 成功 ${result.processed} 筆，錯誤 ${result.errors} 筆`);
+      } catch (e) {
+        console.error(e);
+        setStatus('匯入失敗：' + e.message);
+        log(`匯入失敗: ${e.message}`);
+      }
+    };
+
+    document.getElementById('checkStudentsBtn').onclick = async () => {
+      try {
+        await loginIfNeeded();
+        const snap = await getDocs(collection(db, 'students'));
+        const students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        dbStatusEl.innerHTML = `
+          <div class="alert alert-info">
+            <h6>現有學生 (${students.length} 人):</h6>
+            <ul class="mb-0">
+              ${students.map(s => `<li>${s.name} (${s.class || '未分班'})</li>`).join('')}
+            </ul>
+          </div>
+        `;
+        log(`檢查完成: 找到 ${students.length} 名學生`);
+      } catch (e) {
+        dbStatusEl.innerHTML = `<div class="alert alert-danger">檢查失敗: ${e.message}</div>`;
+        log(`檢查學生失敗: ${e.message}`);
+      }
+    };
+
+    document.getElementById('createSampleBtn').onclick = async () => {
+      try {
+        await loginIfNeeded();
+        
+        const sampleData = {
+          scores: [
+            {
+              name: "測試學生1",
+              front: 15,
+              jack: 20,
+              ski: 25,
+              bike: 30,
+              date: "2024-01-15"
+            },
+            {
+              name: "測試學生2", 
+              front: 18,
+              jack: 22,
+              ski: 28,
+              bike: 35,
+              date: "2024-01-15"
+            }
+          ]
+        };
+        
+        const result = await importFromJson(sampleData);
+        dbStatusEl.innerHTML = `
+          <div class="alert alert-success">
+            範例資料建立完成！已處理 ${result.processed} 筆資料。
+          </div>
+        `;
+        log('範例資料建立完成');
+      } catch (e) {
+        dbStatusEl.innerHTML = `<div class="alert alert-danger">建立範例資料失敗: ${e.message}</div>`;
+        log(`建立範例資料失敗: ${e.message}`);
+      }
+    };
+
+    document.getElementById('clearDataBtn').onclick = async () => {
+      if (!confirm('確定要清除所有學生資料嗎？此操作無法復原！')) {
+        return;
+      }
+      
+      try {
+        await loginIfNeeded();
+        const batch = writeBatch(db);
+        
+        // 清除所有學生和成績
+        const studentsSnap = await getDocs(collection(db, 'students'));
+        for (const studentDoc of studentsSnap.docs) {
+          // 清除該學生的所有成績
+          const scoresSnap = await getDocs(collection(db, 'students', studentDoc.id, 'scores'));
+          scoresSnap.docs.forEach(scoreDoc => {
+            batch.delete(scoreDoc.ref);
+          });
+          // 清除學生檔案
+          batch.delete(studentDoc.ref);
+        }
+        
+        await batch.commit();
+        dbStatusEl.innerHTML = `
+          <div class="alert alert-warning">
+            所有資料已清除！
+          </div>
+        `;
+        log('所有資料已清除');
+      } catch (e) {
+        dbStatusEl.innerHTML = `<div class="alert alert-danger">清除資料失敗: ${e.message}</div>`;
+        log(`清除資料失敗: ${e.message}`);
+      }
+    };
+
+    // 頁面載入時檢查系統狀態
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSystemStatus();
+    });
+  </script>
+</body>
+</html>
