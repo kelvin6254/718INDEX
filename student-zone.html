@@ -520,76 +520,76 @@
         {
             class: '高中三',
             students: [
-                { name: '朱耀鋒', id: '朱耀鋒', photo: '' }
+                { name: '朱耀鋒', id: '', photo: '' }
             ]
         },
         {
             class: '高中一',
             students: [
-                { name: '林思恒', id: '林思恒', photo: '' },
-                { name: '蘇南燊', id: '蘇南燊', photo: '' }
+                { name: '林思恒', id: '', photo: '' },
+                { name: '蘇南燊', id: '', photo: '' }
             ]
         },
         {
             class: '初中四',
             students: [
-                { name: '葉芷汝', id: '葉芷汝', photo: '' }
+                { name: '葉芷汝', id: '', photo: '' }
             ]
         },
         {
             class: '初中三',
             students: [
-                { name: '吳諾暉', id: '吳諾暉', photo: '' },
-                { name: '梁珀源', id: '梁珀源', photo: '' }
+                { name: '吳諾暉', id: '', photo: '' },
+                { name: '梁珀源', id: '', photo: '' }
             ]
         },
         {
             class: '高小五',
             students: [
-                { name: '黎溢鉦', id: '黎溢鉦', photo: '' }
+                { name: '黎溢鉦', id: '', photo: '' }
             ]
         },
         {
             class: '高小四',
             students: [
-                { name: '黃泳鈺', id: '黃泳鈺', photo: '' }
+                { name: '黃泳鈺', id: '', photo: '' }
             ]
         },
         {
             class: '高小三',
             students: [
-                { name: '楊洛謙', id: '楊洛謙', photo: '' },
-                { name: '麥浩敏', id: '麥浩敏', photo: '' },
-                { name: '謝韶謙', id: '謝韶謙', photo: '' },
-                { name: '馮樂宏', id: '馮樂宏', photo: '' }
+                { name: '楊洛謙', id: '', photo: '' },
+                { name: '麥浩敏', id: '', photo: '' },
+                { name: '謝韶謙', id: '', photo: '' },
+                { name: '馮樂宏', id: '', photo: '' }
             ]
         },
         {
             class: '高小二',
             students: [
-                { name: '曾業淳', id: '曾業淳', photo: '' },
-                { name: '馮鎮泓', id: '馮鎮泓', photo: '' }
+                { name: '曾業淳', id: '', photo: '' },
+                { name: '馮鎮泓', id: '', photo: '' }
             ]
         },
         {
             class: '高小一',
             students: [
-                { name: '倪灝', id: '倪灝', photo: '' }
+                { name: '倪灝', id: '', photo: '' }
             ]
         },
         {
             class: '初小三',
             students: [
-                { name: '林澤星', id: '林澤星', photo: '' },
-                { name: '蔡瀚毅', id: '蔡瀚毅', photo: '' },
-                { name: '楊凱琳', id: '楊凱琳', photo: '' },
-                { name: '龍正罡', id: '龍正罡', photo: '' }
+                { name: '林澤星', id: '', photo: '' },
+                { name: '蔡瀚毅', id: '', photo: '' },
+                { name: '楊凱琳', id: '', photo: '' },
+                { name: '龍正罡', id: '', photo: '' }
             ]
         },
         {
             class: '初小二',
             students: [
-                { name: '許明然', id: '許明然', photo: '' }
+                { name: '許明然', id: '', photo: '' }
             ]
         }
     ];
@@ -788,7 +788,8 @@
                     
                     // 同步到 Firebase
                     const id = getQueryParam('id');
-                    const student = findStudentById(id);
+                    const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+                    const student = findStudentByIdOrName(id, name);
                     if (student && window.syncSingleScoreToFirebase) {
                         try {
                             const syncResult = await window.syncSingleScoreToFirebase(student.name, type, value, date);
@@ -805,9 +806,10 @@
                     renderChart();
                     renderTables();
                     // ===== 新增：同步寫入首頁成績格式到 localStorage 'scores' =====
-                    const id = getQueryParam('id');
-                    const student = findStudentById(id);
-                    if(student) {
+                    const id2 = getQueryParam('id');
+                    const name2 = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+                    const student2 = findStudentByIdOrName(id2, name2);
+                    if(student2) {
                         let scores = JSON.parse(localStorage.getItem('scores') || '[]');
                         // 取得該生當日所有七大項分數
                         let front = 0, jack = 0, ski = 0, bike = 0, cross = 0, crossOpen = 0, double = 0;
@@ -820,11 +822,11 @@
                         window.scoreData.doubleJump.forEach(s => { if(s.date === date) double = s.value; });
                         let total = front + jack + ski + bike + cross + crossOpen + double;
                         // 只覆蓋同名同日的成績，不同日就新增
-                        const existingIndex = scores.findIndex(score => score.name === student.name && score.date === date);
+                        const existingIndex = scores.findIndex(score => score.name === student2.name && score.date === date);
                         if (existingIndex !== -1) {
-                            scores[existingIndex] = { name: student.name, front, jack, ski, bike, cross, crossOpen, double, total, date };
+                            scores[existingIndex] = { name: student2.name, front, jack, ski, bike, cross, crossOpen, double, total, date };
                         } else {
-                            scores.push({ name: student.name, front, jack, ski, bike, cross, crossOpen, double, total, date });
+                            scores.push({ name: student2.name, front, jack, ski, bike, cross, crossOpen, double, total, date });
                         }
                         localStorage.setItem('scores', JSON.stringify(scores));
                         
@@ -852,19 +854,33 @@
         }
     }
 
-    // 根據 id 查找學生
-    function findStudentById(id) {
-        for (const cls of studentsData) {
-            for (const stu of cls.students) {
-                if (stu.id === id) {
-                    return { ...stu, class: cls.class };
+    // 根據 id 或 name 查找學生（兼容兩種導向方式）
+    function findStudentByIdOrName(id, name) {
+        if (id) {
+            for (const cls of studentsData) {
+                for (const stu of cls.students) {
+                    if (stu.id === id) {
+                        return { ...stu, class: cls.class };
+                    }
                 }
             }
         }
+        
+        const trimmed = (name || '').trim();
+        if (trimmed) {
+            for (const cls of studentsData) {
+                for (const stu of cls.students) {
+                    if (stu.name === trimmed) {
+                        return { ...stu, class: cls.class };
+                    }
+                }
+            }
+        }
+        
         return null;
     }
 
-    // 取得網址參數 id
+    // 取得網址參數
     function getQueryParam(name) {
         const url = new URL(window.location.href);
         return url.searchParams.get(name);
@@ -877,7 +893,8 @@
     // 渲染四大技能折線圖和表格
     function renderStudentScores() {
         const id = getQueryParam('id');
-        const student = findStudentById(id);
+        const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+        const student = findStudentByIdOrName(id, name);
         
         // 分類七大項
         let scoreData = { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [], crossRope: [], crossOpen: [], doubleJump: [] };
@@ -1126,7 +1143,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const id = getQueryParam('id');
-        const student = findStudentById(id);
+        const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+        const student = findStudentByIdOrName(id, name);
         
             if (student) {
             // 更新學生資訊
@@ -1215,7 +1233,8 @@
             
             // 從 localStorage 獲取當前學生的相片
             const id = getQueryParam('id');
-            const student = findStudentById(id);
+            const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+            const student = findStudentByIdOrName(id, name);
             
             const safeName = encodeURIComponent(student?.name || '');
             if (studentPhoto) {
@@ -1410,7 +1429,8 @@
         // 頁面載入時設置即時監聽
         document.addEventListener('DOMContentLoaded', function() {
             const id = getQueryParam('id');
-            const student = findStudentById(id);
+            const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+            const student = findStudentByIdOrName(id, name);
             
             if (student && window.listenStudentScoresRealtime) {
                 // 設置即時監聽
