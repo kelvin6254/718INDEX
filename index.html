@@ -306,6 +306,12 @@
             font-size: 0.9rem;
         }
         
+        .total-score {
+            background-color: #dc2626 !important;
+            font-size: 1rem;
+            padding: 8px 14px;
+        }
+        
         .rank-badge {
             background-color: #f97316;
             color: white;
@@ -803,6 +809,13 @@ body {
                     <thead class="table-dark">
                         <tr>
                             <th>學生姓名</th>
+                            <th>前跳</th>
+                            <th>開合跳</th>
+                            <th>滑雪跳</th>
+                            <th>單車步</th>
+                            <th>交叉繩</th>
+                            <th>交叉打開</th>
+                            <th>二重跳</th>
                             <th>總分</th>
                             <th>日期</th>
                             <th id="actionHeader" style="display: none;">操作</th>
@@ -867,6 +880,24 @@ body {
                             <div class="mb-3">
                                 <label for="scoreBike" class="form-label">30秒單車步</label>
                                 <input type="number" class="form-control" id="scoreBike" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreCross" class="form-label">30秒交叉繩</label>
+                                <input type="number" class="form-control" id="scoreCross" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreCrossOpen" class="form-label">30秒交叉打開</label>
+                                <input type="number" class="form-control" id="scoreCrossOpen" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="scoreDouble" class="form-label">30秒二重跳</label>
+                                <input type="number" class="form-control" id="scoreDouble" min="0" required>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -1745,7 +1776,14 @@ body {
                 html += `
                     <tr>
                         <td>${item.name}</td>
-                        <td><span class="score-badge">${item.total}</span></td>
+                        <td><span class="score-badge">${item.front || 0}</span></td>
+                        <td><span class="score-badge">${item.jack || 0}</span></td>
+                        <td><span class="score-badge">${item.ski || 0}</span></td>
+                        <td><span class="score-badge">${item.bike || 0}</span></td>
+                        <td><span class="score-badge">${item.cross || 0}</span></td>
+                        <td><span class="score-badge">${item.crossOpen || 0}</span></td>
+                        <td><span class="score-badge">${item.double || 0}</span></td>
+                        <td><span class="score-badge total-score">${item.total}</span></td>
                         <td>${item.date}</td>
                         <td style="${isTeacherLoggedIn ? 'display: table-cell;' : 'display: none;'}">
                             <button class="btn btn-sm btn-info me-1" onclick="editScore(${index})" title="編輯成績">
@@ -2027,28 +2065,48 @@ body {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="mb-3">
                                             <label for="editScoreFront" class="form-label">30秒前跳</label>
                                             <input type="number" class="form-control" id="editScoreFront" value="${score.front}" min="0" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="mb-3">
                                             <label for="editScoreJack" class="form-label">30秒開合跳</label>
                                             <input type="number" class="form-control" id="editScoreJack" value="${score.jack}" min="0" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="mb-3">
                                             <label for="editScoreSki" class="form-label">30秒滑雪跳</label>
                                             <input type="number" class="form-control" id="editScoreSki" value="${score.ski}" min="0" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="mb-3">
                                             <label for="editScoreBike" class="form-label">30秒單車步</label>
                                             <input type="number" class="form-control" id="editScoreBike" value="${score.bike}" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="editScoreCross" class="form-label">30秒交叉繩</label>
+                                            <input type="number" class="form-control" id="editScoreCross" value="${score.cross || 0}" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="editScoreCrossOpen" class="form-label">30秒交叉打開</label>
+                                            <input type="number" class="form-control" id="editScoreCrossOpen" value="${score.crossOpen || 0}" min="0" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="editScoreDouble" class="form-label">30秒二重跳</label>
+                                            <input type="number" class="form-control" id="editScoreDouble" value="${score.double || 0}" min="0" required>
                                         </div>
                                     </div>
                                 </div>
@@ -2077,13 +2135,16 @@ body {
                 const jack = parseInt(document.getElementById('editScoreJack').value);
                 const ski = parseInt(document.getElementById('editScoreSki').value);
                 const bike = parseInt(document.getElementById('editScoreBike').value);
+                const cross = parseInt(document.getElementById('editScoreCross').value);
+                const crossOpen = parseInt(document.getElementById('editScoreCrossOpen').value);
+                const double = parseInt(document.getElementById('editScoreDouble').value);
                 const date = document.getElementById('editScoreDate').value;
                 
-                if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && date) {
-                    const total = front + jack + ski + bike;
+                if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && !isNaN(cross) && !isNaN(crossOpen) && !isNaN(double) && date) {
+                    const total = front + jack + ski + bike + cross + crossOpen + double;
                     
                     // 更新成績
-                    scores[index] = { name, front, jack, ski, bike, total, date };
+                    scores[index] = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
                                     localStorage.setItem('scores', JSON.stringify(scores));
                 autoBackup(); // 自動備份
                 
@@ -2144,20 +2205,23 @@ body {
             let jack = parseInt(document.getElementById('scoreJack').value);
             let ski = parseInt(document.getElementById('scoreSki').value);
             let bike = parseInt(document.getElementById('scoreBike').value);
+            let cross = parseInt(document.getElementById('scoreCross').value);
+            let crossOpen = parseInt(document.getElementById('scoreCrossOpen').value);
+            let double = parseInt(document.getElementById('scoreDouble').value);
             let date = document.getElementById('scoreDate').value;
             
-            if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && date) {
-                let total = front + jack + ski + bike;
+            if (name && !isNaN(front) && !isNaN(jack) && !isNaN(ski) && !isNaN(bike) && !isNaN(cross) && !isNaN(crossOpen) && !isNaN(double) && date) {
+                let total = front + jack + ski + bike + cross + crossOpen + double;
                 
                 // 只覆蓋同名同日的成績，不同日就新增
                 const existingIndex = scores.findIndex(score => score.name === name && score.date === date);
                 if (existingIndex !== -1) {
                     // 覆蓋現有成績
-                    scores[existingIndex] = { name, front, jack, ski, bike, total, date };
+                    scores[existingIndex] = { name, front, jack, ski, bike, cross, crossOpen, double, total, date };
                     showAlert(`已更新 ${name} ${date} 的成績！`, 'success');
                 } else {
                     // 添加新成績
-                    scores.push({ name, front, jack, ski, bike, total, date });
+                    scores.push({ name, front, jack, ski, bike, cross, crossOpen, double, total, date });
                     showAlert('成績已成功提交！', 'success');
                 }
                 
@@ -2172,6 +2236,9 @@ body {
                 document.getElementById('scoreJack').value = '';
                 document.getElementById('scoreSki').value = '';
                 document.getElementById('scoreBike').value = '';
+                document.getElementById('scoreCross').value = '';
+                document.getElementById('scoreCrossOpen').value = '';
+                document.getElementById('scoreDouble').value = '';
                 document.getElementById('scoreDate').valueAsDate = new Date();
             } else {
                 showAlert('請輸入完整的姓名、四項分數和日期', 'danger');

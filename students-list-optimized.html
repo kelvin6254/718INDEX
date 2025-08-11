@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全校學生名單 - 跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+        }
+        .class-title {
+            background: #2339d6;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0;
+            letter-spacing: 2px;
+        }
+        .student-list-col {
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 0 0 20px 0;
+            margin-bottom: 24px;
+        }
+        .student-item {
+            text-align: center;
+            margin: 18px 0;
+        }
+        .student-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .student-photo:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+        }
+        .student-name {
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 1.08rem;
+        }
+        .loading-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .photo-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 991px) {
+            .class-title { font-size: 1rem; }
+            .student-photo { width: 64px; height: 64px; }
+        }
+        @media (max-width: 767px) {
+            .student-list-col { margin-bottom: 16px; }
+        }
+        
+        /* 手機響應式設計 - 按比例顯示 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .row {
+                flex-wrap: wrap;
+                margin: 0;
+            }
+            
+            /* 手機上每行顯示2個學生 */
+            .col-lg-2, .col-md-4, .col-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding: 4px;
+            }
+            
+            .student-list-col {
+                margin: 0 0 8px 0;
+                border-radius: 8px;
+            }
+            
+            .class-title {
+                font-size: 0.9rem;
+                padding: 6px 0;
+                letter-spacing: 1px;
+            }
+            
+            .student-item {
+                margin: 8px 0;
+            }
+            
+            .student-photo {
+                width: 50px;
+                height: 50px;
+                border-width: 2px;
+            }
+            
+            .student-name {
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+        <i class="fas fa-spinner fa-spin me-2"></i>載入相片中...
+    </div>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4" style="color:#2339d6;font-weight:bold;letter-spacing:2px;">
+                    <i class="fas fa-users me-3"></i>全校學生名單
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">全部班級</h4>
+                    <a href="index.html" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>返回首頁
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="studentListContainer"></div>
+    </div>
+
+    <script>
+        // 學生資料
+        window.studentsData = [
+            {
+                class: "1A",
+                students: [
+                    { name: "吳諾暉", id: "student1" },
+                    { name: "曾業淳", id: "student2" },
+                    { name: "朱耀鋒", id: "student3" }
+                ]
+            },
+            {
+                class: "1B", 
+                students: [
+                    { name: "楊洛謙", id: "student4" },
+                    { name: "葉芷汝", id: "student5" },
+                    { name: "謝韶謙", id: "student6" }
+                ]
+            },
+            {
+                class: "1C",
+                students: [
+                    { name: "馮樂宏", id: "student7" },
+                    { name: "馮鎮泓", id: "student8" },
+                    { name: "麥浩敏", id: "student9" }
+                ]
+            },
+            {
+                class: "1D",
+                students: [
+                    { name: "黃泳鈺", id: "student10" },
+                    { name: "黎溢鉦", id: "student11" }
+                ]
+            }
+        ];
+
+        // 相片快取
+        const photoCache = new Map();
+        const loadingPhotos = new Set();
+
+        // 顯示載入指示器
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+        }
+
+        // 隱藏載入指示器
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+
+        // 預載入相片
+        function preloadPhoto(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    photoCache.set(url, img);
+                    resolve(url);
+                };
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
+        }
+
+        // 優化的相片載入函數
+        async function loadStudentPhoto(student, priority = 'normal') {
+            const name = student.name;
+            if (!name) return;
+
+            // 檢查快取
+            if (photoCache.has(name)) {
+                student.photo = photoCache.get(name);
+                return;
+            }
+
+            // 避免重複載入
+            if (loadingPhotos.has(name)) return;
+            loadingPhotos.add(name);
+
+            try {
+                // 優先嘗試從 Storage 載入
+                const storageUrl = await tryStorageByName(name);
+                if (storageUrl) {
+                    student.photo = storageUrl;
+                    photoCache.set(name, storageUrl);
+                    return;
+                }
+
+                // 回退到本地相片
+                const localUrl = `PIC/${encodeURIComponent(name)}.jpg`;
+                student.photo = localUrl;
+                photoCache.set(name, localUrl);
+
+            } catch (error) {
+                console.error(`載入相片失敗: ${name}`, error);
+                const fallbackUrl = `PIC/${encodeURIComponent(name)}.jpg`;
+                student.photo = fallbackUrl;
+                photoCache.set(name, fallbackUrl);
+            } finally {
+                loadingPhotos.delete(name);
+            }
+        }
+
+        // 批次載入相片（優化版本）
+        async function loadStudentPhotosBatch(students, batchSize = 5) {
+            showLoading();
+            
+            const batches = [];
+            for (let i = 0; i < students.length; i += batchSize) {
+                batches.push(students.slice(i, i + batchSize));
+            }
+
+            for (let i = 0; i < batches.length; i++) {
+                const batch = batches[i];
+                const promises = batch.map(student => loadStudentPhoto(student));
+                
+                await Promise.all(promises);
+                
+                // 每批次完成後重新渲染
+                renderStudentList();
+                
+                // 短暫延遲，讓 UI 有時間更新
+                if (i < batches.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            hideLoading();
+        }
+
+        // 渲染學生名單
+        function renderStudentList() {
+            const container = document.getElementById('studentListContainer');
+            container.innerHTML = '';
+
+            window.studentsData.forEach(classData => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'col-12 col-lg-6 col-xl-3 mb-4';
+                
+                let studentsHtml = '';
+                classData.students.forEach(student => {
+                    const photoUrl = student.photo || `PIC/${encodeURIComponent(student.name)}.jpg`;
+                    const loadingClass = !student.photo ? 'photo-loading' : '';
+                    
+                    studentsHtml += `
+                        <div class="student-item">
+                            <img src="${photoUrl}" 
+                                 class="student-photo ${loadingClass}" 
+                                 alt="${student.name}"
+                                 onclick="goToStudentZone('${student.id}')"
+                                 onerror="this.src='PIC/${encodeURIComponent(student.name)}.jpg'; this.classList.remove('photo-loading');">
+                            <div class="student-name">${student.name}</div>
+                        </div>
+                    `;
+                });
+
+                classDiv.innerHTML = `
+                    <div class="student-list-col">
+                        <h3 class="class-title">${classData.class}</h3>
+                        ${studentsHtml}
+                    </div>
+                `;
+                
+                container.appendChild(classDiv);
+            });
+        }
+
+        // 跳轉到個人專區
+        function goToStudentZone(id) {
+            window.location.href = `student-zone.html?id=${id}`;
+        }
+
+        // 初始化
+        async function initialize() {
+            // 先渲染基本結構
+            renderStudentList();
+            
+            // 收集所有學生
+            const allStudents = window.studentsData.flatMap(cls => cls.students);
+            
+            // 批次載入相片
+            await loadStudentPhotosBatch(allStudents);
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+
+    <script src="js/firebase-config.js"></script>
+    <script type="module">
+        import { db, storage } from './js/firebase.js';
+        import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+        import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js';
+
+        // 優化的 Storage 讀取函數
+        async function tryStorageByName(name) {
+            const candidates = [
+                `students/${name}.jpg`, `students/${name}.jpeg`, `students/${name}.png`, `students/${name}.webp`,
+                `${name}.jpg`, `${name}.jpeg`, `${name}.png`, `${name}.webp`
+            ];
+            
+            for (const path of candidates) {
+                try {
+                    const storageRef = ref(storage, path);
+                    const url = await getDownloadURL(storageRef);
+                    return url;
+                } catch (error) {
+                    // 繼續嘗試下一個路徑
+                }
+            }
+            return null;
+        }
+
+        // 將函數設為全域，供其他腳本使用
+        window.tryStorageByName = tryStorageByName;
+
+        // 優化的相片同步函數
+        async function syncPhotosFromFirestore() {
+            try {
+                const snap = await getDocs(collection(db, 'students'));
+                const nameToPhoto = {};
+                
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.name && data.photoUrl) {
+                        nameToPhoto[data.name] = data.photoUrl;
+                    }
+                });
+
+                // 更新相片快取
+                Object.entries(nameToPhoto).forEach(([name, url]) => {
+                    photoCache.set(name, url);
+                });
+
+                // 重新渲染
+                renderStudentList();
+                
+            } catch (error) {
+                console.error('Firestore 同步失敗:', error);
+            }
+        }
+
+        // 延遲執行 Firestore 同步
+        setTimeout(syncPhotosFromFirestore, 2000);
+    </script>
+</body>
+</html>
