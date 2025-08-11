@@ -770,10 +770,22 @@
     // 表單權限與事件
     function setupScoreForm() {
         const form = document.getElementById('scoreInputForm');
-        if(localStorage.getItem('userRole') === 'teacher') {
+        const userRole = localStorage.getItem('userRole');
+        const teacherName = localStorage.getItem('teacherName');
+        
+
+        
+        if(userRole === 'teacher') {
             form.style.display = '';
             form.onsubmit = async function(e) {
                 e.preventDefault();
+                
+                // 再次檢查權限
+                if(localStorage.getItem('userRole') !== 'teacher') {
+                    alert('權限已過期，請重新登入');
+                    return;
+                }
+                
                 const type = document.getElementById('scoreType').value;
                 const value = parseInt(document.getElementById('scoreValue').value);
                 const date = document.getElementById('scoreDate').value;
@@ -847,11 +859,51 @@
                     }
                     // ===== END =====
                     form.reset();
+                    
+                    // 顯示成功訊息
+                    showMessage('成績已成功提交！', 'success');
                 }
             };
         } else {
             form.style.display = 'none';
         }
+    }
+    
+    // 檢查並恢復老師權限
+    function checkAndRestoreTeacherPermission() {
+        const userRole = localStorage.getItem('userRole');
+        const teacherName = localStorage.getItem('teacherName');
+        const teacherLoginTime = localStorage.getItem('teacherLoginTime');
+        
+
+        
+        // 如果沒有老師權限，嘗試從 sessionStorage 恢復
+        if(userRole !== 'teacher' && sessionStorage.getItem('userRole') === 'teacher') {
+            localStorage.setItem('userRole', 'teacher');
+            localStorage.setItem('teacherName', sessionStorage.getItem('teacherName') || '');
+            localStorage.setItem('teacherLoginTime', sessionStorage.getItem('teacherLoginTime') || '');
+
+        }
+        
+        // 檢查登入時間是否過期（24小時）
+        if(teacherLoginTime) {
+            const loginTime = new Date(teacherLoginTime);
+            const now = new Date();
+            const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
+            
+            if(hoursDiff > 24) {
+
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('teacherName');
+                localStorage.removeItem('teacherLoginTime');
+                sessionStorage.removeItem('userRole');
+                sessionStorage.removeItem('teacherName');
+                sessionStorage.removeItem('teacherLoginTime');
+                return false;
+            }
+        }
+        
+        return userRole === 'teacher';
     }
 
     // 根據 id 或 name 查找學生（兼容兩種導向方式）
@@ -1200,6 +1252,9 @@
         }
         
         renderStudentScores();
+        
+        // 檢查並恢復老師權限
+        checkAndRestoreTeacherPermission();
         setupScoreForm && setupScoreForm();
 
         const role = localStorage.getItem('userRole');
@@ -1225,6 +1280,14 @@
 
         // 每30秒更新一次數據（可選）
         setInterval(updateChartData, 30000);
+        
+        // 每5分鐘檢查一次老師權限
+        setInterval(function() {
+            if(checkAndRestoreTeacherPermission()) {
+                // 如果權限恢復了，重新設置表單
+                setupScoreForm();
+            }
+        }, 300000);
 
         // 相片處理功能
         function loadStudentPhoto() {
@@ -1309,6 +1372,9 @@
                 }
             }, 3000);
         }
+        
+        // 全域 showMessage 函式
+        window.showMessage = showMessage;
 
         // 載入已儲存的學生相片
         function loadStudentPhotos() {
@@ -1361,6 +1427,18 @@
                 loadStudentPhotos();
                 loadStudentPhoto();
                 console.log('學生專區頁面變為可見，重新載入相片');
+                
+                // 檢查老師權限
+                if(checkAndRestoreTeacherPermission()) {
+                    setupScoreForm();
+                }
+            }
+        });
+        
+        // 頁面獲得焦點時檢查權限
+        window.addEventListener('focus', function() {
+            if(checkAndRestoreTeacherPermission()) {
+                setupScoreForm();
             }
         });
     });

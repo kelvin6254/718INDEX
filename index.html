@@ -826,7 +826,7 @@ body {
                 </table>
             </div>
 
-            <div class="form-container">
+            <div class="form-container" id="scoreInputForm" style="display: none;">
                 <h3 class="mb-4"><i class="fas fa-plus me-2"></i>輸入新成績</h3>
                 <form id="scoreForm">
                     <div class="row">
@@ -1873,6 +1873,7 @@ body {
             showRoleSelection();
             checkDataIntegrity(); // 檢查資料完整性
             autoBackup(); // 自動備份
+            updateFormVisibility(); // 更新表單可見性
         });
 
         function renderScores() {
@@ -1962,6 +1963,7 @@ body {
                     isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
                 }
                 updateRoleStatus && updateRoleStatus();
+                updateFormVisibility(); // 更新表單可見性
                 return;
             }
             const modal = document.createElement('div');
@@ -2015,6 +2017,7 @@ body {
                 // 家長直接進入，關閉模態框
                 closeModal();
                 showAlert('歡迎家長！您可以使用影片上傳功能。', 'success');
+                updateFormVisibility();
             }
         }
         
@@ -2074,6 +2077,7 @@ body {
                     showAlert('老師登入成功！您可以使用所有管理功能。', 'success');
                     // 重新渲染成績表格以顯示操作按鈕
                     renderScores();
+                    updateFormVisibility();
                 } else {
                     showAlert('密碼錯誤，請重新輸入！', 'danger');
                     document.getElementById('teacherPassword').value = '';
@@ -2096,6 +2100,21 @@ body {
             window.location.href = 'student-zone.html';
         }
         
+        // 更新表單可見性
+        function updateFormVisibility() {
+            const scoreInputForm = document.getElementById('scoreInputForm');
+            const userRole = localStorage.getItem('userRole');
+            const isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+            
+            if (userRole === 'teacher' && isTeacherLoggedIn) {
+                // 老師角色且已登入，顯示輸入表格
+                scoreInputForm.style.display = 'block';
+            } else {
+                // 家長角色或老師未登入，隱藏輸入表格
+                scoreInputForm.style.display = 'none';
+            }
+        }
+        
         // 登出功能
         function logout() {
             // 重置所有狀態
@@ -2103,6 +2122,8 @@ body {
             isTeacherLoggedIn = false;
             localStorage.removeItem('userRole');
             localStorage.removeItem('isTeacherLoggedIn');
+            // 隱藏輸入表格
+            updateFormVisibility();
             // 顯示登出成功訊息
             showAlert('已成功登出！', 'success');
             // 重新顯示角色選擇
