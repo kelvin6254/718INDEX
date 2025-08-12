@@ -356,7 +356,7 @@
         /* 影片展示區域 */
         .video-section {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 80px 0;
+            padding: 80px 0 40px 0;
             position: relative;
         }
         
@@ -1222,7 +1222,7 @@ body {
             </div>
         </section>
 
-        <section id="scores" class="content-section">
+        <section id="scores" class="content-section" style="padding-top: 60px;">
             <div class="container">
                 <div class="section-header">
                     <h2><i class="fas fa-chart-bar me-2"></i>成績紀錄</h2>
@@ -1232,7 +1232,7 @@ body {
             <div class="table-container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3>當前成績</h3>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group" role="group" id="adminButtons">
                         <button type="button" class="btn btn-outline-primary btn-sm" onclick="exportScores()" title="匯出成績資料">
                             <i class="fas fa-download me-1"></i>匯出資料
                         </button>
@@ -2582,15 +2582,22 @@ body {
         // 更新表單可見性
         function updateFormVisibility() {
             const scoreInputForm = document.getElementById('scoreInputForm');
+            const adminButtons = document.getElementById('adminButtons');
             const userRole = localStorage.getItem('userRole');
             const isTeacherLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
             
             if (userRole === 'teacher' && isTeacherLoggedIn) {
-                // 老師角色且已登入，顯示輸入表格
+                // 老師角色且已登入，顯示輸入表格和管理按鈕
                 scoreInputForm.style.display = 'block';
+                if (adminButtons) {
+                    adminButtons.style.display = 'flex';
+                }
             } else {
-                // 家長角色或老師未登入，隱藏輸入表格
+                // 家長角色或老師未登入，隱藏輸入表格和管理按鈕
                 scoreInputForm.style.display = 'none';
+                if (adminButtons) {
+                    adminButtons.style.display = 'none';
+                }
             }
         }
         
