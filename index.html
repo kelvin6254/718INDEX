@@ -353,6 +353,131 @@
             color: white;
         }
         
+        /* 影片展示區域 */
+        .video-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 80px 0;
+            position: relative;
+        }
+        
+        .video-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23e2e8f0" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23e2e8f0" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%23e2e8f0" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="%23e2e8f0" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="%23e2e8f0" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .video-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .video-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .video-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .video-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            background: #000;
+        }
+        
+        .video-wrapper::before {
+            content: '';
+            display: block;
+            padding-top: 56.25%; /* 16:9 比例 */
+        }
+        
+        .video-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-description {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .video-description h4 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .video-description p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        
+        .video-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .video-stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+        
+        .video-stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2563eb;
+            display: block;
+        }
+        
+        .video-stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        
         /* 響應式設計 */
         @media (max-width: 768px) {
             .hero-section h1 {
@@ -365,6 +490,27 @@
             
             .feature-card {
                 margin: 10px 0;
+            }
+            
+            .video-title {
+                font-size: 2rem;
+            }
+            
+            .video-subtitle {
+                font-size: 1rem;
+            }
+            
+            .video-stats {
+                gap: 20px;
+            }
+            
+            .video-stat {
+                min-width: 100px;
+                padding: 10px;
+            }
+            
+            .video-stat-number {
+                font-size: 1.5rem;
             }
         }
         
@@ -689,6 +835,11 @@ body {
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="competition-news.html">
+                            <i class="fas fa-newspaper me-1"></i>比賽報導
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="holyjumpvibe.html">
                             <i class="fas fa-book-open me-1"></i>《HolyJumpVibe》繩刊
                         </a>
@@ -778,7 +929,59 @@ body {
             </div>
         </section>
 
-
+        <!-- 跳繩隊介紹影片區域 -->
+        <section class="video-section">
+            <div class="container">
+                <div class="video-container">
+                    <div class="video-header">
+                        <h2 class="video-title">
+                            <i class="fas fa-play-circle me-3"></i>跳繩隊介紹影片
+                        </h2>
+                        <p class="video-subtitle">
+                            透過精彩影片了解我們跳繩隊的訓練日常、團隊精神與精彩表現
+                        </p>
+                    </div>
+                    
+                    <div class="video-wrapper">
+                        <iframe 
+                            class="video-iframe"
+                            src="https://www.youtube.com/embed/am2Z4Lg7Dyo" 
+                            title="跳繩隊介紹影片"
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    
+                    <div class="video-description">
+                        <h4><i class="fas fa-star me-2"></i>跳繩隊特色</h4>
+                        <p>
+                            我們的跳繩隊致力於培養學生的跳繩技能與團隊合作精神，透過專業訓練與比賽經驗，
+                            讓每位隊員都能在跳繩運動中找到自信與成就感。
+                        </p>
+                    </div>
+                    
+                    <div class="video-stats">
+                        <div class="video-stat">
+                            <span class="video-stat-number">20+</span>
+                            <div class="video-stat-label">隊員人數</div>
+                        </div>
+                        <div class="video-stat">
+                            <span class="video-stat-number">5+</span>
+                            <div class="video-stat-label">比賽項目</div>
+                        </div>
+                        <div class="video-stat">
+                            <span class="video-stat-number">100%</span>
+                            <div class="video-stat-label">團隊精神</div>
+                        </div>
+                        <div class="video-stat">
+                            <span class="video-stat-number">∞</span>
+                            <div class="video-stat-label">無限可能</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section id="scores" class="content-section">
             <div class="container">
