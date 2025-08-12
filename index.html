@@ -464,6 +464,7 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             min-width: 120px;
+            flex-shrink: 0;
         }
         
         .video-stat-number {
@@ -734,26 +735,30 @@
             
             /* 視頻統計卡片響應式 */
             .video-stats {
-                gap: 15px;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-top: 20px;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 20px !important;
+                justify-content: center !important;
+                margin-top: 20px !important;
+                width: 100% !important;
             }
             
             .video-stat {
-                min-width: 100px;
-                padding: 12px 10px;
-                margin: 5px;
-                flex: 0 0 auto;
+                flex: 0 0 calc(50% - 10px) !important;
+                min-width: calc(50% - 10px) !important;
+                max-width: calc(50% - 10px) !important;
+                padding: 15px 10px !important;
+                margin: 5px !important;
+                box-sizing: border-box !important;
             }
             
             .video-stat-number {
-                font-size: 1.4rem;
+                font-size: 1.4rem !important;
             }
             
             .video-stat-label {
-                font-size: 0.8rem;
-                margin-top: 5px;
+                font-size: 0.8rem !important;
+                margin-top: 5px !important;
             }
             
             /* 防止內容重疊 */
@@ -832,28 +837,38 @@
                 padding: 15px;
             }
             
+            /* 確保視頻統計區域有足夠空間 */
+            .video-stats {
+                margin-bottom: 30px !important;
+                padding: 10px 0 !important;
+            }
+            
             /* 視頻統計卡片在超小螢幕的處理 */
             .video-stats {
-                gap: 10px;
-                justify-content: space-between;
-                flex-wrap: wrap;
-                margin-top: 15px;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 15px !important;
+                justify-content: space-between !important;
+                margin-top: 15px !important;
+                width: 100% !important;
             }
             
             .video-stat {
-                min-width: calc(50% - 10px);
-                padding: 10px 8px;
-                margin: 2px;
-                flex: 0 0 calc(50% - 10px);
+                flex: 0 0 calc(50% - 7.5px) !important;
+                min-width: calc(50% - 7.5px) !important;
+                max-width: calc(50% - 7.5px) !important;
+                padding: 12px 8px !important;
+                margin: 2px !important;
+                box-sizing: border-box !important;
             }
             
             .video-stat-number {
-                font-size: 1.2rem;
+                font-size: 1.2rem !important;
             }
             
             .video-stat-label {
-                font-size: 0.75rem;
-                margin-top: 3px;
+                font-size: 0.75rem !important;
+                margin-top: 3px !important;
             }
             
             /* 確保按鈕不會重疊 */
