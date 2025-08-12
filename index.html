@@ -520,6 +520,38 @@
             width: 100%;
         }
         
+        /* 表格容器響應式處理 */
+        .table-container {
+            position: relative;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .table-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.8));
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .table-container:hover::after {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .table-container::after {
+                opacity: 1;
+            }
+        }
+        
         .table th {
             background-color: #2563eb;
             color: white;
@@ -621,6 +653,192 @@
             
             .video-container {
                 height: 200px !important;
+            }
+            
+            /* 表格響應式處理 */
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 10px 0;
+                padding: 15px;
+            }
+            
+            .table {
+                min-width: 800px;
+                font-size: 0.85rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+            
+            /* 表單響應式處理 */
+            .form-container {
+                padding: 15px;
+                margin: 10px 0;
+            }
+            
+            .form-container .row {
+                margin: 0;
+            }
+            
+            .form-container .col-md-2 {
+                padding: 0 5px;
+                margin-bottom: 15px;
+            }
+            
+            .form-container .form-control {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+            
+            /* 導航欄響應式處理 */
+            .navbar-nav {
+                margin-top: 10px;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 10px 15px !important;
+                margin: 2px 0;
+                border-radius: 8px;
+            }
+            
+            /* 內容區域間距調整 */
+            .content-section {
+                padding: 20px 0;
+            }
+            
+            .section-header {
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            /* 按鈕組響應式處理 */
+            .btn-group {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .btn-group .btn {
+                margin-bottom: 5px;
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            /* 視頻統計卡片響應式 */
+            .video-stats {
+                gap: 10px;
+                justify-content: space-around;
+            }
+            
+            .video-stat {
+                min-width: 80px;
+                padding: 10px 8px;
+            }
+            
+            .video-stat-number {
+                font-size: 1.4rem;
+            }
+            
+            .video-stat-label {
+                font-size: 0.8rem;
+            }
+            
+            /* 防止內容重疊 */
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            .row {
+                margin-left: -7.5px;
+                margin-right: -7.5px;
+            }
+            
+            .col-md-6,
+            .col-md-4,
+            .col-md-3,
+            .col-md-2 {
+                padding-left: 7.5px;
+                padding-right: 7.5px;
+            }
+        }
+        
+        /* 超小螢幕優化 */
+        @media (max-width: 576px) {
+            .table {
+                min-width: 600px;
+                font-size: 0.8rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 6px 4px;
+            }
+            
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+            
+            .video-title {
+                font-size: 1.5rem;
+            }
+            
+            .video-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            /* 防止內容重疊的額外處理 */
+            .zone-card {
+                margin-bottom: 20px !important;
+            }
+            
+            .card {
+                margin-bottom: 20px !important;
+            }
+            
+            .video-section {
+                padding: 40px 0;
+            }
+            
+            .video-wrapper {
+                margin: 0 10px;
+            }
+            
+            /* 確保按鈕不會重疊 */
+            .btn {
+                margin-bottom: 10px;
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+            
+            /* 改善表單在手機上的顯示 */
+            .form-container .row > div {
+                margin-bottom: 15px;
+            }
+            
+            /* 確保導航欄不會重疊 */
+            .navbar-collapse {
+                margin-top: 10px;
+            }
+            
+            .navbar-nav .nav-item {
+                margin-bottom: 5px;
             }
         }
 /* ====== 全站美化 ====== */
@@ -1008,25 +1226,27 @@ body {
                         </button>
                     </div>
                 </div>
-                <table id="scoresTable" class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>學生姓名</th>
-                            <th>前跳</th>
-                            <th>開合跳</th>
-                            <th>滑雪跳</th>
-                            <th>單車步</th>
-                            <th>交叉繩</th>
-                            <th>交叉打開</th>
-                            <th>二重跳</th>
-                            <th>總分</th>
-                            <th>日期</th>
-                            <th id="actionHeader" style="display: none;">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table id="scoresTable" class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>學生姓名</th>
+                                <th>前跳</th>
+                                <th>開合跳</th>
+                                <th>滑雪跳</th>
+                                <th>單車步</th>
+                                <th>交叉繩</th>
+                                <th>交叉打開</th>
+                                <th>二重跳</th>
+                                <th>總分</th>
+                                <th>日期</th>
+                                <th id="actionHeader" style="display: none;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="form-container" id="scoreInputForm" style="display: none;">
