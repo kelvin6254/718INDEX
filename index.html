@@ -427,6 +427,7 @@
         .video-description {
             text-align: center;
             margin-top: 30px;
+            margin-bottom: 30px;
             padding: 20px;
             background: white;
             border-radius: 15px;
@@ -733,13 +734,17 @@
             
             /* 視頻統計卡片響應式 */
             .video-stats {
-                gap: 10px;
-                justify-content: space-around;
+                gap: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 20px;
             }
             
             .video-stat {
-                min-width: 80px;
-                padding: 10px 8px;
+                min-width: 100px;
+                padding: 12px 10px;
+                margin: 5px;
+                flex: 0 0 auto;
             }
             
             .video-stat-number {
@@ -748,6 +753,7 @@
             
             .video-stat-label {
                 font-size: 0.8rem;
+                margin-top: 5px;
             }
             
             /* 防止內容重疊 */
@@ -818,6 +824,36 @@
             
             .video-wrapper {
                 margin: 0 10px;
+            }
+            
+            .video-description {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                padding: 15px;
+            }
+            
+            /* 視頻統計卡片在超小螢幕的處理 */
+            .video-stats {
+                gap: 10px;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                margin-top: 15px;
+            }
+            
+            .video-stat {
+                min-width: calc(50% - 10px);
+                padding: 10px 8px;
+                margin: 2px;
+                flex: 0 0 calc(50% - 10px);
+            }
+            
+            .video-stat-number {
+                font-size: 1.2rem;
+            }
+            
+            .video-stat-label {
+                font-size: 0.75rem;
+                margin-top: 3px;
             }
             
             /* 確保按鈕不會重疊 */
