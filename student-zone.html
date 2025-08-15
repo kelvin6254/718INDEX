@@ -7,6 +7,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 預載入 Chart.js，確保圖表能快速渲染
+        window.addEventListener('load', function() {
+            if (typeof Chart !== 'undefined') {
+                console.log('Chart.js 已載入完成');
+            }
+        });
+    </script>
     <style>
         * {
             margin: 0;
@@ -231,6 +239,40 @@
             padding: 2rem;
         }
 
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -261,6 +303,14 @@
     </style>
 </head>
 <body>
+    <!-- 載入指示器 -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">載入學生成績資料中...</div>
+        </div>
+    </div>
+
     <div class="header">
         <h1>基督教中國佈道會聖道學校跳繩平台</h1>
         <button class="back-btn" onclick="goBack()">返回首頁</button>
@@ -635,6 +685,13 @@
     function renderChart() {
         const canvas = document.getElementById('performanceChart');
         if (!canvas) return;
+        
+        // 確保 Canvas 已經準備好
+        if (canvas.width === 0 || canvas.height === 0) {
+            setTimeout(renderChart, 50);
+            return;
+        }
+        
         const ctx = canvas.getContext('2d');
         const sd = window.scoreData || { frontJump: [], jumpingJack: [], skiJump: [], bicycleStep: [], crossRope: [], crossOpen: [], doubleJump: [] };
         // 合併所有日期
@@ -651,8 +708,22 @@
             const found = arr.find(s=>s.date===d);
             return found ? found.value : null;
         });
-        if(window.performanceChart && typeof window.performanceChart.destroy === 'function') window.performanceChart.destroy();
-        window.performanceChart = new Chart(ctx, {
+        if(window.performanceChart && typeof window.performanceChart.destroy === 'function') {
+            try {
+                window.performanceChart.destroy();
+            } catch (e) {
+                console.warn('銷毀舊圖表時發生錯誤:', e);
+            }
+        }
+        
+        // 確保 Chart 已載入
+        if (typeof Chart === 'undefined') {
+            setTimeout(renderChart, 100);
+            return;
+        }
+        
+        try {
+            window.performanceChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: allDates.map(d=>d.replace('2024-','').replace('-','月')+'日'),
@@ -743,6 +814,11 @@
                 elements: { point: { radius: 4, hoverRadius: 6 } }
             }
         });
+        } catch (error) {
+            console.error('渲染圖表時發生錯誤:', error);
+            // 如果圖表渲染失敗，至少隱藏載入指示器
+            hideLoadingIndicator();
+        }
     }
 
     // 表格渲染
@@ -942,6 +1018,17 @@
         const allScores = JSON.parse(localStorage.getItem('scores') || '[]');
         return allScores.filter(s => s.name === name);
     }
+    // 隱藏載入指示器
+    function hideLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.opacity = '0';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+            }, 300);
+        }
+    }
+
     // 渲染四大技能折線圖和表格
     function renderStudentScores() {
         const id = getQueryParam('id');
@@ -972,13 +1059,17 @@
             console.log('未找到學生資料');
         }
         
-        // 渲染折線圖
+        // 立即渲染折線圖和表格，不等待 Firebase
         window.scoreData = scoreData;
         renderChart();
         renderTables();
         
         // 更新學生資訊
         updateStudentInfo(student ? student.name : '查無此學生', student ? getStudentScores(student.name) : []);
+        
+        // 顯示載入完成訊息並隱藏載入指示器
+        console.log('學生成績資料已載入完成');
+        hideLoadingIndicator();
     }
     
     // 更新學生資訊
@@ -1194,20 +1285,20 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // 設置載入超時機制（3秒後自動隱藏載入指示器）
+        setTimeout(() => {
+            hideLoadingIndicator();
+        }, 3000);
+        
+        // 立即顯示基本學生資訊，不等待 Firebase
         const id = getQueryParam('id');
         const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
         const student = findStudentByIdOrName(id, name);
         
-            if (student) {
-            // 更新學生資訊
+        if (student) {
+            // 立即更新學生基本資訊
             document.getElementById('studentName').textContent = student.name;
             document.getElementById('studentClass').textContent = student.class;
-            
-            // 更新所有表格中的學生姓名
-            const studentNameElements = document.querySelectorAll('td:last-child');
-            studentNameElements.forEach(element => {
-                element.textContent = student.name;
-            });
             
             // 更新頁面標題
             document.title = `${student.name} - 基督教中國佈道會聖道學校跳繩平台`;
@@ -1218,236 +1309,214 @@
                 headerTitle.innerHTML = `基督教中國佈道會聖道學校跳繩平台 - ${student.name}`;
             }
             
-            // 計算並更新總測試次數
-            const studentScores = getStudentScores(student.name);
-            const totalTests = studentScores ? studentScores.length : 0;
-            document.getElementById('totalTests').textContent = `${totalTests}次`;
-
-            // 相片：預設先以本地 PIC/姓名.jpg，之後由雲端補圖模組覆蓋
-            const imgEl = document.getElementById('studentPhoto');
-            const placeholderEl = document.getElementById('photoPlaceholder');
-            const safeName = encodeURIComponent(student.name || '');
-            if (imgEl && placeholderEl) {
-                imgEl.onerror = function(){
-                  if (!this.dataset.fallback) {
-                    this.dataset.fallback = 'jpeg';
-                    this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
-                  } else if (this.dataset.fallback === 'jpeg') {
-                    this.dataset.fallback = 'jpg';
-                    this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
-                  } else if (this.dataset.fallback === 'jpg') {
-                    this.dataset.fallback = 'JPG';
-                    this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
-                  } else {
-                    this.style.display = 'none';
-                    placeholderEl.style.display = 'flex';
-                  }
-                };
-                const initialSrc = (student.photo && student.photo !== '') ? student.photo : `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
-                imgEl.src = initialSrc;
-                imgEl.style.display = 'block';
-                placeholderEl.style.display = 'none';
-            }
+            // 立即渲染成績資料（使用本地資料）
+            renderStudentScores();
+            
+            // 延遲載入相片，避免阻塞初始渲染
+            setTimeout(() => {
+                loadStudentPhoto();
+            }, 50);
+            
         } else {
             document.getElementById('studentName').textContent = '查無此學生';
             document.getElementById('studentClass').textContent = '';
             document.getElementById('totalTests').textContent = '0次';
         }
         
-        renderStudentScores();
-        
-        // 檢查並恢復老師權限
-        checkAndRestoreTeacherPermission();
-        setupScoreForm && setupScoreForm();
+        // 延遲執行其他非關鍵功能
+        setTimeout(() => {
+            // 檢查並恢復老師權限
+            checkAndRestoreTeacherPermission();
+            setupScoreForm && setupScoreForm();
 
-        const role = localStorage.getItem('userRole');
-        if(role === 'parent' || role === 'teacher') {
-            document.getElementById('parentUploadSection').style.display = 'block';
-            if(role === 'parent') {
-                document.getElementById('parentUploadFormCard').style.display = 'block';
-            } else {
-                document.getElementById('parentUploadFormCard').style.display = 'none';
-            }
-        }
-        
-
-        
-        // 初始化彩虹章別計劃影片區塊
-        initSelfStudyVideoSection();
-
-        // 模擬動態數據更新
-        function updateChartData() {
-            // 這裡可以添加實時數據更新邏輯
-            console.log('圖表數據已更新');
-        }
-
-        // 每30秒更新一次數據（可選）
-        setInterval(updateChartData, 30000);
-        
-        // 每5分鐘檢查一次老師權限
-        setInterval(function() {
-            if(checkAndRestoreTeacherPermission()) {
-                // 如果權限恢復了，重新設置表單
-                setupScoreForm();
-            }
-        }, 300000);
-
-        // 相片處理功能
-        function loadStudentPhoto() {
-            const studentPhoto = document.getElementById('studentPhoto');
-            const photoPlaceholder = document.getElementById('photoPlaceholder');
-            
-            // 從 localStorage 獲取當前學生的相片
-            const id = getQueryParam('id');
-            const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
-            const student = findStudentByIdOrName(id, name);
-            
-            const safeName = encodeURIComponent(student?.name || '');
-            if (studentPhoto) {
-              studentPhoto.onerror = function(){
-                if (!this.dataset.fallback) {
-                  this.dataset.fallback = 'jpeg';
-                  this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
-                } else if (this.dataset.fallback === 'jpeg') {
-                  this.dataset.fallback = 'jpg';
-                  this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
-                } else if (this.dataset.fallback === 'jpg') {
-                  this.dataset.fallback = 'JPG';
-                  this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
-                } else {
-                  this.style.display = 'none';
-                  photoPlaceholder.style.display = 'flex';
+            const role = localStorage.getItem('userRole');
+            if(role === 'parent' || role === 'teacher') {
+                const parentUploadSection = document.getElementById('parentUploadSection');
+                const parentUploadFormCard = document.getElementById('parentUploadFormCard');
+                if(parentUploadSection) parentUploadSection.style.display = 'block';
+                if(parentUploadFormCard) {
+                    if(role === 'parent') {
+                        parentUploadFormCard.style.display = 'block';
+                    } else {
+                        parentUploadFormCard.style.display = 'none';
+                    }
                 }
-              };
             }
-            const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpeg?v=${PIC_VERSION}` : '');
-            if (src) {
-              studentPhoto.src = src;
-              studentPhoto.style.display = 'block';
-              photoPlaceholder.style.display = 'none';
-            } else {
-              studentPhoto.style.display = 'none';
-              photoPlaceholder.style.display = 'flex';
-            }
-        }
-
-        // 上傳相片功能
-        function uploadStudentPhoto() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const photoUrl = e.target.result;
-                        document.getElementById('studentPhoto').src = photoUrl;
-                        document.getElementById('studentPhoto').style.display = 'block';
-                        document.getElementById('photoPlaceholder').style.display = 'none';
-                        
-                        // 保存到本地存儲（實際應用中應該上傳到服務器）
-                        localStorage.setItem('studentPhoto', photoUrl);
-                        
-                        showMessage('相片上傳成功！', 'success');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        }
-
-        // 顯示訊息
-        function showMessage(message, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            messageDiv.style.position = 'fixed';
-            messageDiv.style.top = '20px';
-            messageDiv.style.right = '20px';
-            messageDiv.style.zIndex = '9999';
-            messageDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
             
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.parentNode.removeChild(messageDiv);
-                }
-            }, 3000);
-        }
+            // 初始化彩虹章別計劃影片區塊
+            initSelfStudyVideoSection();
+        }, 100);
         
-        // 全域 showMessage 函式
-        window.showMessage = showMessage;
-
-        // 載入已儲存的學生相片
-        function loadStudentPhotos() {
-            const saved = localStorage.getItem('studentPhotos');
-            if (saved) {
-                const savedData = JSON.parse(saved);
-                // 合併相片資料
-                studentsData.forEach((cls, clsIndex) => {
-                    cls.students.forEach((student, stuIndex) => {
-                        const savedStudent = savedData[clsIndex]?.students[stuIndex];
-                        if (savedStudent && savedStudent.photo) {
-                            student.photo = savedStudent.photo;
-                        }
-                    });
-                });
-            }
-            }
-    
-
-    
-
-    
-
-
-    // 初始化相片
-        loadStudentPhotos();
-        loadStudentPhoto();
-        
-        // 定期檢查相片更新（每2秒檢查一次）
-        setInterval(function() {
-            const currentPhotos = localStorage.getItem('studentPhotos');
-            if (currentPhotos !== window.lastPhotosCheck) {
-                window.lastPhotosCheck = currentPhotos;
-                loadStudentPhotos();
-                loadStudentPhoto();
-                console.log('學生專區相片已更新');
-            }
-        }, 2000);
-        
-        // 頁面獲得焦點時重新載入相片
-        window.addEventListener('focus', function() {
+        // 延遲載入相片相關功能
+        setTimeout(() => {
             loadStudentPhotos();
-            loadStudentPhoto();
-            console.log('學生專區頁面獲得焦點，重新載入相片');
-        });
+            
+            // 定期檢查相片更新（每2秒檢查一次）
+            setInterval(function() {
+                const currentPhotos = localStorage.getItem('studentPhotos');
+                if (currentPhotos !== window.lastPhotosCheck) {
+                    window.lastPhotosCheck = currentPhotos;
+                    loadStudentPhotos();
+                    loadStudentPhoto();
+                    console.log('學生專區相片已更新');
+                }
+            }, 2000);
+        }, 200);
         
-        // 頁面可見性變化時重新載入相片
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
+        // 延遲設置事件監聽器
+        setTimeout(() => {
+            // 頁面獲得焦點時重新載入相片
+            window.addEventListener('focus', function() {
                 loadStudentPhotos();
                 loadStudentPhoto();
-                console.log('學生專區頁面變為可見，重新載入相片');
-                
-                // 檢查老師權限
+                console.log('學生專區頁面獲得焦點，重新載入相片');
+            });
+            
+            // 頁面可見性變化時重新載入相片
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    loadStudentPhotos();
+                    loadStudentPhoto();
+                    console.log('學生專區頁面變為可見，重新載入相片');
+                    
+                    // 檢查老師權限
+                    if(checkAndRestoreTeacherPermission()) {
+                        setupScoreForm();
+                    }
+                }
+            });
+            
+            // 頁面獲得焦點時檢查權限
+            window.addEventListener('focus', function() {
                 if(checkAndRestoreTeacherPermission()) {
                     setupScoreForm();
                 }
-            }
-        });
+            });
+        }, 300);
         
-        // 頁面獲得焦點時檢查權限
-        window.addEventListener('focus', function() {
-            if(checkAndRestoreTeacherPermission()) {
-                setupScoreForm();
-            }
-        });
+        // 延遲設置定時器
+        setTimeout(() => {
+            // 每30秒更新一次數據（可選）
+            setInterval(function() {
+                console.log('圖表數據已更新');
+            }, 30000);
+            
+            // 每5分鐘檢查一次老師權限
+            setInterval(function() {
+                if(checkAndRestoreTeacherPermission()) {
+                    // 如果權限恢復了，重新設置表單
+                    setupScoreForm();
+                }
+            }, 300000);
+        }, 500);
     });
+    
+    // 相片處理功能
+    function loadStudentPhoto() {
+        const studentPhoto = document.getElementById('studentPhoto');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        
+        // 從 localStorage 獲取當前學生的相片
+        const id = getQueryParam('id');
+        const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
+        const student = findStudentByIdOrName(id, name);
+        
+        const safeName = encodeURIComponent(student?.name || '');
+        if (studentPhoto) {
+          studentPhoto.onerror = function(){
+            if (!this.dataset.fallback) {
+              this.dataset.fallback = 'jpeg';
+              this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
+            } else if (this.dataset.fallback === 'jpeg') {
+              this.dataset.fallback = 'jpg';
+              this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+            } else if (this.dataset.fallback === 'jpg') {
+              this.dataset.fallback = 'JPG';
+              this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
+            } else {
+              this.style.display = 'none';
+              photoPlaceholder.style.display = 'flex';
+            }
+          };
+        }
+        const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpeg?v=${PIC_VERSION}` : '');
+        if (src) {
+          studentPhoto.src = src;
+          studentPhoto.style.display = 'block';
+          photoPlaceholder.style.display = 'none';
+        } else {
+          studentPhoto.style.display = 'none';
+          photoPlaceholder.style.display = 'flex';
+        }
+    }
+
+    // 上傳相片功能
+    function uploadStudentPhoto() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoUrl = e.target.result;
+                    document.getElementById('studentPhoto').src = photoUrl;
+                    document.getElementById('studentPhoto').style.display = 'block';
+                    document.getElementById('photoPlaceholder').style.display = 'none';
+                    
+                    // 保存到本地存儲（實際應用中應該上傳到服務器）
+                    localStorage.setItem('studentPhoto', photoUrl);
+                    
+                    showMessage('相片上傳成功！', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
+    // 顯示訊息
+    function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.top = '20px';
+        messageDiv.style.right = '20px';
+        messageDiv.style.zIndex = '9999';
+        messageDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 3000);
+    }
+    
+    // 全域 showMessage 函式
+    window.showMessage = showMessage;
+
+    // 載入已儲存的學生相片
+    function loadStudentPhotos() {
+        const saved = localStorage.getItem('studentPhotos');
+        if (saved) {
+            const savedData = JSON.parse(saved);
+            // 合併相片資料
+            studentsData.forEach((cls, clsIndex) => {
+                cls.students.forEach((student, stuIndex) => {
+                    const savedStudent = savedData[clsIndex]?.students[stuIndex];
+                    if (savedStudent && savedStudent.photo) {
+                        student.photo = savedStudent.photo;
+                    }
+                });
+            });
+        }
+    }
 
     // ===== END =====
     </script>
@@ -1489,6 +1558,9 @@
                 
                 window.scoreData = scoreData;
                 onDataChange(scoreData);
+                
+                // Firebase 資料載入完成後隱藏載入指示器
+                hideLoadingIndicator();
             });
         }
         
@@ -1510,8 +1582,8 @@
             }
         };
         
-        // 頁面載入時設置即時監聽
-        document.addEventListener('DOMContentLoaded', function() {
+        // 頁面載入時設置即時監聽（延遲執行，避免阻塞初始載入）
+        setTimeout(() => {
             const id = getQueryParam('id');
             const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
             const student = findStudentByIdOrName(id, name);
@@ -1524,7 +1596,7 @@
                     updateStudentInfo(student.name, Object.values(scoreData).flat());
                 });
             }
-        });
+        }, 100); // 延遲 100ms 執行，讓頁面先完成初始渲染
     </script>
     <script type="module">
   import { ensureAuth, db } from './js/firebase.js';
@@ -1553,12 +1625,16 @@
       const total = scoresSnap.size;
       const totalEl = document.getElementById('totalTests');
       if (totalEl) totalEl.textContent = `${total}次`;
+      
+      // 雲端成績載入完成後隱藏載入指示器
+      hideLoadingIndicator();
     } catch (e) {
       console.warn('讀取雲端學生成績失敗：', e.message);
     }
   }
 
-  document.addEventListener('DOMContentLoaded', loadCloudScores);
+  // 延遲載入雲端成績，避免阻塞初始渲染
+  setTimeout(loadCloudScores, 200);
 </script>
 </body>
 </html> 

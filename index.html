@@ -28,6 +28,41 @@
             scroll-behavior: smooth;
         }
         
+        /* 載入指示器樣式 */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+        
         body {
             font-family: 'Microsoft JhengHei', Arial, sans-serif;
             background-color: #f5f5f5;
@@ -1077,6 +1112,14 @@ body {
     <button id="backToTopBtn" onclick="backToTop()" title="返回頂部"><i class="fas fa-arrow-up"></i></button>
 </head>
 <body>
+    <!-- 載入指示器 -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">載入成績資料中...</div>
+        </div>
+    </div>
+
     <!-- 頂部導航欄 -->
     <div class="top-nav">
         <div class="container">
@@ -2114,69 +2157,150 @@ body {
             }
         };
         
-        // 從 Firebase 載入成績
+        // 從 Firebase 載入成績（添加超時機制）
         window.loadScoresFromFirebase = async function() {
             try {
-                const studentsRef = collection(db, 'students');
-                const snapshot = await getDocs(studentsRef);
-                const allScores = [];
+                // 設置 10 秒超時
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Firebase 載入超時')), 10000);
+                });
                 
-                for (const studentDoc of snapshot.docs) {
-                    const studentData = studentDoc.data();
-                    const scoresRef = collection(db, 'students', studentDoc.id, 'scores');
-                    const scoresSnapshot = await getDocs(scoresRef);
+                const loadPromise = (async () => {
+                    const studentsRef = collection(db, 'students');
+                    const snapshot = await getDocs(studentsRef);
+                    const allScores = [];
                     
-                    scoresSnapshot.forEach(scoreDoc => {
-                        const scoreData = scoreDoc.data();
-                        allScores.push({
-                            name: studentData.name,
-                            front: scoreData.front || 0,
-                            jack: scoreData.jack || 0,
-                            ski: scoreData.ski || 0,
-                            bike: scoreData.bike || 0,
-                            cross: scoreData.cross || 0,
-                            crossOpen: scoreData.crossOpen || 0,
-                            double: scoreData.double || 0,
-                            total: scoreData.total || 0,
-                            date: scoreData.date
+                    for (const studentDoc of snapshot.docs) {
+                        const studentData = studentDoc.data();
+                        const scoresRef = collection(db, 'students', studentDoc.id, 'scores');
+                        const scoresSnapshot = await getDocs(scoresRef);
+                        
+                        scoresSnapshot.forEach(scoreDoc => {
+                            const scoreData = scoreDoc.data();
+                            allScores.push({
+                                name: studentData.name,
+                                front: scoreData.front || 0,
+                                jack: scoreData.jack || 0,
+                                ski: scoreData.ski || 0,
+                                bike: scoreData.bike || 0,
+                                cross: scoreData.cross || 0,
+                                crossOpen: scoreData.crossOpen || 0,
+                                double: scoreData.double || 0,
+                                total: scoreData.total || 0,
+                                date: scoreData.date
+                            });
                         });
-                    });
-                }
+                    }
+                    
+                    return allScores;
+                })();
                 
-                return allScores;
+                // 使用 Promise.race 實現超時
+                return await Promise.race([loadPromise, timeoutPromise]);
             } catch (error) {
                 console.error('從 Firebase 載入成績失敗:', error);
                 return [];
             }
         };
         
-        // 頁面載入時從 Firebase 載入成績
-        document.addEventListener('DOMContentLoaded', async function() {
-            const firebaseScores = await window.loadScoresFromFirebase();
-            if (firebaseScores.length > 0) {
-                // 合併 Firebase 成績到本地
-                const localScores = JSON.parse(localStorage.getItem('scores') || '[]');
-                const mergedScores = [...localScores];
-                
-                firebaseScores.forEach(fbScore => {
-                    const existingIndex = mergedScores.findIndex(s => s.name === fbScore.name && s.date === fbScore.date);
-                    if (existingIndex === -1) {
-                        mergedScores.push(fbScore);
-                    } else {
-                        mergedScores[existingIndex] = fbScore;
-                    }
-                });
-                
-                localStorage.setItem('scores', JSON.stringify(mergedScores));
-                window.scores = mergedScores;
-                
-                // 重新渲染
+        // 隱藏載入指示器
+        function hideLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // 頁面載入時先顯示本地資料，再載入 Firebase 資料
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設置載入超時機制（3秒後自動隱藏載入指示器）
+            setTimeout(() => {
+                hideLoadingIndicator();
+            }, 3000);
+            
+            // 確保頁面元素已準備好
+            const checkElements = () => {
+                const scoresTable = document.querySelector('#scoresTable tbody');
+                const rankingsTable = document.querySelector('#rankingsTable tbody');
+                return scoresTable && rankingsTable;
+            };
+            
+            // 如果元素還沒準備好，等待一下再渲染
+            if (!checkElements()) {
+                setTimeout(() => {
+                    if (typeof renderScores === 'function') renderScores();
+                    if (typeof renderRankings === 'function') renderRankings();
+                }, 50);
+            } else {
+                // 立即顯示本地成績資料
                 if (typeof renderScores === 'function') renderScores();
                 if (typeof renderRankings === 'function') renderRankings();
-                
-                console.log('已從 Firebase 載入', firebaseScores.length, '筆成績');
             }
+            
+            // 延遲載入 Firebase 資料
+            setTimeout(async function() {
+                try {
+                    const firebaseScores = await window.loadScoresFromFirebase();
+                    if (firebaseScores.length > 0) {
+                        // 合併 Firebase 成績到本地
+                        const localScores = JSON.parse(localStorage.getItem('scores') || '[]');
+                        const mergedScores = [...localScores];
+                        
+                        firebaseScores.forEach(fbScore => {
+                            const existingIndex = mergedScores.findIndex(s => s.name === fbScore.name && s.date === fbScore.date);
+                            if (existingIndex === -1) {
+                                mergedScores.push(fbScore);
+                            } else {
+                                mergedScores[existingIndex] = fbScore;
+                            }
+                        });
+                        
+                        localStorage.setItem('scores', JSON.stringify(mergedScores));
+                        window.scores = mergedScores;
+                        
+                        // 重新渲染
+                        if (typeof renderScores === 'function') renderScores();
+                        if (typeof renderRankings === 'function') renderRankings();
+                        
+                        console.log('已從 Firebase 載入', firebaseScores.length, '筆成績');
+                        
+                        // 顯示更新完成提示
+                        showUpdateNotification('成績資料已更新');
+                    }
+                } catch (error) {
+                    console.error('載入 Firebase 資料失敗:', error);
+                    showUpdateNotification('載入雲端資料失敗，使用本地資料');
+                } finally {
+                    // 無論成功或失敗都隱藏載入指示器
+                    hideLoadingIndicator();
+                }
+            }, 100); // 延遲 100ms 載入 Firebase 資料
         });
+        
+        // 顯示更新通知
+        function showUpdateNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-info alert-dismissible fade show';
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9998';
+            notification.innerHTML = `
+                <i class="fas fa-sync-alt me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
     </script>
     <script>
         // 全局變量
@@ -2375,36 +2499,47 @@ body {
 
         function renderScores() {
             let tableBody = document.querySelector('#scoresTable tbody');
+            if (!tableBody) {
+                console.warn('找不到成績表格元素');
+                return;
+            }
+            
             let html = '';
             
             // 更新操作欄可見性
             updateActionColumnVisibility();
             
+            // 使用 DocumentFragment 提高渲染效能
+            const fragment = document.createDocumentFragment();
+            
             scores.forEach(function(item, index) {
-                html += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td><span class="score-badge">${item.front || 0}</span></td>
-                        <td><span class="score-badge">${item.jack || 0}</span></td>
-                        <td><span class="score-badge">${item.ski || 0}</span></td>
-                        <td><span class="score-badge">${item.bike || 0}</span></td>
-                        <td><span class="score-badge">${item.cross || 0}</span></td>
-                        <td><span class="score-badge">${item.crossOpen || 0}</span></td>
-                        <td><span class="score-badge">${item.double || 0}</span></td>
-                        <td><span class="score-badge total-score">${item.total}</span></td>
-                        <td>${item.date}</td>
-                        <td style="${(localStorage.getItem('userRole') === 'teacher' && localStorage.getItem('isTeacherLoggedIn') === 'true') ? 'display: table-cell;' : 'display: none;'}">
-                            <button class="btn btn-sm btn-info me-1" onclick="editScore(${index})" title="編輯成績">
-                                <i class="fas fa-edit"></i>✏️
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="removeScore(${index})" title="移除成績">
-                                <i class="fas fa-trash"></i>🗑️
-                            </button>
-                        </td>
-                    </tr>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td><span class="score-badge">${item.front || 0}</span></td>
+                    <td><span class="score-badge">${item.jack || 0}</span></td>
+                    <td><span class="score-badge">${item.ski || 0}</span></td>
+                    <td><span class="score-badge">${item.bike || 0}</span></td>
+                    <td><span class="score-badge">${item.cross || 0}</span></td>
+                    <td><span class="score-badge">${item.crossOpen || 0}</span></td>
+                    <td><span class="score-badge">${item.double || 0}</span></td>
+                    <td><span class="score-badge total-score">${item.total}</span></td>
+                    <td>${item.date}</td>
+                    <td style="${(localStorage.getItem('userRole') === 'teacher' && localStorage.getItem('isTeacherLoggedIn') === 'true') ? 'display: table-cell;' : 'display: none;'}">
+                        <button class="btn btn-sm btn-info me-1" onclick="editScore(${index})" title="編輯成績">
+                            <i class="fas fa-edit"></i>✏️
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="removeScore(${index})" title="移除成績">
+                            <i class="fas fa-trash"></i>🗑️
+                        </button>
+                    </td>
                 `;
+                fragment.appendChild(row);
             });
-            tableBody.innerHTML = html;
+            
+            // 清空表格並一次性添加所有行
+            tableBody.innerHTML = '';
+            tableBody.appendChild(fragment);
         }
 
         function renderRankings() {
@@ -2423,26 +2558,36 @@ body {
             let rankings = Object.values(latestScores).sort((a, b) => b.total - a.total);
 
             let tableBody = document.querySelector('#rankingsTable tbody');
-            let html = '';
+            if (!tableBody) {
+                console.warn('找不到排名表格元素');
+                return;
+            }
+            
+            // 使用 DocumentFragment 提高渲染效能
+            const fragment = document.createDocumentFragment();
+            
             rankings.forEach(function(item, index) {
                 let rankClass = '';
                 if (index === 0) rankClass = 'rank-1';
                 else if (index === 1) rankClass = 'rank-2';
                 else if (index === 2) rankClass = 'rank-3';
 
-                html += `
-                    <tr>
-                        <td>
-                            <span class="rank-badge ${rankClass}">${index + 1}</span>
-                            ${index < 3 ? '<i class="fas fa-medal ms-1"></i>' : ''}
-                        </td>
-                        <td>${item.name}</td>
-                        <td>${item.total}</td>
-                        <td>${item.date}</td>
-                    </tr>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <span class="rank-badge ${rankClass}">${index + 1}</span>
+                        ${index < 3 ? '<i class="fas fa-medal ms-1"></i>' : ''}
+                    </td>
+                    <td>${item.name}</td>
+                    <td>${item.total}</td>
+                    <td>${item.date}</td>
                 `;
+                fragment.appendChild(row);
             });
-            tableBody.innerHTML = html;
+            
+            // 清空表格並一次性添加所有行
+            tableBody.innerHTML = '';
+            tableBody.appendChild(fragment);
         }
 
         // 顯示角色選擇模態框
