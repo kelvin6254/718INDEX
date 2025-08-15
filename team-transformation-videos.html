@@ -74,12 +74,129 @@
             opacity: 0.9;
         }
 
-        .student-section {
+        /* 學生選擇區域 */
+        .student-selector {
             background: white;
             border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .selector-title {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .student-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .student-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .student-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .student-card-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+            margin: 0 auto 0.5rem;
+            display: block;
+        }
+
+        .student-card-name {
+            color: #1e3a8a;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .student-card-class {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .student-card-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .status-available {
+            background: #10b981;
+        }
+
+        .status-missing {
+            background: #f59e0b;
+        }
+
+        /* 學生詳細內容區域 */
+        .student-detail-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .student-detail-section.active {
+            display: block;
+        }
+
+        .no-selection {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.2rem;
+            padding: 3rem;
+        }
+
+        .no-selection i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+
+        /* 搜索框樣式 */
+        #studentSearch:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .student-header {
@@ -98,6 +215,7 @@
             border: 4px solid #3b82f6;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
             margin-right: 1.5rem;
+            position: relative;
         }
 
         .student-info h3 {
@@ -207,6 +325,29 @@
             background: #f3f4f6;
             color: #6b7280;
         }
+        
+        .photo-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        
+        .photo-available {
+            background: #10b981;
+        }
+        
+        .photo-missing {
+            background: #f59e0b;
+        }
 
         @media (max-width: 768px) {
             .container {
@@ -219,6 +360,28 @@
             
             .page-title h2 {
                 font-size: 2rem;
+            }
+            
+            .students-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .student-card {
+                padding: 0.75rem;
+            }
+            
+            .student-card-photo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .student-card-name {
+                font-size: 0.8rem;
+            }
+            
+            .student-card-class {
+                font-size: 0.7rem;
             }
             
             .student-header {
@@ -294,10 +457,40 @@
         <div class="page-title">
             <h2>🏆 隊員蛻變進步影片集</h2>
             <p>見證每位隊員的成長歷程，從初期到比賽的精彩表現</p>
+            <div id="photoStats" style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                <i class="fas fa-camera me-1"></i>相片載入中...
+            </div>
         </div>
 
-        <div id="studentsContainer">
-            <!-- 學生影片區域將由 JavaScript 動態生成 -->
+        <!-- 學生選擇區域 -->
+        <div class="student-selector">
+            <div class="selector-title">
+                <i class="fas fa-users me-2"></i>選擇學生查看進步影片
+            </div>
+            
+            <!-- 搜索框 -->
+            <div style="margin-bottom: 1.5rem; text-align: center;">
+                <div style="position: relative; max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="studentSearch" placeholder="搜尋學生姓名..." 
+                           style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 2px solid #e5e7eb; border-radius: 25px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                    <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+                </div>
+            </div>
+            
+            <div id="studentsGrid" class="students-grid">
+                <!-- 學生卡片將由 JavaScript 動態生成 -->
+            </div>
+            <div id="photoStats" style="text-align: center; font-size: 0.9rem; color: #6b7280;">
+                <i class="fas fa-camera me-1"></i>相片載入中...
+            </div>
+        </div>
+
+        <!-- 學生詳細內容區域 -->
+        <div id="studentDetailContainer">
+            <div class="no-selection">
+                <i class="fas fa-hand-pointer"></i>
+                <div>請點擊上方學生卡片查看詳細進步影片</div>
+            </div>
         </div>
     </div>
 
@@ -438,10 +631,30 @@
             }
         }
 
-        // 生成學生影片卡片
-        function generateStudentVideoCard(student, className) {
+        // 生成學生選擇卡片
+        function generateStudentCard(student, className) {
             const safeName = encodeURIComponent(student.name);
-            const photoUrl = student.photo || `PIC/${safeName}.jpeg?v=20250809a`;
+            const photoUrl = student.photo || `PIC/${safeName}.jpg?v=20250809a`;
+            
+            return `
+                <div class="student-card" onclick="selectStudent('${student.id}', '${student.name}', '${className}')" data-student-id="${student.id}">
+                    <img src="${photoUrl}" alt="${student.name}" class="student-card-photo" 
+                         onerror="handleCardPhotoError(this, '${safeName}')"
+                         onload="updateCardPhotoStatus(this, '${safeName}', true)"
+                         data-student-name="${student.name}">
+                    <div class="student-card-status status-missing" id="card-status-${safeName}">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="student-card-name">${student.name}</div>
+                    <div class="student-card-class">${className}</div>
+                </div>
+            `;
+        }
+
+        // 生成學生詳細影片內容
+        function generateStudentDetailContent(student, className) {
+            const safeName = encodeURIComponent(student.name);
+            const photoUrl = student.photo || `PIC/${safeName}.jpg?v=20250809a`;
             
             let videoCardsHTML = '';
             videoTypes.forEach(videoType => {
@@ -468,10 +681,17 @@
             });
 
             return `
-                <div class="student-section">
+                <div class="student-detail-section active">
                     <div class="student-header">
-                        <img src="${photoUrl}" alt="${student.name}" class="student-photo" 
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+'">
+                        <div style="position: relative;">
+                            <img src="${photoUrl}" alt="${student.name}" class="student-photo" 
+                                 onerror="handlePhotoError(this, '${safeName}')"
+                                 onload="updatePhotoStatus(this, '${safeName}', true)"
+                                 data-student-name="${student.name}">
+                            <div class="photo-status photo-missing" id="photo-status-${safeName}">
+                                <i class="fas fa-question"></i>
+                            </div>
+                        </div>
                         <div class="student-info">
                             <h3>${student.name}</h3>
                             <div class="class-info">${className}</div>
@@ -484,14 +704,162 @@
             `;
         }
 
-        // 渲染所有學生影片
-        function renderAllStudents() {
-            const container = document.getElementById('studentsContainer');
+        // 處理相片載入錯誤
+        function handlePhotoError(img, safeName) {
+            // 嘗試不同的檔案格式
+            if (!img.dataset.fallback) {
+                img.dataset.fallback = 'jpeg';
+                img.src = `PIC/${safeName}.jpeg?v=20250809a`;
+            } else if (img.dataset.fallback === 'jpeg') {
+                img.dataset.fallback = 'jpg';
+                img.src = `PIC/${safeName}.jpg?v=20250809a`;
+            } else if (img.dataset.fallback === 'jpg') {
+                img.dataset.fallback = 'JPG';
+                img.src = `PIC/${safeName}.JPG?v=20250809a`;
+            } else {
+                // 如果所有格式都失敗，顯示美觀的預設頭像
+                img.src = generateDefaultAvatar(safeName);
+                // 更新狀態指示器為預設頭像
+                updatePhotoStatus(img, safeName, false);
+            }
+        }
+
+        // 處理卡片相片載入錯誤
+        function handleCardPhotoError(img, safeName) {
+            // 嘗試不同的檔案格式
+            if (!img.dataset.fallback) {
+                img.dataset.fallback = 'jpeg';
+                img.src = `PIC/${safeName}.jpeg?v=20250809a`;
+            } else if (img.dataset.fallback === 'jpeg') {
+                img.dataset.fallback = 'jpg';
+                img.src = `PIC/${safeName}.jpg?v=20250809a`;
+            } else if (img.dataset.fallback === 'jpg') {
+                img.dataset.fallback = 'JPG';
+                img.src = `PIC/${safeName}.JPG?v=20250809a`;
+            } else {
+                // 如果所有格式都失敗，顯示美觀的預設頭像
+                img.src = generateDefaultAvatar(safeName);
+                // 更新卡片狀態指示器為預設頭像
+                updateCardPhotoStatus(img, safeName, false);
+            }
+        }
+        
+        // 生成美觀的預設頭像
+        function generateDefaultAvatar(studentName) {
+            // 根據學生姓名生成不同顏色的頭像
+            const colors = [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'
+            ];
+            const colorIndex = studentName.charCodeAt(0) % colors.length;
+            const bgColor = colors[colorIndex];
+            
+            // 生成學生姓名縮寫
+            const initials = studentName.length >= 2 ? 
+                studentName.charAt(0) + studentName.charAt(studentName.length - 1) : 
+                studentName.charAt(0);
+            
+            return `data:image/svg+xml;base64,${btoa(`
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="80" height="80" rx="40" fill="${bgColor}"/>
+                    <text x="40" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+                          text-anchor="middle" fill="white">${initials}</text>
+                </svg>
+            `)}`;
+        }
+        
+        // 更新相片狀態指示器
+        function updatePhotoStatus(img, safeName, isLoaded) {
+            const statusElement = document.getElementById(`photo-status-${safeName}`);
+            if (statusElement) {
+                if (isLoaded && !img.src.includes('data:image/svg+xml')) {
+                    // 相片載入成功
+                    statusElement.className = 'photo-status photo-available';
+                    statusElement.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    // 使用預設頭像
+                    statusElement.className = 'photo-status photo-missing';
+                    statusElement.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+            // 更新相片統計
+            updatePhotoStats();
+        }
+
+        // 更新卡片相片狀態指示器
+        function updateCardPhotoStatus(img, safeName, isLoaded) {
+            const statusElement = document.getElementById(`card-status-${safeName}`);
+            if (statusElement) {
+                if (isLoaded && !img.src.includes('data:image/svg+xml')) {
+                    // 相片載入成功
+                    statusElement.className = 'student-card-status status-available';
+                    statusElement.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    // 使用預設頭像
+                    statusElement.className = 'student-card-status status-missing';
+                    statusElement.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+            // 更新相片統計
+            updatePhotoStats();
+        }
+
+        // 選擇學生
+        function selectStudent(studentId, studentName, className) {
+            // 移除所有選中狀態
+            document.querySelectorAll('.student-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // 添加選中狀態到當前卡片
+            const selectedCard = document.querySelector(`[data-student-id="${studentId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            // 找到選中的學生資料
+            let selectedStudent = null;
+            studentsData.forEach(classData => {
+                classData.students.forEach(student => {
+                    if (student.id === studentId) {
+                        selectedStudent = student;
+                    }
+                });
+            });
+            
+            if (selectedStudent) {
+                // 生成詳細內容
+                const detailContainer = document.getElementById('studentDetailContainer');
+                detailContainer.innerHTML = generateStudentDetailContent(selectedStudent, className);
+                
+                // 平滑滾動到詳細內容
+                detailContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // 更新相片統計
+        function updatePhotoStats() {
+            const totalStudents = studentsData.reduce((total, classData) => total + classData.students.length, 0);
+            const availablePhotos = document.querySelectorAll('.photo-status.photo-available, .student-card-status.status-available').length;
+            const missingPhotos = document.querySelectorAll('.photo-status.photo-missing, .student-card-status.status-missing').length;
+            
+            const statsElement = document.getElementById('photoStats');
+            if (statsElement) {
+                statsElement.innerHTML = `
+                    <i class="fas fa-camera me-1"></i>
+                    相片統計：${availablePhotos} 張可用 / ${missingPhotos} 張預設 / 共 ${totalStudents} 位學生
+                `;
+            }
+        }
+
+        // 渲染學生選擇卡片
+        function renderStudentCards() {
+            const container = document.getElementById('studentsGrid');
             let html = '';
             
             studentsData.forEach(classData => {
                 classData.students.forEach(student => {
-                    html += generateStudentVideoCard(student, classData.class);
+                    html += generateStudentCard(student, classData.class);
                 });
             });
             
@@ -520,14 +888,47 @@
                 hideLoadingIndicator();
             }, 3000);
             
-            // 立即渲染學生影片
-            renderAllStudents();
+            // 載入學生相片
+            loadStudentPhotos();
+            
+            // 立即渲染學生選擇卡片
+            renderStudentCards();
+            
+            // 設置搜索功能
+            setupSearch();
             
             // 隱藏載入指示器
             hideLoadingIndicator();
             
             console.log('隊員蛻變影片頁面載入完成');
         });
+
+        // 設置搜索功能
+        function setupSearch() {
+            const searchInput = document.getElementById('studentSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    filterStudents(searchTerm);
+                });
+            }
+        }
+
+        // 過濾學生
+        function filterStudents(searchTerm) {
+            const studentCards = document.querySelectorAll('.student-card');
+            
+            studentCards.forEach(card => {
+                const studentName = card.querySelector('.student-card-name').textContent.toLowerCase();
+                const className = card.querySelector('.student-card-class').textContent.toLowerCase();
+                
+                if (searchTerm === '' || studentName.includes(searchTerm) || className.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
 
         // 載入學生相片
         function loadStudentPhotos() {
@@ -544,6 +945,34 @@
                     });
                 });
             }
+            
+            // 預先載入相片以檢查可用性
+            preloadStudentPhotos();
+        }
+        
+        // 預先載入學生相片
+        function preloadStudentPhotos() {
+            studentsData.forEach(classData => {
+                classData.students.forEach(student => {
+                    const safeName = encodeURIComponent(student.name);
+                    // 檢查相片是否存在
+                    checkPhotoExists(safeName, student);
+                });
+            });
+        }
+        
+        // 檢查相片是否存在
+        function checkPhotoExists(safeName, student) {
+            const img = new Image();
+            img.onload = function() {
+                // 相片存在，可以正常載入
+                console.log(`${student.name} 的相片載入成功`);
+            };
+            img.onerror = function() {
+                // 相片不存在，記錄到控制台
+                console.warn(`${student.name} 的相片檔案不存在，將使用預設頭像`);
+            };
+            img.src = `PIC/${safeName}.jpg?v=20250809a`;
         }
 
         // 定期檢查相片更新
@@ -552,7 +981,7 @@
             if (currentPhotos !== window.lastPhotosCheck) {
                 window.lastPhotosCheck = currentPhotos;
                 loadStudentPhotos();
-                renderAllStudents();
+                renderStudentCards();
                 console.log('隊員蛻變影片頁面相片已更新');
             }
         }, 2000);
