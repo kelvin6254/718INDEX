@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隊員蛻變進步影片集 - 基督教中國佈道會聖道學校跳繩平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #ea580c;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .student-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .student-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            margin-right: 1.5rem;
+        }
+
+        .student-info h3 {
+            color: #1e3a8a;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-info .class-info {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .video-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .video-title {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            margin-bottom: 1rem;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e3edfa 0%, #dbeafe 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-placeholder:hover {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .video-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .video-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .status-uploaded {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-empty {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .page-title h2 {
+                font-size: 2rem;
+            }
+            
+            .student-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .student-photo {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .video-card {
+                padding: 1rem;
+            }
+        }
+
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 載入指示器 -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">載入隊員蛻變影片中...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>基督教中國佈道會聖道學校跳繩平台</h1>
+        <button class="back-btn" onclick="goBack()">返回首頁</button>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>🏆 隊員蛻變進步影片集</h2>
+            <p>見證每位隊員的成長歷程，從初期到比賽的精彩表現</p>
+        </div>
+
+        <div id="studentsContainer">
+            <!-- 學生影片區域將由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 完整 studentsData 結構
+        const studentsData = [
+            {
+                class: '高中三',
+                students: [
+                    { name: '朱耀鋒', id: '001', photo: '' }
+                ]
+            },
+            {
+                class: '高中一',
+                students: [
+                    { name: '林思恒', id: '002', photo: '' },
+                    { name: '蘇南燊', id: '003', photo: '' }
+                ]
+            },
+            {
+                class: '初中四',
+                students: [
+                    { name: '葉芷汝', id: '004', photo: '' }
+                ]
+            },
+            {
+                class: '初中三',
+                students: [
+                    { name: '吳諾暉', id: '005', photo: '' },
+                    { name: '梁珀源', id: '006', photo: '' }
+                ]
+            },
+            {
+                class: '高小五',
+                students: [
+                    { name: '黎溢鉦', id: '007', photo: '' }
+                ]
+            },
+            {
+                class: '高小四',
+                students: [
+                    { name: '黃泳鈺', id: '008', photo: '' }
+                ]
+            },
+            {
+                class: '高小三',
+                students: [
+                    { name: '楊洛謙', id: '009', photo: '' },
+                    { name: '麥浩敏', id: '010', photo: '' },
+                    { name: '謝韶謙', id: '011', photo: '' },
+                    { name: '馮樂宏', id: '012', photo: '' }
+                ]
+            },
+            {
+                class: '高小二',
+                students: [
+                    { name: '曾業淳', id: '013', photo: '' },
+                    { name: '馮鎮泓', id: '014', photo: '' }
+                ]
+            },
+            {
+                class: '高小一',
+                students: [
+                    { name: '倪灝', id: '015', photo: '' }
+                ]
+            },
+            {
+                class: '初小三',
+                students: [
+                    { name: '林澤星', id: '016', photo: '' },
+                    { name: '蔡瀚毅', id: '017', photo: '' },
+                    { name: '楊凱琳', id: '018', photo: '' },
+                    { name: '龍正罡', id: '019', photo: '' }
+                ]
+            },
+            {
+                class: '初小二',
+                students: [
+                    { name: '許明然', id: '020', photo: '' }
+                ]
+            }
+        ];
+
+        // 影片類型定義
+        const videoTypes = [
+            {
+                key: 'initial',
+                title: '初期表現',
+                period: '2025年11月',
+                description: '隊員加入跳繩隊初期的基礎表現',
+                icon: 'fas fa-seedling'
+            },
+            {
+                key: 'midterm',
+                title: '中期表現',
+                period: '2025年3月',
+                description: '經過訓練後的中期進步表現',
+                icon: 'fas fa-leaf'
+            },
+            {
+                key: 'progress',
+                title: '進步表現',
+                period: '2025年6月',
+                description: '持續進步的技術提升表現',
+                icon: 'fas fa-chart-line'
+            },
+            {
+                key: 'competition',
+                title: '比賽表現',
+                period: '比賽實況',
+                description: '正式比賽中的精彩表現',
+                icon: 'fas fa-trophy'
+            },
+            {
+                key: 'skills',
+                title: '技巧展示',
+                period: '技巧專輯',
+                description: '個人特色技巧的展示',
+                icon: 'fas fa-star'
+            },
+            {
+                key: 'training',
+                title: '訓練日常',
+                period: '訓練花絮',
+                description: '日常訓練的精彩片段',
+                icon: 'fas fa-dumbbell'
+            }
+        ];
+
+        // 隱藏載入指示器
+        function hideLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // 生成學生影片卡片
+        function generateStudentVideoCard(student, className) {
+            const safeName = encodeURIComponent(student.name);
+            const photoUrl = student.photo || `PIC/${safeName}.jpeg?v=20250809a`;
+            
+            let videoCardsHTML = '';
+            videoTypes.forEach(videoType => {
+                videoCardsHTML += `
+                    <div class="video-card">
+                        <div class="video-title">
+                            <i class="${videoType.icon} me-2"></i>${videoType.title}
+                        </div>
+                        <div class="video-container">
+                            <div class="video-placeholder" onclick="uploadVideo('${student.id}', '${student.name}', '${videoType.key}')">
+                                <i class="fab fa-youtube"></i>
+                                <div>點擊上傳影片</div>
+                                <div style="font-size: 0.8rem; margin-top: 0.5rem;">${videoType.period}</div>
+                            </div>
+                        </div>
+                        <div class="video-description">
+                            ${videoType.description}
+                        </div>
+                        <div class="text-center">
+                            <span class="video-status status-empty">待上傳</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return `
+                <div class="student-section">
+                    <div class="student-header">
+                        <img src="${photoUrl}" alt="${student.name}" class="student-photo" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIyMCIgeT0iMTUiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+'">
+                        <div class="student-info">
+                            <h3>${student.name}</h3>
+                            <div class="class-info">${className}</div>
+                        </div>
+                    </div>
+                    <div class="videos-grid">
+                        ${videoCardsHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 渲染所有學生影片
+        function renderAllStudents() {
+            const container = document.getElementById('studentsContainer');
+            let html = '';
+            
+            studentsData.forEach(classData => {
+                classData.students.forEach(student => {
+                    html += generateStudentVideoCard(student, classData.class);
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 上傳影片功能
+        function uploadVideo(studentId, studentName, videoType) {
+            const videoTypeInfo = videoTypes.find(vt => vt.key === videoType);
+            const message = `為 ${studentName} 上傳 ${videoTypeInfo.title} 影片`;
+            
+            // 這裡可以實現影片上傳邏輯
+            // 目前先顯示提示訊息
+            alert(`${message}\n\n功能開發中，敬請期待！`);
+        }
+
+        // 返回首頁
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設置載入超時機制
+            setTimeout(() => {
+                hideLoadingIndicator();
+            }, 3000);
+            
+            // 立即渲染學生影片
+            renderAllStudents();
+            
+            // 隱藏載入指示器
+            hideLoadingIndicator();
+            
+            console.log('隊員蛻變影片頁面載入完成');
+        });
+
+        // 載入學生相片
+        function loadStudentPhotos() {
+            const saved = localStorage.getItem('studentPhotos');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                // 合併相片資料
+                studentsData.forEach((cls, clsIndex) => {
+                    cls.students.forEach((student, stuIndex) => {
+                        const savedStudent = savedData[clsIndex]?.students[stuIndex];
+                        if (savedStudent && savedStudent.photo) {
+                            student.photo = savedStudent.photo;
+                        }
+                    });
+                });
+            }
+        }
+
+        // 定期檢查相片更新
+        setInterval(function() {
+            const currentPhotos = localStorage.getItem('studentPhotos');
+            if (currentPhotos !== window.lastPhotosCheck) {
+                window.lastPhotosCheck = currentPhotos;
+                loadStudentPhotos();
+                renderAllStudents();
+                console.log('隊員蛻變影片頁面相片已更新');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
