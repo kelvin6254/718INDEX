@@ -360,7 +360,7 @@
                 <h3>學生資訊</h3>
                 <div class="student-photo" onclick="uploadStudentPhoto()" style="cursor: pointer;" title="點擊上傳相片">
                     <!-- 如果有學生相片，顯示相片；否則顯示預設圖示 -->
-                    <img id="studentPhoto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlM2VkZmEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZGJlYWZlIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2ZyB4PSIzMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjM2I4MmY2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzIuNSAwIDQuNzEtMS4yOCA2LTQuMjUtMS4yOS0yLjkyLTMuNS00LjI1LTYtNC4yNXMtNC43MSAxLjMzLTYgNC4yNWMxLjI5IDIuOTcgMy41IDQuMjUgNiA0LjI1eiIvPgo8L3N2Zz4KPC9zdmc+" alt="學生相片" style="display: none;">
+                    <img id="studentPhoto" src="" alt="學生相片" style="display: none;">
                     <div class="photo-placeholder" id="photoPlaceholder">
                         <i class="fas fa-user"></i>
                     </div>
@@ -1312,10 +1312,8 @@
             // 立即渲染成績資料（使用本地資料）
             renderStudentScores();
             
-            // 延遲載入相片，避免阻塞初始渲染
-            setTimeout(() => {
-                loadStudentPhoto();
-            }, 50);
+            // 立即載入相片
+            loadStudentPhoto();
             
         } else {
             document.getElementById('studentName').textContent = '查無此學生';
@@ -1351,33 +1349,45 @@
         setTimeout(() => {
             loadStudentPhotos();
             
-            // 定期檢查相片更新（每2秒檢查一次）
+            // 定期檢查相片更新（每5秒檢查一次，避免過於頻繁）
             setInterval(function() {
                 const currentPhotos = localStorage.getItem('studentPhotos');
                 if (currentPhotos !== window.lastPhotosCheck) {
                     window.lastPhotosCheck = currentPhotos;
                     loadStudentPhotos();
-                    loadStudentPhoto();
+                    // 只有在相片資料確實有變化時才重新載入
+                    const studentPhoto = document.getElementById('studentPhoto');
+                    if (studentPhoto && studentPhoto.dataset.loaded !== 'true') {
+                        loadStudentPhoto();
+                    }
                     console.log('學生專區相片已更新');
                 }
-            }, 2000);
+            }, 5000);
         }, 200);
         
         // 延遲設置事件監聽器
         setTimeout(() => {
-            // 頁面獲得焦點時重新載入相片
+            // 頁面獲得焦點時檢查相片更新
             window.addEventListener('focus', function() {
                 loadStudentPhotos();
-                loadStudentPhoto();
-                console.log('學生專區頁面獲得焦點，重新載入相片');
+                // 只有在相片資料確實有變化時才重新載入
+                const studentPhoto = document.getElementById('studentPhoto');
+                if (studentPhoto && studentPhoto.dataset.loaded !== 'true') {
+                    loadStudentPhoto();
+                }
+                console.log('學生專區頁面獲得焦點，檢查相片更新');
             });
             
-            // 頁面可見性變化時重新載入相片
+            // 頁面可見性變化時檢查相片更新
             document.addEventListener('visibilitychange', function() {
                 if (!document.hidden) {
                     loadStudentPhotos();
-                    loadStudentPhoto();
-                    console.log('學生專區頁面變為可見，重新載入相片');
+                    // 只有在相片資料確實有變化時才重新載入
+                    const studentPhoto = document.getElementById('studentPhoto');
+                    if (studentPhoto && studentPhoto.dataset.loaded !== 'true') {
+                        loadStudentPhoto();
+                    }
+                    console.log('學生專區頁面變為可見，檢查相片更新');
                     
                     // 檢查老師權限
                     if(checkAndRestoreTeacherPermission()) {
@@ -1416,37 +1426,84 @@
         const studentPhoto = document.getElementById('studentPhoto');
         const photoPlaceholder = document.getElementById('photoPlaceholder');
         
+        if (!studentPhoto || !photoPlaceholder) {
+            console.warn('照片元素未找到');
+            return;
+        }
+        
         // 從 localStorage 獲取當前學生的相片
         const id = getQueryParam('id');
         const name = getQueryParam('name') ? decodeURIComponent(getQueryParam('name')) : '';
         const student = findStudentByIdOrName(id, name);
         
-        const safeName = encodeURIComponent(student?.name || '');
-        if (studentPhoto) {
-          studentPhoto.onerror = function(){
-            if (!this.dataset.fallback) {
-              this.dataset.fallback = 'jpeg';
-              this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
-            } else if (this.dataset.fallback === 'jpeg') {
-              this.dataset.fallback = 'jpg';
-              this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
-            } else if (this.dataset.fallback === 'jpg') {
-              this.dataset.fallback = 'JPG';
-              this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
-            } else {
-              this.style.display = 'none';
-              photoPlaceholder.style.display = 'flex';
-            }
-          };
+        if (!student || !student.name) {
+            studentPhoto.style.display = 'none';
+            photoPlaceholder.style.display = 'flex';
+            return;
         }
-        const src = (student && student.photo) ? student.photo : (safeName ? `PIC/${safeName}.jpeg?v=${PIC_VERSION}` : '');
+        
+        const safeName = encodeURIComponent(student.name);
+        
+        // 如果照片已經成功載入且正在顯示，則不重新載入
+        if (studentPhoto.dataset.loaded === 'true' && studentPhoto.style.display === 'block' && studentPhoto.src && studentPhoto.src.length > 0 && !studentPhoto.src.includes('data:image/svg+xml')) {
+            console.log('照片已載入，跳過重新載入');
+            return;
+        }
+        
+        // 防抖機制：避免短時間內重複載入
+        if (window.lastPhotoLoadTime && (Date.now() - window.lastPhotoLoadTime) < 1000) {
+            console.log('照片載入過於頻繁，跳過');
+            return;
+        }
+        window.lastPhotoLoadTime = Date.now();
+        
+        // 重置錯誤處理狀態
+        studentPhoto.dataset.fallback = '';
+        let loadAttempts = 0;
+        
+        // 設置錯誤處理
+        studentPhoto.onerror = function(){
+            loadAttempts++;
+            console.log(`照片載入失敗，嘗試次數: ${loadAttempts}`);
+            
+            if (!this.dataset.fallback) {
+                this.dataset.fallback = 'jpeg';
+                this.src = `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
+            } else if (this.dataset.fallback === 'jpeg') {
+                this.dataset.fallback = 'jpg';
+                this.src = `PIC/${safeName}.jpg?v=${PIC_VERSION}`;
+            } else if (this.dataset.fallback === 'jpg') {
+                this.dataset.fallback = 'JPG';
+                this.src = `PIC/${safeName}.JPG?v=${PIC_VERSION}`;
+            } else {
+                // 所有格式都失敗，顯示預設圖示
+                this.style.display = 'none';
+                photoPlaceholder.style.display = 'flex';
+                console.log('所有照片格式載入失敗，顯示預設圖示');
+            }
+        };
+        
+        // 設置載入成功處理
+        studentPhoto.onload = function() {
+            this.style.display = 'block';
+            photoPlaceholder.style.display = 'none';
+            console.log('學生照片載入成功:', this.src);
+            // 標記照片已成功載入
+            this.dataset.loaded = 'true';
+        };
+        
+        // 優先使用 localStorage 中的相片，否則嘗試載入本地檔案
+        const src = (student && student.photo) ? student.photo : `PIC/${safeName}.jpeg?v=${PIC_VERSION}`;
+        
         if (src) {
-          studentPhoto.src = src;
-          studentPhoto.style.display = 'block';
-          photoPlaceholder.style.display = 'none';
+            console.log('開始載入學生照片:', src);
+            studentPhoto.src = src;
+            // 先顯示載入中狀態
+            studentPhoto.style.display = 'block';
+            photoPlaceholder.style.display = 'none';
         } else {
-          studentPhoto.style.display = 'none';
-          photoPlaceholder.style.display = 'flex';
+            studentPhoto.style.display = 'none';
+            photoPlaceholder.style.display = 'flex';
         }
     }
 
